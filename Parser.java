@@ -112,7 +112,7 @@ public class Parser {
                     if (key == null && tree.getValueType() == JsonValue.ValueType.ARRAY) {
                         columns.add(new ArrayList<ArrayList<String>>());
                         rowOrColumnNum++;
-                        cellNum = 0;
+                        cellNum = -1;
                     }
                 }
                 for (JsonValue val : array)
@@ -129,13 +129,15 @@ public class Parser {
                 JsonNumber num = (JsonNumber) tree;
                 if (colours.size() == 0) {
                     if (currentArray.equals("columns")) {
+                        cellNum++;
                         columns.get(rowOrColumnNum).add(new ArrayList<>());
                         columns.get(rowOrColumnNum).get(cellNum).add(num.toString());
                         columns.get(rowOrColumnNum).get(cellNum).add("COLOUR_1");
-                        cellNum++;
+                        
                     }
                 } else {
                     if (currentArray.equals("columns")) {
+                        cellNum++;
                         columns.get(rowOrColumnNum).add(new ArrayList<>());
                         columns.get(rowOrColumnNum).get(cellNum).add(num.toString());
                     }
