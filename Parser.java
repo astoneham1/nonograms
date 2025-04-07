@@ -20,11 +20,8 @@ public class Parser {
         String fileName = "./Jsons/cat.json";
         try {
             getArrayLists(fileName);
-            if (colours.size() == 0) {
-                colours.put("COLOUR_1", "0x000000");
-                colours.put("UNKOWN", "0xECECEC");
-                colours.put("EMPTY", "0xffffff");
-            }
+            getArrayLists(fileName);
+            getArrayLists("./Jsons/colour_cat.json");
             System.out.println(rows.toString());
             System.out.println(columns.toString());
             System.out.println(colours.toString());
@@ -34,9 +31,15 @@ public class Parser {
     }
 
     public static void getArrayLists(String fileName) throws FileNotFoundException {
+        clearLists();
         JsonReader reader = Json.createReader(new FileReader(fileName));
         JsonStructure jsonst = reader.read();
         getArrayListsFromTree(jsonst, null);
+        if (colours.size() == 0) {
+            colours.put("COLOUR_1", "0x000000");
+            colours.put("UNKOWN", "0xECECEC");
+            colours.put("EMPTY", "0xffffff");
+        }
     }
 
     public static void getArrayListsFromTree(JsonValue tree, String key) {
@@ -118,5 +121,15 @@ public class Parser {
             case NULL:
                 break;
         }
+    }
+    public static void clearLists(){
+        rows.clear();
+        rows.trimToSize();
+        columns.clear();
+        columns.trimToSize();
+        colours.clear();
+        currentArray = "";
+        cellNum = 0;
+        rowOrColumnNum = 0;
     }
 }
