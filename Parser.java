@@ -22,6 +22,8 @@ public class Parser {
             getArrayLists(fileName);
             if (colours.size() == 0) {
                 colours.put("COLOUR_1", "0x000000");
+                colours.put("UNKOWN", "0xECECEC");
+                colours.put("EMPTY", "0xffffff");
             }
             System.out.println(rows.toString());
             System.out.println(columns.toString());
