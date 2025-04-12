@@ -8,12 +8,19 @@ public class app {
     private JButton reset;
     private JPanel grid;
     private JPanel colorGuide;
-    private JPanel extraColors;
-    private JPanel defaultColours;
     private JPanel color1;
-    private JLabel color1Label;
-    private JLabel color3Label;
-    private JLabel color2Label;
-    private JPanel color3;
+    private JPanel color1Preview;
+    private JLabel color1Name;
     private JPanel color2;
+    private JPanel color2Preview;
+    private JLabel color2Name;
+    private JPanel color3;
+    private JPanel color3Preview;
+    private JLabel color3Label;
+
+    public app() {
+        loadFile.addActionListener(e -> {
+            // Code to be executed when the button is clicked
+        });
+    }
 }
