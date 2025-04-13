@@ -13,34 +13,38 @@
  *      - This code will hopefully be cleaned up a lot in the future.
  */
 
-import java.util.*;
+import java.util.List;
+import java.util.Arrays;
 
 public class Checker {
     /**
-    * The player grid and clues have been hard-coded for testing. The methods for these are at the bottom.
-    */
+     * The player grid and clues have been hard-coded for testing. The methods for these are at the bottom.
+     * @param args
+     */
     public static void main(String[] args) {
         int[][] blanksSmiler = createGrid("blanks_smiler");
         List<List<Integer>> rowCluesBlankSmiler = createRowClues("blanks_smiler");
         List<List<Integer>> columnCluesBlankSmiler = createColumnClues("blanks_smiler");
         checkNonogram(blanksSmiler, rowCluesBlankSmiler, columnCluesBlankSmiler);
- 
+
         int[][] colourWink = createGrid("colour_wink");
         List<List<Integer>> rowCluesColourWink = createRowClues("colour_wink");
         List<List<Integer>> columnCluesColourWink = createColumnClues("colour_wink");
         checkNonogram(colourWink, rowCluesColourWink, columnCluesColourWink);
     }
- 
+
     /**
-    * Loops through the number of rows, and calls the checkRow() method for that given row, and for the corresponding clue. For testing, it
-    * prints the result to the console, but this would be removed in the end.
-    */
+     * Loops through the number of rows, and calls the checkRow() method for that given row, and for the corresponding clue. For testing, it 
+     * prints the result to the console, but this would be removed in the end.
+     * @param grid              The player's nonogram.
+     * @param rowClues          All of the rowClues
+     * @param columnClues       All of the columnClues
+     */
     public static void checkNonogram(int[][] grid, List<List<Integer>> rowClues, List<List<Integer>> columnClues) {
         boolean hasBeenWrong = false;
- 
         // For each row in the 2D array grid, check the ith row against the ith clue.
         for (int i = 0; i < grid.length; i++) {
-            boolean correctRow = checkRow(grid[i], rowClues.get(i));
+            boolean correctRow = checkLine(grid[i], rowClues.get(i));
             if (!correctRow) {
                 hasBeenWrong = true;
                 System.out.println("INCORRECT ROW " + (i+1) );
@@ -48,7 +52,10 @@ public class Checker {
             else if (i == grid.length - 1 && !hasBeenWrong) {
                 System.out.println("CORRECT ROWS");
             }
-            boolean correctColumn = checkColumn(grid, columnClues.get(i), i);
+
+            // Get the ith column, and check it against the corresponding clue.
+            int[] column = getColumn(grid, i);
+            boolean correctColumn = checkLine(column, columnClues.get(i));
             if (!correctColumn) {
                 hasBeenWrong = true;
                 System.out.println("INCORRECT COLUMN " + (i+1));
@@ -57,31 +64,34 @@ public class Checker {
                 System.out.println("CORRECT COLUMNS");
             }
         }
-     }
- 
+    }
+  
     /**
-    * This checks a specific row abides with a specific clue. This method could be neatened up in the future and needs a bit more work.
-    */
-    public static boolean checkRow(int[] row, List<Integer> rowClue) {
+     * This checks a specific line abides with a specific clue. (This method could be neatened up in the future and needs a bit more work).
+     * @param line          The row or column which is being checked.
+     * @param clue          The clue which the row or column is being checked against.
+     * @return              True if correct, false if not.
+     */
+    public static boolean checkLine(int[] line, List<Integer> clue) {
         // For global access within the method
         int numCorrect = 0;         // Keeps track of the number of cells which are correct for a given clue.
         int positionInRow = 0;      // Keeps track of the position in the row, i.e. the cell number.
         int numSquares = 0;         // This is the count clue, i.e. how many squares are a given colour.
         int squareColour = 0;       // This is the square colour.
- 
+  
         // Loops through the size of the clue list. Some clue lists are short, such as [5, 0] which is 5 squares in the colour 0 (black).
         // Others are longer, such as [2,0, 3,3, 1,0] which is 2 squares in colour 0 (black), 3 squares in colour 3 (yellow), 1 square in colour 0 (black).
-        for (int j = 0; j < rowClue.size(); j+=2) {
+        for (int j = 0; j < clue.size(); j+=2) {
             numCorrect = 0;
-            numSquares = rowClue.get(j);
-            squareColour = rowClue.get(j+1);
- 
-            // Loops through each cell in the row, starting from 0.
-            for (int i = positionInRow; i < row.length; i++) {
+            numSquares = clue.get(j);
+            squareColour = clue.get(j+1);
+  
+            // Loops through each cell in the line, starting from 0.
+            for (int i = positionInRow; i < line.length; i++) {
                 // Checks if the number of squares matches the clue count, which signals that that part of the clue is complete.
                 if (numCorrect == numSquares) {
-                    if (row[i] != squareColour) { // The cell MUST be a different colour, otherwise the clue has not been satisfied (e.g. the clue is 4 but there are 5 filled in)
-                        if (j != rowClue.size() - 2) {
+                    if (line[i] != squareColour) { // The cell MUST be a different colour, otherwise the clue has not been satisfied (e.g. the clue is 4 but there are 5 filled in)
+                        if (j != clue.size() - 2) {
                             break; // Break only if not on the last clue. Fixes 0, 0, 0, 2, 2, 0 and clue is 3. Allows for clues with multiple counts.
                         }
                     }
@@ -89,75 +99,24 @@ public class Checker {
                         return false;
                     }
                 }
- 
+  
                 // If the cell matches the square colour given in the clue, then it is correct and one is added to the counter.
-                if (row[i] == squareColour) {
+                if (line[i] == squareColour) {
                     numCorrect++;
                 }
-
+ 
                 // The cell is incorrect if it is any colour other than the square colour, or if it is blank but the clue has not been finished
                 // e.g. Clue was 5 black squares with no spaces but the player entered 2 black, one space, 2 black.
-                else if (row[i] != 2 || (row[i] == 2 && numCorrect > 0 && numSquares != numCorrect)) {
+                else if (line[i] != 2 || (line[i] == 2 && numCorrect > 0 && numSquares != numCorrect)) {
                     return false;
                 }
- 
-                // Go to the next position in the row.
+  
+                // Go to the next position in the line.
                 positionInRow++;
             }
         }
- 
-        // Once the whole row has been iterated through, if the number of cells are correct for the clue, true is returned.
-        if (numCorrect == numSquares) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /*
-    - The whole 2D array must be passed in.
-    - You need to loop through grid[a][b], where a is the row number, and b is the element in that row. For a column, b will remain fixed and a will change:
-    - grid[0][0], grid[1][0], grid[2][0], grid[3][0], grid[4][0], grid[5][0] (this is one column).
-    - We can create a general checkColumn method, which checks a particular column. This will be called inside a loop which iterates through the
-    - number of columns, i. Since i is the column number, we can pass this in to the method, and this is going to be our b.
-    - Within the checkColumn method, a loop will iterate over the number of rows, and this number is our a.
-    - Lots of code repetition here and in checkRow - could try and combine.
-    */
-    public static boolean checkColumn(int[][] column, List<Integer> columnClue, int columnNumber) {
-        int numCorrect = 0;         
-        int positionInRow = 0;   
-        int numSquares = 0;  
-        int squareColour = 0;
-
-        for (int j = 0; j < columnClue.size(); j+=2) {
-            numCorrect = 0;
-            numSquares = columnClue.get(j);
-            squareColour = columnClue.get(j+1);
-
-            for (int i = positionInRow; i < column.length; i++) {
-                if (numCorrect == numSquares) {
-                    if (column[i][columnNumber] != squareColour) {
-                        if (j != columnClue.size() - 2) {
-                            break;
-                        }
-                    }
-                    else {
-                        return false;
-                    }
-                }
-
-                if (column[i][columnNumber] == squareColour) {
-                    numCorrect++;
-                }
-
-                else if (column[i][columnNumber] != 2) {
-                    return false;
-                }
-
-                positionInRow++;
-            }
-        }
+  
+        // Once the whole line has been iterated through, if the number of cells are correct for the clue, true is returned.
         if (numCorrect == numSquares) {
             return true;
         }
@@ -166,6 +125,24 @@ public class Checker {
         }
     }
  
+    /**
+     * From the 2D array, gets the column as an int array so only one 'checkLine' method is required. This gets all elements
+     * for a fixed row number, e.g. grid[i][0], grid[i][1], grid[i][2] where i is every element per column and 0,1,2... is the column number.
+     * @param grid          The 2D array player grid
+     * @param num           The column number, i.e. get all elements from this column.
+     * @return              An integer array which is the ith column from the player grid.
+     */
+    public static int[] getColumn(int[][] grid, int num) {
+        int length = grid[0].length;
+        int[] column = new int[length];
+ 
+        for (int i = 0; i < grid.length; i++) {
+            column[i] = grid[i][num];
+        }
+ 
+        return column;
+    }
+  
     // ******************************************************************************************************************************************
     // All methods below will most likely not be in the finished product, they are here to test the class and contain hard-coded grids and clues.
     // The grids below represent the players grid. These values can be changed to test the program to see if they match the clues.
@@ -201,7 +178,7 @@ public class Checker {
         }
         return grid;
     }
- 
+  
     public static List<List<Integer>> createRowClues(String name) {
         List<List<Integer>> rowClues = null;
         if (name.equals("blanks_smiler")) {
@@ -233,7 +210,7 @@ public class Checker {
         }
         return rowClues;
     }
- 
+
     public static List<List<Integer>> createColumnClues(String name) {
         List<List<Integer>> columnClues = null;
         if (name.equals("blanks_smiler")) {
@@ -265,4 +242,4 @@ public class Checker {
         }
         return columnClues;
     }
- }
+}
