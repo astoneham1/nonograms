@@ -15,13 +15,14 @@ public class Main {
         g.updateMove(2, 1, 4);
         g.updateMove(2, 2, 3);
         g.updateMove(2, 1, 2);
+        g.saveMoves();
+        g.updateMove(2, 1, 5);
         for (int i = 0; i<rows; i++) {
             for (int j = 0; j<cols; j++) {
                 System.out.print(g.grid[i][j]);
             }
             System.out.println();
         }
-        g.saveMoves();
         System.out.println(g.moves);
         Grid w = new Grid(rows, cols, "Jsons/hi.json");
         w.loadMoves();
@@ -31,7 +32,7 @@ public class Main {
             }
             System.out.println();
         }
-        System.out.println(w.moves);
+        // System.out.println(w.moves);
     }
 
 

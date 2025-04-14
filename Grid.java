@@ -5,14 +5,16 @@
 
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import javax.json.JsonWriter;
 
 public class Grid {
@@ -62,26 +64,44 @@ public class Grid {
         try {
             FileWriter w = new FileWriter(f);
             JsonWriter writer = Json.createWriter(w);
-            JsonObjectBuilder moveBuilder = Json.createObjectBuilder();
+            JsonBuilderFactory factory = Json.createBuilderFactory(null);
             JsonArrayBuilder moveArrayBuilder = Json.createArrayBuilder();
             for (Move m : this.moves) {
-                moveBuilder.add("row", m.location[0]) 
+                JsonObject moveObject = factory.createObjectBuilder()
+                            .add("row", m.location[0]) 
                             .add("cols", m.location[1])
                             .add("oldColor", m.oldColor)
-                            .add("newColor", m.newColor);
-                JsonObject moveObject = moveBuilder.build();
+                            .add("newColor", m.newColor)
+                            .build();
                 moveArrayBuilder.add(moveObject);
             }
             JsonArray moveArray = moveArrayBuilder.build();
-            writer.writeArray(moveArray);
+            JsonObject moves = factory.createObjectBuilder()
+                                .add("Moves", moveArray)
+                                .build();
+            writer.writeObject(moves);
             writer.close();
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    // // when recalling an old grid, reading from a json file to update grid to the last move
-    // public void loadMoves() {
-        
-    // }
+    // when recalling an old grid, reading from a json file to update grid to the last move
+    public void loadMoves() {
+        try {
+            JsonReader reader = Json.createReader(new FileReader(path));
+            JsonObject file = reader.readObject();
+            JsonArray array = file.getJsonArray("Moves");
+            for (JsonObject r : array.getValuesAs(JsonObject.class)) {
+                Move m = new Move(r.getInt("row"), r.getInt("cols"), r.getInt("oldColor"), r.getInt("newColor"));
+                this.grid[r.getInt("row")][r.getInt("cols")] = r.getInt("newColor");
+                this.moves.add(m);
+            }
+            reader.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
 }
