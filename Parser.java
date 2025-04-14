@@ -30,6 +30,23 @@ public class Parser {
         }
     }
 
+     /**
+     * Clears arraylists to ensure empty after every load
+     */
+    public static void clearLists(){
+        rows.clear();
+        rows.trimToSize();
+        columns.clear();
+        columns.trimToSize();
+        colours.clear();
+        currentArray = "";
+        cellNum = 0;
+        rowOrColumnNum = 0;
+    }
+
+    /**
+     * gets arraylists and info
+     */
     public static void getArrayLists(String fileName) throws FileNotFoundException {
         clearLists();
         JsonReader reader = Json.createReader(new FileReader(fileName));
@@ -42,6 +59,10 @@ public class Parser {
         }
     }
 
+     
+    /**
+     * Parses Through arraylists
+     */
     public static void getArrayListsFromTree(JsonValue tree, String key) {
         if (key != null) {
             if (key.equals("states")) {
@@ -121,15 +142,5 @@ public class Parser {
             case NULL:
                 break;
         }
-    }
-    public static void clearLists(){
-        rows.clear();
-        rows.trimToSize();
-        columns.clear();
-        columns.trimToSize();
-        colours.clear();
-        currentArray = "";
-        cellNum = 0;
-        rowOrColumnNum = 0;
     }
 }
