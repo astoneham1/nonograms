@@ -1,13 +1,29 @@
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.text.StyleContext;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridLayout;
 import java.io.File;
-import java.util.Locale;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.List;
 
-// to remove the .form dependency (required to allow this run on anything except intellij idea:
-//
+// NOTE TO AMPS1:
+// to remove the .form dependency (required to allow this run on anything except intellij idea):
+// within IJ: settings -> editors -> GUI designer
+// set generate gui into: java source code on compilation
+// neaten up code
+// this will be done when the code is near finished
+
+// PARSER SHOULD RETURN SOMETHING LIKE THIS IDEALLY
+//public class PuzzleData {
+//    public Map<String, Color> states;
+//    public List<List<Clue>> rows;
+//    public List<List<Clue>> columns;
+// STUFF ABOUT HINTS
+//}
 
 //COLOR NUMBERS:
 //0 - UNKNOWN
@@ -16,11 +32,11 @@ import java.util.Locale;
 //3 -
 
 public class app {
-    private final Color COLOR_UNKNOWN_1 = new Color(136, 142, 152);
-    private final Color COLOR_EMPTY_2 = new Color(228, 240, 255);
-    private final Color COLOR_BLACK_3 = new Color(43, 45, 48);
+    // COLORS
+    private final Map<String, Color> colors; // ensure this is a linked hashmap
 
 
+    // OBJECTS ON SCREEN
     private JPanel mainPanel;
     private JLabel titleText;
     private JPanel controls;
@@ -40,7 +56,10 @@ public class app {
     private JButton reset;
     private JButton solve;
 
-    public app() {
+    // CONSTRUCTOR
+    public app(Map<String, Color> colors) {
+        this.colors = colors;
+
         loadFile.addActionListener(e -> {
             JOptionPane.showMessageDialog(mainPanel, "load clicked");
 
@@ -55,14 +74,24 @@ public class app {
             if (result == JFileChooser.APPROVE_OPTION) {
                 File puzzleFile = fileChooser.getSelectedFile();
 
-                // GET PARSED JSON
+                //try {
+                    // call method to parse JSON by passing in puzzleFile
+                    // get color states from the data and create a new object
+                    //app newApp = new app(newColors);
+                    // get grid size from puzzle
 
-                // TEMP VALUES
-                int rows = 5;
-                int cols = 10;
+                    // get grid size from puzzle json
 
-                buildGrid(rows, cols);
-                JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
+                    // temp values
+                    int rows = 5;
+                    int cols = 10;
+
+                    //newApp.buildGrid(rows, cols);
+                    JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
+                //} catch (IOException ex) {
+                //    ex.printStackTrace();
+                //JOptionPane.showMessageDialog(mainPanel, "error loading puzzle");
+                //}
             }
         });
 
@@ -76,7 +105,7 @@ public class app {
 
             for (Component c : grid.getComponents()) {
                 if (c instanceof JButton button) {
-                    button.setBackground(COLOR_UNKNOWN_1); // resets color
+                    button.setBackground(colors.get("UNKNOWN")); // resets color
                     button.putClientProperty("state", 0); // resets state to 0 (unknown)
                 }
             }
@@ -94,6 +123,7 @@ public class app {
         return mainPanel;
     }
 
+    // builds the grid on screen
     public void buildGrid(int rows, int columns) {
         grid.removeAll(); // clear grid of anything previous
         grid.setLayout(new GridLayout(rows, columns));
@@ -102,26 +132,19 @@ public class app {
             for (int j = 0; j < columns; j++) { // repeat through columns
                 JButton cell = new JButton();
                 cell.setOpaque(true);
-                cell.setBackground(COLOR_UNKNOWN_1); // set colour to the unknown colour
+                cell.setBackground(colors.get("UNKNOWN")); // set colour to the unknown colour
                 cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 cell.putClientProperty("state", 0); // set state to unknown
 
+                List<String> colorKeys = new ArrayList<>(colors.keySet());
+
                 cell.addActionListener(e -> {
                     int state = (int) cell.getClientProperty("state");
-                    int nextState = (state + 1) % 3;
+                    int nextState = (state + 1) % colorKeys.size();
                     cell.putClientProperty("state", nextState);
 
-                    switch (nextState) {
-                        case 0: // unknown
-                            cell.setBackground(COLOR_UNKNOWN_1);
-                            break;
-                        case 1: // empty (white)
-                            cell.setBackground(COLOR_EMPTY_2);
-                            break;
-                        case 2: // black
-                            cell.setBackground(COLOR_BLACK_3);
-                            break;
-                    }
+                    String colorName = colorKeys.get(nextState);
+                    cell.setBackground(colors.get(colorName));
                 });
 
                 grid.add(cell);
@@ -134,8 +157,13 @@ public class app {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
+            // create default colors (will be replaced when a puzzle is loaded)
+            Map<String, Color> defaultColors = new LinkedHashMap<>();
+            defaultColors.put("UNKNOWN", Color.decode("#ECECEC"));
+            defaultColors.put("EMPTY", Color.decode("#FFFFFF"));
+
             JFrame frame = new JFrame("Nonograms");
-            frame.setContentPane(new app().mainPanel);
+            frame.setContentPane(new app(defaultColors).mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
             frame.setLocationRelativeTo(null);
