@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -39,7 +38,7 @@ public class Grid {
         this.rows = r;
         this.columns = c;
         this.path = path;
-        // creates a blank grid that the will be updated throughout the gameplay and populates it with unknown values
+        // creates a blank grid that the will be updated throughout the gameplay and populates it with "unknown" values
         this.grid = new int[r][c];
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
@@ -103,5 +102,11 @@ public class Grid {
             System.out.println(e);
         }
 
+    }
+
+    public void undoMoves() {
+        grid[this.moves.get(moves.size()-1).rows][this.moves.get(moves.size()-1).cols] = this.moves.get(moves.size()-1).oldColor;
+        this.moves.remove(moves.size());
+        // do this for the json as well
     }
 }
