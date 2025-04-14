@@ -3,7 +3,7 @@ import javax.swing.*;
 public class app {
     private JPanel mainPanel;
     private JLabel titleText;
-    private JPanel loader;
+    private JPanel controls;
     private JButton loadFile;
     private JButton reset;
     private JPanel grid;
@@ -17,11 +17,28 @@ public class app {
     private JPanel color3;
     private JPanel color3Preview;
     private JLabel color3Label;
+    private JButton check;
+    private JButton solve;
 
     public app() {
         loadFile.addActionListener(e -> {
             // Code to be executed when the button is clicked
-            JOptionPane.showMessageDialog(mainPanel, "Load File Clicked!");
+            JOptionPane.showMessageDialog(mainPanel, "load clicked");
+        });
+
+        reset.addActionListener(e -> {
+            // Code to be executed when the button is clicked
+            JOptionPane.showMessageDialog(mainPanel, "reset clicked");
+        });
+
+        check.addActionListener(e -> {
+            // Code to be executed when the button is clicked
+            JOptionPane.showMessageDialog(mainPanel, "check clicked");
+        });
+
+        solve.addActionListener(e -> {
+            // Code to be executed when the button is clicked
+            JOptionPane.showMessageDialog(mainPanel, "solve clicked");
         });
     }
 
