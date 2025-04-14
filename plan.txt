@@ -6,6 +6,6 @@ Thomas - Checker
 Conor - Parser(with colour)
 
 Colour codes:
-0 - unkown
+0 - unknown
 1 - empty
 2 - black
