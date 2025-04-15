@@ -13,6 +13,7 @@ public class Parser {
     //hashmap of the colours and there hex codes
     public LinkedHashMap<String, String> colours = new LinkedHashMap<>();
     
+    //used when parsing
     public int rowOrColumnNum = 0;
     public String currentArray = "";
 
@@ -149,22 +150,15 @@ public class Parser {
         }
     }
 
+    //generates a clue from two arraylists
     public Clue getClue(ArrayList<Integer> counts, ArrayList<Integer> colours){
-        if (colours.size() == 0) {
-            for(int i = 0; i<counts.size(); i++){
-                colours.add(2);
-            }
-            Clue clue = new Clue(counts, colours);
-            return clue;
-        }
-        else{
-            Clue clue = new Clue(counts, colours);
-            return clue;
-        }
+        Clue clue = new Clue(counts, colours);
+        return clue;
         //could throw an invalid json error if information is wrong here
         //instead of else use elif and check arrays are the same size
     }
 
+    //generates an arraylist of clues
     public ArrayList<Clue> getClues(ArrayList<ArrayList<Integer>> lines, ArrayList<ArrayList<Integer>> colours){
         ArrayList<Clue> clues = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
@@ -173,6 +167,7 @@ public class Parser {
         return clues;
     }
 
+    //add colours to the colours.java hashmap
     public static void createColourHashmap(LinkedHashMap<String, String> colours){
         int i = 0;
         for(String colour : colours.keySet()){
@@ -180,7 +175,8 @@ public class Parser {
             i++;
         }
     }
-    
+
+    //generates the grid
     public Grid getGrid(String filePath){
         try {
             getArrayLists(filePath);
