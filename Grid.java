@@ -90,9 +90,9 @@ public class Grid {
     }
 
     // when recalling an old grid, reading from a json file to update grid to the last move
-    public void loadMoves(String path) {
+    public void loadMoves(String newPath) {
         try {
-            JsonReader reader = Json.createReader(new FileReader(path));
+            JsonReader reader = Json.createReader(new FileReader(newPath));
             JsonObject file = reader.readObject();
             JsonArray array = file.getJsonArray("Moves");
             for (JsonObject r : array.getValuesAs(JsonObject.class)) {
@@ -103,6 +103,8 @@ public class Grid {
                 }
             }
             reader.close();
+            //ensures that the file storing moves for the grid has the most updated moves
+            saveMoves();
         } catch (Exception e) {
             System.out.println(e);
         }

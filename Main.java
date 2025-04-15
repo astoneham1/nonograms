@@ -1,20 +1,15 @@
 // import javax.json.JsonWriter;
 
 public class Main { 
-    public static Grid currentGridClues; // current grid of clues  
-    public static Grid inProgressClues; // grid that represents the progress of the user in terms of clues
+    public static Grid currentGrid; // current grid of clues  
+    public static Grid inProgressGrid; // grid that represents the progress of the user in terms of clues
 
     public static void main(String [] args) {
-        //load the currentGrid
-        //call grid writer to create a temp grid that can be easily modified
+        //load the currentGrid from the parser
+        //create inProgressGrid that has the same params as the current Grid 
 
     }
 
-
-    public static void load(Grid current, Grid inProgress) {
-        
-
-    }
 
 //     // Summary of the gameplay:
 //     // loads ui
