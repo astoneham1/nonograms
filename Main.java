@@ -1,42 +1,15 @@
 // import javax.json.JsonWriter;
 
 public class Main { 
-//     public static Grid currentGridClues; // current grid of clues  
-//     public static Grid inProgressClues; // grid that represents the progress of the user in terms of clues
-//     public static // These two grids can be passed into the checker and checked against each other
-//     public static JsonWriter writer;
+    public static Grid currentGrid; // current grid of clues  
+    public static Grid inProgressGrid; // grid that represents the progress of the user in terms of clues
 
     public static void main(String [] args) {
-        //load the currentGrid
-        //call grid writer to create a temp grid that can be easily modified
-        int rows = 3;
-        int cols = 4;
-        Grid g = new Grid(rows, cols, "Jsons/hi.json");
-        g.updateMove(2, 1, 4);
-        g.updateMove(2, 2, 3);
-        g.updateMove(2, 1, 2);
-        g.saveMoves();
-        g.updateMove(2, 1, 5);
-        for (int i = 0; i<rows; i++) {
-            for (int j = 0; j<cols; j++) {
-                System.out.print(g.grid[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println(g.moves);
-        Grid w = new Grid(rows, cols, "Jsons/hi.json");
-        w.loadMoves();
-        for (int i = 0; i<rows; i++) {
-            for (int j = 0; j<cols; j++) {
-                System.out.print(w.grid[i][j]);
-            }
-            System.out.println();
-        }
-        // System.out.println(w.moves);
+        //load the currentGrid from the parser
+        //create inProgressGrid that has the same params as the current Grid 
+
     }
 
-
-    
 
 //     // Summary of the gameplay:
 //     // loads ui

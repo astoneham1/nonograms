@@ -23,9 +23,10 @@ public class Grid {
     public ArrayList<ArrayList<ArrayList<String>>> columnClues = new ArrayList<>();
     public ArrayList<Move> moves = new ArrayList<>(); 
     public int[][] grid;
+    // int currentMove = 0;
     String path;
 
-    // this stores the solved clues of the puzzle
+    // this constructor can be used for the solved clues of the puzzle
     public Grid(ArrayList<ArrayList<ArrayList<String>>> rows, ArrayList<ArrayList<ArrayList<String>>> columns, int r, int c) {
         this.rowClues = rows;
         this.columnClues = columns;
@@ -33,7 +34,7 @@ public class Grid {
         this.columns = c;
     }
 
-    // this stores the puzzle in progress
+    // this constructor can be used to store the puzzle in progress
     public Grid(int r, int c, String path) {
         this.rows = r;
         this.columns = c;
@@ -65,12 +66,15 @@ public class Grid {
             JsonWriter writer = Json.createWriter(w);
             JsonBuilderFactory factory = Json.createBuilderFactory(null);
             JsonArrayBuilder moveArrayBuilder = Json.createArrayBuilder();
+            int i = 0;
             for (Move m : this.moves) {
+                i++;
                 JsonObject moveObject = factory.createObjectBuilder()
+                            .add(String.valueOf(i), factory.createObjectBuilder()
                             .add("row", m.location[0]) 
                             .add("cols", m.location[1])
                             .add("oldColor", m.oldColor)
-                            .add("newColor", m.newColor)
+                            .add("newColor", m.newColor))
                             .build();
                 moveArrayBuilder.add(moveObject);
             }
@@ -86,27 +90,42 @@ public class Grid {
     }
 
     // when recalling an old grid, reading from a json file to update grid to the last move
-    public void loadMoves() {
+    public void loadMoves(String newPath) {
         try {
-            JsonReader reader = Json.createReader(new FileReader(path));
+            JsonReader reader = Json.createReader(new FileReader(newPath));
             JsonObject file = reader.readObject();
             JsonArray array = file.getJsonArray("Moves");
             for (JsonObject r : array.getValuesAs(JsonObject.class)) {
-                Move m = new Move(r.getInt("row"), r.getInt("cols"), r.getInt("oldColor"), r.getInt("newColor"));
-                this.grid[r.getInt("row")][r.getInt("cols")] = r.getInt("newColor");
-                this.moves.add(m);
+                if (r.getInt("row") < this.rows && r.getInt("cols") < this.columns) {
+                    Move m = new Move(r.getInt("row"), r.getInt("cols"), r.getInt("oldColor"), r.getInt("newColor"));
+                    this.grid[r.getInt("row")][r.getInt("cols")] = r.getInt("newColor");
+                    this.moves.add(m);
+                }
             }
             reader.close();
-
+            //ensures that the file storing moves for the grid has the most updated moves
+            saveMoves();
         } catch (Exception e) {
             System.out.println(e);
         }
-
     }
 
     public void undoMoves() {
-        grid[this.moves.get(moves.size()-1).rows][this.moves.get(moves.size()-1).cols] = this.moves.get(moves.size()-1).oldColor;
-        this.moves.remove(moves.size());
-        // do this for the json as well
+        grid[this.moves.get(moves.size()-1).location[0]][this.moves.get(moves.size()-1).location[1]] = this.moves.get(moves.size()-1).oldColor;
+        this.moves.remove(moves.size()-1);
+        saveMoves();
     }
 }
+    // public void redoMove() {
+
+    // }
+
+
+        // until I can find a better way to just delete something from a json file, this is what'll have to do for updating it
+        // if (currentMove <= moves.size() - 3) {
+        //     moves.remove(currentMove);
+
+        // if (currentMove >= 1) {
+            // grid[this.moves.get(currentMove).location[0]][this.moves.get(currentMove).location[1]] = this.moves.get(currentMove).oldColor;
+            // currentMove = currentMove - 1;
+        // }
