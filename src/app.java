@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,17 +43,11 @@ public class app {
     private JButton check;
     private JPanel grid;
     private JPanel colorGuide;
-    private JPanel color1;
-    private JPanel color1Preview;
-    private JLabel color1Name;
-    private JPanel color2;
-    private JPanel color2Preview;
-    private JLabel color2Name;
-    private JPanel color3;
-    private JPanel color3Preview;
-    private JLabel color3Label;
     private JButton reset;
-    private JButton solve;
+    private JButton save;
+    private JButton color0;
+    private JButton color1;
+    private JButton color2;
 
     // CONSTRUCTOR
     public app(Map<String, Color> colors) {
@@ -113,9 +106,9 @@ public class app {
             JOptionPane.showMessageDialog(mainPanel, "reset puzzle");
         });
 
-        solve.addActionListener(e -> {
+        save.addActionListener(e -> {
             // Code to be executed when the button is clicked
-            JOptionPane.showMessageDialog(mainPanel, "solve clicked");
+            JOptionPane.showMessageDialog(mainPanel, "save clicked");
         });
     }
 
