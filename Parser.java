@@ -150,9 +150,26 @@ public class Parser {
                 }
                 break;
             case TRUE:
+                break;
             case FALSE:
+                break;
             case NULL:
                 break;
         }
+    }
+
+    public Clue getClues(ArrayList<Integer> counts, ArrayList<Integer> colours){
+        if (colours.size() == 0) {
+            for(int i = 0; i<counts.size(); i++){
+                colours.add(2);
+            }
+            Clue clue = new Clue(counts, colours);
+            return clue;
+        }
+        else{
+            Clue clue = new Clue(counts, colours);
+            return clue;
+        }
+        
     }
 }
