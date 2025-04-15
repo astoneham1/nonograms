@@ -26,7 +26,7 @@ public class Grid {
     // int currentMove = 0;
     String path;
 
-    // this stores the solved clues of the puzzle
+    // this constructor can be used for the solved clues of the puzzle
     public Grid(ArrayList<ArrayList<ArrayList<String>>> rows, ArrayList<ArrayList<ArrayList<String>>> columns, int r, int c) {
         this.rowClues = rows;
         this.columnClues = columns;
@@ -34,7 +34,7 @@ public class Grid {
         this.columns = c;
     }
 
-    // this stores the puzzle in progress
+    // this constructor can be used to store the puzzle in progress
     public Grid(int r, int c, String path) {
         this.rows = r;
         this.columns = c;
@@ -90,39 +90,40 @@ public class Grid {
     }
 
     // when recalling an old grid, reading from a json file to update grid to the last move
-    public void loadMoves() {
+    public void loadMoves(String path) {
         try {
             JsonReader reader = Json.createReader(new FileReader(path));
             JsonObject file = reader.readObject();
             JsonArray array = file.getJsonArray("Moves");
             for (JsonObject r : array.getValuesAs(JsonObject.class)) {
-                Move m = new Move(r.getInt("row"), r.getInt("cols"), r.getInt("oldColor"), r.getInt("newColor"));
-                this.grid[r.getInt("row")][r.getInt("cols")] = r.getInt("newColor");
-                this.moves.add(m);
+                if (r.getInt("row") < this.rows && r.getInt("cols") < this.columns) {
+                    Move m = new Move(r.getInt("row"), r.getInt("cols"), r.getInt("oldColor"), r.getInt("newColor"));
+                    this.grid[r.getInt("row")][r.getInt("cols")] = r.getInt("newColor");
+                    this.moves.add(m);
+                }
             }
             reader.close();
-
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
     public void undoMoves() {
-        // if (currentMove >= 1) {
-            // grid[this.moves.get(currentMove).location[0]][this.moves.get(currentMove).location[1]] = this.moves.get(currentMove).oldColor;
-            // currentMove = currentMove - 1;
-        // }
         grid[this.moves.get(moves.size()-1).location[0]][this.moves.get(moves.size()-1).location[1]] = this.moves.get(moves.size()-1).oldColor;
         this.moves.remove(moves.size()-1);
+        saveMoves();
+    }
+}
+    // public void redoMove() {
+
+    // }
+
+
         // until I can find a better way to just delete something from a json file, this is what'll have to do for updating it
         // if (currentMove <= moves.size() - 3) {
         //     moves.remove(currentMove);
 
-        saveMoves();
+        // if (currentMove >= 1) {
+            // grid[this.moves.get(currentMove).location[0]][this.moves.get(currentMove).location[1]] = this.moves.get(currentMove).oldColor;
+            // currentMove = currentMove - 1;
         // }
-    }
-
-    // public void redoMove() {
-
-    // }
-}
