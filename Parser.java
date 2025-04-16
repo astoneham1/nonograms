@@ -6,42 +6,34 @@ import java.util.LinkedHashMap;
 
 public class Parser {
     //2d arraylist containing an arraylist of number of cells and there colour for row and columns
-    public static ArrayList<ArrayList<Integer>> rows = new ArrayList<>();
-    public static ArrayList<ArrayList<Integer>> rowColour = new ArrayList<>();
-    public static ArrayList<ArrayList<Integer>> columns = new ArrayList<>();
-    public static ArrayList<ArrayList<Integer>> columnColour = new ArrayList<>();
+    public ArrayList<ArrayList<Integer>> rows = new ArrayList<>();
+    public ArrayList<ArrayList<Integer>> rowColour = new ArrayList<>();
+    public ArrayList<ArrayList<Integer>> columns = new ArrayList<>();
+    public ArrayList<ArrayList<Integer>> columnColour = new ArrayList<>();
     //hashmap of the colours and there hex codes
-    public static LinkedHashMap<String, String> colours = new LinkedHashMap<>();
+    public LinkedHashMap<String, String> colours = new LinkedHashMap<>();
     
-    public static int rowOrColumnNum = 0;
-    public static String currentArray = "";
-    public static void main(String[] args) {
-        String fileName = "./Jsons/colour_cat.json";
-        try {
-            Parser.getArrayLists(fileName);
-            System.out.println(rows.toString());
-            System.out.println(columns.toString());
-            System.out.println(colours.toString());
-            System.out.println(rowColour.toString());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+    //used when parsing
+    public int rowOrColumnNum = 0;
+    public String currentArray = "";
 
      /**
      * Clears arraylists to ensure empty after every load
      */
-    public static void clearLists(){
+    public void clearLists(){
         rows.clear();
         rows.trimToSize();
         columns.clear();
         columns.trimToSize();
+        rowOrColumnNum = 0;
+        currentArray = "";
+        Colours.colours.clear();
     }
 
     /**
      * gets arraylists and info
      */
-    public static void getArrayLists(String fileName) throws FileNotFoundException {
+    public void getArrayLists(String fileName) throws FileNotFoundException {
         clearLists();
         JsonReader reader = Json.createReader(new FileReader(fileName));
         JsonStructure jsonst = reader.read();
@@ -57,7 +49,7 @@ public class Parser {
     /**
      * Parses Through arraylists
      */
-    public static void getArrayListsFromTree(JsonValue tree, String key) {
+    public void getArrayListsFromTree(JsonValue tree, String key) {
         if (key != null) {
             if (key.equals("states")) {
                 currentArray = "colours";
@@ -150,9 +142,49 @@ public class Parser {
                 }
                 break;
             case TRUE:
+                break;
             case FALSE:
+                break;
             case NULL:
                 break;
         }
+    }
+
+    //generates a clue from two arraylists
+    public Clue getClue(ArrayList<Integer> counts, ArrayList<Integer> colours){
+        Clue clue = new Clue(counts, colours);
+        return clue;
+        //could throw an invalid json error if information is wrong here
+        //instead of else use elif and check arrays are the same size
+    }
+
+    //generates an arraylist of clues
+    public ArrayList<Clue> getClues(ArrayList<ArrayList<Integer>> lines, ArrayList<ArrayList<Integer>> colours){
+        ArrayList<Clue> clues = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i++) {
+            clues.add(getClue(lines.get(i), colours.get(i)));
+        }
+        return clues;
+    }
+
+    //add colours to the colours.java hashmap
+    public static void createColourHashmap(LinkedHashMap<String, String> colours){
+        int i = 0;
+        for(String colour : colours.keySet()){
+            Colours.colours.put(i, colours.get(colour));
+            i++;
+        }
+    }
+
+    //generates the grid
+    public Grid getGrid(String filePath){
+        try {
+            getArrayLists(filePath);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        createColourHashmap(colours);
+        Grid grid = new Grid(getClues(rows, rowColour), getClues(columns, columnColour), rows.size(), columns.size());
+        return grid;
     }
 }
