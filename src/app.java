@@ -33,7 +33,10 @@ import java.util.List;
 public class app {
     // COLORS
     private final Map<String, Color> colors; // ensure this is a linked hashmap
-
+    
+    // Global grid variables
+    private Grid puzzleGrid;
+    private Grid userGrid;
 
     // OBJECTS ON SCREEN
     private JPanel mainPanel;
@@ -72,12 +75,14 @@ public class app {
                     // get color states from the data and create a new object
                     //app newApp = new app(newColors);
                     // get grid size from puzzle
+                    this.puzzleGrid = Parser.getGrid(path); 
 
-                    // get grid size from puzzle json
+
+                    // // get grid size from puzzle json
 
                     // temp values
-                    int rows = 5;
-                    int cols = 10;
+                    int rows = this.puzzleGrid.rows;
+                    int cols = this.puzzleGrid.columns;
 
                     //newApp.buildGrid(rows, cols);
                     JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
@@ -87,6 +92,12 @@ public class app {
                 //}
             }
         });
+
+        // need a method to allow the player to pick out a grid that they can play with
+            // create a method that prompts the user to either pick an old file or create a new game then use this constructor to create:
+            // String path = (see above to allow the user to pick)
+            // UserGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, path);
+            
 
         check.addActionListener(e -> {
             // Code to be executed when the button is clicked

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class GridManipulation {
     public static void convertToClues(Grid g) {
         for (int i = 0; i < g.rows; i ++) {
-            // int currentColor = 0;
             int currentCount = 0;
             ArrayList<Integer> color = new ArrayList<>();
             ArrayList<Integer> count = new ArrayList<>();
