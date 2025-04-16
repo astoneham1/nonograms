@@ -21,30 +21,26 @@ public class Checker {
         int[][] blanksSmiler = createGrid("blanks_smiler");
         ArrayList<Clue> rowCluesBlankSmiler = createRowClues("blanks_smiler");
         ArrayList<Clue> columnCluesBlankSmiler = createColumnClues("blanks_smiler");
-        Grid loadedGrid1 = new Grid(rowCluesBlankSmiler, columnCluesBlankSmiler, rowCluesBlankSmiler.size(), columnCluesBlankSmiler.size());
-        checkNonogram(blanksSmiler, loadedGrid1);
+        //Grid loadedGrid1 = new Grid(rowCluesBlankSmiler, columnCluesBlankSmiler, rowCluesBlankSmiler.size(), columnCluesBlankSmiler.size());
+        checkNonogram(blanksSmiler, rowCluesBlankSmiler, columnCluesBlankSmiler);
 
         int[][] colourWink = createGrid("colour_wink");
         ArrayList<Clue> rowCluesColourWink = createRowClues("colour_wink");
         ArrayList<Clue> columnCluesColourWink = createColumnClues("colour_wink");
-        Grid loadedGrid2 = new Grid(rowCluesColourWink, columnCluesColourWink, rowCluesColourWink.size(), columnCluesColourWink.size());
-        checkNonogram(colourWink, loadedGrid2);
+        //Grid loadedGrid2 = new Grid(rowCluesColourWink, columnCluesColourWink, rowCluesColourWink.size(), columnCluesColourWink.size());
+        checkNonogram(colourWink, rowCluesColourWink, columnCluesColourWink);
     }
 
     /**
      * Loops through the number of rows, and calls the checkRow() method for that given row, and for the corresponding clue.
      * @param grid              The player's nonogram.
-     * @param loadedGrid        Grid object which contains the clues (as an attribute)
+     * @param loadedGrid        List of row clues.
+     * @param columnClues       List of column clues.
      * @return                  List of lists of coordinates where the incorrect cell is located.
      */
-    public static ArrayList<ArrayList<Integer>> checkNonogram(int[][] grid, Grid loadedGrid) {
-        // Get the list of clues from the loadedGrid object.
-        ArrayList<Clue> rowClues = loadedGrid.getRowClues();
-        ArrayList<Clue> columnClues = loadedGrid.getColumnClues();
-        
+    public static ArrayList<ArrayList<Integer>> checkNonogram(int[][] grid, ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
         // Where incorrect coordinates are stored
         ArrayList<ArrayList<Integer>> incorrectCells = new ArrayList<ArrayList<Integer>>();
-        
         // Just for printing/testing
         boolean hasBeenWrong = false;
 
@@ -202,17 +198,18 @@ public class Checker {
     }
   
     public static ArrayList<Clue> createRowClues(String name) {
-        ArrayList<Clue> rowClues = null;
+        ArrayList<Clue> rowClues = new ArrayList<Clue>();
         if (name.equals("blanks_smiler")) {
-            Clue r1 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(0)));
-            Clue r2 = new Clue(new ArrayList<>(Arrays.asList(7)), new ArrayList<>(Arrays.asList(0)));
-            Clue r3 = new Clue(new ArrayList<>(Arrays.asList(2, 3, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue r4 = new Clue(new ArrayList<>(Arrays.asList(2, 3, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue r5 = new Clue(new ArrayList<>(Arrays.asList(9)), new ArrayList<>(Arrays.asList(0)));
-            Clue r6 = new Clue(new ArrayList<>(Arrays.asList(1, 5, 1)), new ArrayList<>(Arrays.asList(0)));
-            Clue r7 = new Clue(new ArrayList<>(Arrays.asList(2, 3, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue r8 = new Clue(new ArrayList<>(Arrays.asList(2, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue r9 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(0)));
+            Clue r1 = new Clue(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(0)));
+            Clue r2 = new Clue(new ArrayList<Integer>(Arrays.asList(7)), new ArrayList<Integer>(Arrays.asList(0)));
+            Clue r3 = new Clue(new ArrayList<Integer>(Arrays.asList(2, 3, 2)), new ArrayList<Integer>(Arrays.asList(0, 0, 0)));
+            Clue r4 = new Clue(new ArrayList<Integer>(Arrays.asList(2, 3, 2)), new ArrayList<Integer>(Arrays.asList(0, 0, 0)));
+            Clue r5 = new Clue(new ArrayList<Integer>(Arrays.asList(9)), new ArrayList<Integer>(Arrays.asList(0)));
+            Clue r6 = new Clue(new ArrayList<Integer>(Arrays.asList(1, 5, 1)), new ArrayList<Integer>(Arrays.asList(0, 0, 0)));
+            Clue r7 = new Clue(new ArrayList<Integer>(Arrays.asList(2, 3, 2)), new ArrayList<Integer>(Arrays.asList(0, 0, 0)));
+            Clue r8 = new Clue(new ArrayList<Integer>(Arrays.asList(2, 2)), new ArrayList<Integer>(Arrays.asList(0, 0)));
+            Clue r9 = new Clue(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(0)));
+            Clue r10 = new Clue(new ArrayList<Integer>(Arrays.asList(0)), new ArrayList<Integer>(Arrays.asList(0))); //   !
             rowClues.add(r1);
             rowClues.add(r2);
             rowClues.add(r3);
@@ -222,18 +219,18 @@ public class Checker {
             rowClues.add(r7);
             rowClues.add(r8);
             rowClues.add(r9);
+            rowClues.add(r10);
         }
         else if (name.equals("colour_wink")) {
-            Clue r10 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(3)));
-            Clue r11 = new Clue(new ArrayList<>(Arrays.asList(7)), new ArrayList<>(Arrays.asList(3)));
-            Clue r12 = new Clue(new ArrayList<>(Arrays.asList(2, 1, 6)), new ArrayList<>(Arrays.asList(3, 0, 3)));
-            Clue r13 = new Clue(new ArrayList<>(Arrays.asList(2, 1, 3, 1, 2)), new ArrayList<>(Arrays.asList(3, 0, 3, 0, 3)));
-            Clue r14 = new Clue(new ArrayList<>(Arrays.asList(9)), new ArrayList<>(Arrays.asList(3)));
+            Clue r11 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(3)));
+            Clue r12 = new Clue(new ArrayList<>(Arrays.asList(7)), new ArrayList<>(Arrays.asList(3)));
+            Clue r13 = new Clue(new ArrayList<>(Arrays.asList(2, 1, 6)), new ArrayList<>(Arrays.asList(3, 0, 3)));
+            Clue r14 = new Clue(new ArrayList<>(Arrays.asList(2, 1, 3, 1, 2)), new ArrayList<>(Arrays.asList(3, 0, 3, 0, 3)));
             Clue r15 = new Clue(new ArrayList<>(Arrays.asList(9)), new ArrayList<>(Arrays.asList(3)));
-            Clue r16 = new Clue(new ArrayList<>(Arrays.asList(2, 1, 3, 1, 2)), new ArrayList<>(Arrays.asList(3, 0, 3, 0, 3)));
-            Clue r17 = new Clue(new ArrayList<>(Arrays.asList(2, 3, 2)), new ArrayList<>(Arrays.asList(3, 0, 3)));
-            Clue r18 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(3)));
-            rowClues.add(r10);
+            Clue r16 = new Clue(new ArrayList<>(Arrays.asList(9)), new ArrayList<>(Arrays.asList(3)));
+            Clue r17 = new Clue(new ArrayList<>(Arrays.asList(2, 1, 3, 1, 2)), new ArrayList<>(Arrays.asList(3, 0, 3, 0, 3)));
+            Clue r18 = new Clue(new ArrayList<>(Arrays.asList(2, 3, 2)), new ArrayList<>(Arrays.asList(3, 0, 3)));
+            Clue r19 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(3)));
             rowClues.add(r11);
             rowClues.add(r12);
             rowClues.add(r13);
@@ -242,22 +239,24 @@ public class Checker {
             rowClues.add(r16);
             rowClues.add(r17);
             rowClues.add(r18);
+            rowClues.add(r19);
         }
         return rowClues;
     }
 
     public static ArrayList<Clue> createColumnClues(String name) {
-        ArrayList<Clue> columnClues = null;
+        ArrayList<Clue> columnClues = new ArrayList<Clue>();
         if (name.equals("blanks_smiler")) {
             Clue c1 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(0)));
-            Clue c2 = new Clue(new ArrayList<>(Arrays.asList(4, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue c3 = new Clue(new ArrayList<>(Arrays.asList(2, 2, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue c4 = new Clue(new ArrayList<>(Arrays.asList(7, 1)), new ArrayList<>(Arrays.asList(0)));
-            Clue c5 = new Clue(new ArrayList<>(Arrays.asList(7, 1)), new ArrayList<>(Arrays.asList(0)));
-            Clue c6 = new Clue(new ArrayList<>(Arrays.asList(7, 1)), new ArrayList<>(Arrays.asList(0)));
-            Clue c7 = new Clue(new ArrayList<>(Arrays.asList(2, 2, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue c8 = new Clue(new ArrayList<>(Arrays.asList(4, 2)), new ArrayList<>(Arrays.asList(0)));
-            Clue c9 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(0))); // !
+            Clue c2 = new Clue(new ArrayList<>(Arrays.asList(4, 2)), new ArrayList<>(Arrays.asList(0, 0)));
+            Clue c3 = new Clue(new ArrayList<>(Arrays.asList(2, 2, 2)), new ArrayList<>(Arrays.asList(0, 0, 0)));
+            Clue c4 = new Clue(new ArrayList<>(Arrays.asList(7, 1)), new ArrayList<>(Arrays.asList(0, 0)));
+            Clue c5 = new Clue(new ArrayList<>(Arrays.asList(7, 1)), new ArrayList<>(Arrays.asList(0, 0)));
+            Clue c6 = new Clue(new ArrayList<>(Arrays.asList(7, 1)), new ArrayList<>(Arrays.asList(0, 0)));
+            Clue c7 = new Clue(new ArrayList<>(Arrays.asList(2, 2, 2)), new ArrayList<>(Arrays.asList(0, 0, 0)));
+            Clue c8 = new Clue(new ArrayList<>(Arrays.asList(4, 2)), new ArrayList<>(Arrays.asList(0, 0)));
+            Clue c9 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(0)));
+            Clue c10 = new Clue(new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(0))); //  !
             columnClues.add(c1);
             columnClues.add(c2);
             columnClues.add(c3);
@@ -267,6 +266,7 @@ public class Checker {
             columnClues.add(c7);
             columnClues.add(c8);
             columnClues.add(c9);
+            columnClues.add(c10);
         }
         else if (name.equals("colour_wink")) {
             Clue c10 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(3)));
