@@ -32,30 +32,29 @@ public class Checker {
     }
 
     /**
-     * Loops through the number of rows, and calls the checkRow() method for that given row, and for the corresponding clue. For testing, it 
-     * prints the result to the console, but this would be removed in the end.
+     * Loops through the number of rows, and calls the checkRow() method for that given row, and for the corresponding clue.
      * @param grid              The player's nonogram.
      * @param loadedGrid        Grid object which contains the clues (as an attribute)
+     * @return                  List of lists of coordinates where the incorrect cell is located.
      */
-    public static void checkNonogram(int[][] grid, Grid loadedGrid) {
+    public static ArrayList<ArrayList<Integer>> checkNonogram(int[][] grid, Grid loadedGrid) {
         // Get the list of clues from the loadedGrid object.
         ArrayList<Clue> rowClues = loadedGrid.getRowClues();
         ArrayList<Clue> columnClues = loadedGrid.getColumnClues();
         
         // Where incorrect coordinates are stored
-        List<Integer> incorrectRows = new ArrayList<>();
-        List<Integer> incorrectColumns = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> incorrectCells = new ArrayList<ArrayList<Integer>>();
         
         // Just for printing/testing
         boolean hasBeenWrong = false;
 
         // For each row in the 2D array grid, check the ith row against the ith clue.
         for (int i = 0; i < grid.length; i++) {
-            boolean correctRow = checkLine(grid[i], rowClues.get(i));
-            if (!correctRow) {
+            ArrayList<Integer> checkRow = checkLine(grid[i], rowClues.get(i), i, true);
+            if (!checkRow.isEmpty()) {
                 hasBeenWrong = true;
                 System.out.println("INCORRECT ROW " + (i+1) );
-                incorrectRows.add(i+1);
+                incorrectCells.add(checkRow);
             }
             else if (i == grid.length - 1 && !hasBeenWrong) {
                 System.out.println("CORRECT ROWS");
@@ -63,25 +62,28 @@ public class Checker {
 
             // Get the ith column, and check it against the corresponding clue.
             int[] column = getColumn(grid, i);
-            boolean correctColumn = checkLine(column, columnClues.get(i));
-            if (!correctColumn) {
+            ArrayList<Integer> checkColumn = checkLine(column, columnClues.get(i), i, false);
+            if (!checkColumn.isEmpty()) {
                 hasBeenWrong = true;
                 System.out.println("INCORRECT COLUMN " + (i+1));
-                incorrectColumns.add(i+1);
+                incorrectCells.add(checkColumn);
             }
             else if (i == grid.length - 1 && !hasBeenWrong) {
                 System.out.println("CORRECT COLUMNS");
             }
         }
+        return incorrectCells;
     }
   
     /**
      * This checks a specific line abides with a specific clue.
      * @param line          The row or column which is being checked.
      * @param clue          The clue which the row or column is being checked against.
-     * @return              True if correct, false if not.
+     * @param lineNumber    This is needed so the incorrect coordinates can be returned.
+     * @param isRow         Since the column has been treated as a row, we need to flip the coordinates if we are checking a column.
+     * @return              List of coordinates of incorrect cells.
      */
-    public static boolean checkLine(int[] line, Clue clue) {
+    public static ArrayList<Integer> checkLine(int[] line, Clue clue, int lineNumber, boolean isRow) {
         // For global access within the method
         ArrayList<Integer> counts = clue.getCounts();       // Gets the list of counts for this clue.
         ArrayList<Integer> colours = clue.getColours();     // Gets the list of colours for this clue, given as integers.
@@ -89,6 +91,7 @@ public class Checker {
         int positionInRow = 0;      // Keeps track of the position in the row, i.e. the cell number.
         int numSquares = 0;         // This is the count clue, i.e. how many squares are a given colour.
         int squareColour = 0;       // This is the square colour.
+        ArrayList<Integer> wrongCells = new ArrayList<Integer>();       // Where incorrect cells are returned, in the form of the row and column number.
 
         // Loops through the size of the counts list. The length of the counts and colours lists must be the same.
         // Example counts list: [5, 3, 2] which is 5 squares, a space, 3 squares, a space, 2 squares, a space.
@@ -108,7 +111,14 @@ public class Checker {
                         }
                     }
                     else {
-                        return false;
+                        if (isRow) {
+                            wrongCells.add(i);              // Row number
+                            wrongCells.add(positionInRow);  // Column number
+                        }
+                        else {
+                            wrongCells.add(positionInRow);  // Row number
+                            wrongCells.add(i);              // Column number
+                        }
                     }
                 }
   
@@ -120,21 +130,21 @@ public class Checker {
                 // The cell is incorrect if it is any colour other than the square colour, or if it is blank but the clue has not been finished
                 // e.g. Clue was 5 black squares with no spaces but the player entered 2 black, one space, 2 black.
                 else if (line[i] != 2 || (line[i] == 2 && numCorrect > 0 && numSquares != numCorrect)) {
-                    return false;
+                    if (isRow) {
+                        wrongCells.add(i);              // Row number
+                        wrongCells.add(positionInRow);  // Column number
+                    }
+                    else {
+                        wrongCells.add(positionInRow);  // Row number
+                        wrongCells.add(i);              // Column number
+                    }
                 }
   
                 // Go to the next position in the line.
                 positionInRow++;
             }
         }
-  
-        // Once the whole line has been iterated through, if the number of cells are correct for the clue, true is returned.
-        if (numCorrect == numSquares) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return wrongCells;
     }
  
     /**
