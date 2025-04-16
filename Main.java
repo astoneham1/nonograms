@@ -7,7 +7,29 @@ public class Main {
     public static void main(String [] args) {
         //load the currentGrid from the parser
         //create inProgressGrid that has the same params as the current Grid 
-
+        int row = 5;
+        int col = 5;
+        Grid g = new Grid(row, col, "Jsons/hello.json");
+        g.updateMove(1, 2, 2);
+        g.updateMove(3, 0, 4);
+        g.updateMove(3, 3, 4);
+        g.updateMove(3, 2, 4);
+        g.updateMove(2, 1, 3);
+        g.updateMove(1, 2, 2);
+        g.updateMove(1, 3, 4);
+        g.updateMove(1, 4, 5);
+        g.updateMove(4, 3, 5);
+        g.updateMove(4, 2, 5);
+        g.updateMove(4, 4, 1);
+        g.updateMove(0, 3, 1);
+        for (int i = 0; i < g.rows; i++) {
+            for (int j = 0; j < g.columns; j++) {
+                System.out.print(g.grid[i][j]);
+            }
+            System.out.println();
+        }
+        g.saveMoves();
+        GridManipulation.convertToClues(g);
     }
 
 

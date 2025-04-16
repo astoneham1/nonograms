@@ -19,15 +19,15 @@ import javax.json.JsonWriter;
 public class Grid {
     public int rows;
     public int columns;
-    public ArrayList<ArrayList<ArrayList<String>>> rowClues = new ArrayList<>();
-    public ArrayList<ArrayList<ArrayList<String>>> columnClues = new ArrayList<>();
+    public ArrayList<Clue> rowClues = new ArrayList<>();
+    public ArrayList<Clue> columnClues = new ArrayList<>();
     public ArrayList<Move> moves = new ArrayList<>(); 
     public int[][] grid;
     // int currentMove = 0;
     String path;
 
     // this constructor can be used for the solved clues of the puzzle
-    public Grid(ArrayList<ArrayList<ArrayList<String>>> rows, ArrayList<ArrayList<ArrayList<String>>> columns, int r, int c) {
+    public Grid(ArrayList<Clue> rows, ArrayList<Clue> columns, int r, int c) {
         this.rowClues = rows;
         this.columnClues = columns;
         this.rows = r;
