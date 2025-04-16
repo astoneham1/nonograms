@@ -1,9 +1,3 @@
-// Grid object 
-// This can be used in two ways:
-    // to store the solutions to the puzzles
-    // to store the in progress puzzles
-
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;

@@ -1,6 +1,5 @@
 //this class contains methods that the main can call to manipulate the grids prior to checking or parsing
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class GridManipulation {

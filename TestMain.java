@@ -1,6 +1,6 @@
 // import javax.json.JsonWriter;
 
-public class Main { 
+public class TestMain { 
     public static Grid currentGrid; // current grid of clues  
     public static Grid inProgressGrid; // grid that represents the progress of the user in terms of clues
 
