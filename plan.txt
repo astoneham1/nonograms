@@ -1,3 +1,4 @@
+<<<<<<<<< Temporary merge branch 1
 Plan:
 
 Ksenia - Secondary(undo, save, load)
@@ -8,6 +9,7 @@ Conor - Parser(with colour)
 Colour codes:
 0 - unknown
 1 - empty
+=========
 Plan:
 
 Ksenia - Secondary(undo, save, load)
