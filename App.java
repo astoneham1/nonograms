@@ -1,15 +1,16 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.Map;
 
 public class App {
     // COLORS
-    private final LinkedHashMap<Integer, String> colors;
+    private LinkedHashMap<Integer, String> colors = new LinkedHashMap<Integer, String>();
 
     // STATE
     private int selectedColor = 0;
@@ -115,25 +116,26 @@ public class App {
                 JOptionPane.PLAIN_MESSAGE,
                 null,
                 options,
-                options[0]
-        );
-    
+                options[0]);
+
         if (selected != null) {
             File selectedFile = new File(puzzleDir, selected);
 
             Parser parser = new Parser();
             Grid puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
 
-            int rows = grid.rows;
-            int cols = grid.columns;
+            int rows = puzzleGrid.rows;
+            int cols = puzzleGrid.columns;
 
-            ArrayList<Clue> rowClues = grid.rowClues;
-            ArrayList<Clue> columnClues = grid.columnClues;
+            ArrayList<Clue> rowClues = puzzleGrid.rowClues;
+            ArrayList<Clue> columnClues = puzzleGrid.columnClues;
 
-            colors = parser.colours;
+            // this.colors = parser.colours; PARSER METHOD NEEDS TO BE SWITCHED TO A
+            // INTEGER, STRING NOT STRING, STRING
 
             displayColors();
             buildGrid(rows, cols);
+            displayClues(rowClues, columnClues);
             JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
         }
     }
@@ -245,12 +247,12 @@ public class App {
         for (Clue clue : rowClues) {
             JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
             ArrayList<Integer> counts = clue.getCounts();
-            ArrayList<Integer> clueColor = clue.getColors();
+            ArrayList<Integer> clueColor = clue.getColours();
 
             for (int i = 0; i < counts.size(); i++) {
                 JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
                 int colorKey = clueColor.get(i);
-                String colorCode = colors.get(colorKey);
+                String colorCode = colors.getOrDefault(colorKey, "#000000"); // fallback to black
                 clueLabel.setForeground(Color.decode(colorCode));
                 clueRow.add(clueLabel);
             }
@@ -263,17 +265,17 @@ public class App {
             JPanel clueColumn = new JPanel();
             clueColumn.setLayout(new BoxLayout(clueColumn, BoxLayout.Y_AXIS));
             ArrayList<Integer> counts = clue.getCounts();
-            ArrayList<Integer> clueColor = clue.getColors();
+            ArrayList<Integer> clueColor = clue.getColours();
 
             for (int i = 0; i < counts.size(); i++) {
                 JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
                 int colorKey = clueColor.get(i);
-                String colorCode = colors.get(colorKey);
+                String colorCode = colors.getOrDefault(colorKey, "#000000"); // fallback to black
                 clueLabel.setForeground(Color.decode(colorCode));
                 clueColumn.add(clueLabel);
             }
 
-            rowCluePanel.add(clueColumn);
+            columnCluePanel.add(clueColumn);
         }
 
         rowCluePanel.revalidate();
@@ -289,11 +291,8 @@ public class App {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            LinkedHashMap<Integer, String> defaultColors = new LinkedHashMap<>();
-
-
+            App a = new App();
             JFrame frame = new JFrame("Nonograms");
-            App a = new App(defaultColors);
             frame.setContentPane(a.mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 800);
