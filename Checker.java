@@ -8,7 +8,6 @@
  *         counts = (5, 3, 2)
  *         colours = (0, 0, 0)      opposed to      colours = (0)
  */
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -21,14 +20,38 @@ public class Checker {
         int[][] blanksSmiler = createGrid("blanks_smiler");
         ArrayList<Clue> rowCluesBlankSmiler = createRowClues("blanks_smiler");
         ArrayList<Clue> columnCluesBlankSmiler = createColumnClues("blanks_smiler");
-        //Grid loadedGrid1 = new Grid(rowCluesBlankSmiler, columnCluesBlankSmiler, rowCluesBlankSmiler.size(), columnCluesBlankSmiler.size());
-        checkNonogram(blanksSmiler, rowCluesBlankSmiler, columnCluesBlankSmiler);
+        ArrayList<ArrayList<Integer>> blankSmilerIncorrect = checkNonogram(blanksSmiler, rowCluesBlankSmiler, columnCluesBlankSmiler);
+        
+        // Print information. Will be removed from final.
+        int counter1 = 0;
+        for (ArrayList<Integer> list : blankSmilerIncorrect) {
+            if (counter1 == 0) {
+                System.out.print("Incorrect row number/s: ");
+            }
+            else {
+                System.out.print("Incorrect column number/s: ");
+            }
+            System.out.println(list);
+            counter1++;
+        }
 
         int[][] colourWink = createGrid("colour_wink");
         ArrayList<Clue> rowCluesColourWink = createRowClues("colour_wink");
         ArrayList<Clue> columnCluesColourWink = createColumnClues("colour_wink");
-        //Grid loadedGrid2 = new Grid(rowCluesColourWink, columnCluesColourWink, rowCluesColourWink.size(), columnCluesColourWink.size());
-        checkNonogram(colourWink, rowCluesColourWink, columnCluesColourWink);
+        ArrayList<ArrayList<Integer>> colourWinkIncorrect = checkNonogram(colourWink, rowCluesColourWink, columnCluesColourWink);
+        
+        // Print information. Will be removed from final.
+        int counter2 = 0;
+        for (ArrayList<Integer> list : colourWinkIncorrect) {
+            if (counter2 == 0) {
+                System.out.print("Incorrect row number/s: ");
+            }
+            else {
+                System.out.print("Incorrect column number/s: ");
+            }
+            System.out.println(list);
+            counter2++;
+        }
     }
 
     /**
@@ -39,36 +62,28 @@ public class Checker {
      * @return                  List of lists of coordinates where the incorrect cell is located.
      */
     public static ArrayList<ArrayList<Integer>> checkNonogram(int[][] grid, ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
-        // Where incorrect coordinates are stored
-        ArrayList<ArrayList<Integer>> incorrectCells = new ArrayList<ArrayList<Integer>>();
-        // Just for printing/testing
-        boolean hasBeenWrong = false;
+        // Where incorrect rows and columns are kept.
+        ArrayList<Integer> incorrectRows = new ArrayList<Integer>();
+        ArrayList<Integer> incorrectColumns = new ArrayList<Integer>();
+        ArrayList<ArrayList<Integer>> incorrectRowsAndColumns = new ArrayList<ArrayList<Integer>>(); // this is what gets returned
 
         // For each row in the 2D array grid, check the ith row against the ith clue.
         for (int i = 0; i < grid.length; i++) {
-            ArrayList<Integer> checkRow = checkLine(grid[i], rowClues.get(i), i, true);
-            if (!checkRow.isEmpty()) {
-                hasBeenWrong = true;
-                System.out.println("INCORRECT ROW " + (i+1) );
-                incorrectCells.add(checkRow);
-            }
-            else if (i == grid.length - 1 && !hasBeenWrong) {
-                System.out.println("CORRECT ROWS");
+            boolean correctRow = checkLine(grid[i], rowClues.get(i));
+            if (!correctRow) {
+                incorrectRows.add(i);
             }
 
             // Get the ith column, and check it against the corresponding clue.
             int[] column = getColumn(grid, i);
-            ArrayList<Integer> checkColumn = checkLine(column, columnClues.get(i), i, false);
-            if (!checkColumn.isEmpty()) {
-                hasBeenWrong = true;
-                System.out.println("INCORRECT COLUMN " + (i+1));
-                incorrectCells.add(checkColumn);
-            }
-            else if (i == grid.length - 1 && !hasBeenWrong) {
-                System.out.println("CORRECT COLUMNS");
+            boolean correctColumn = checkLine(column, columnClues.get(i));
+            if (!correctColumn) {
+                incorrectColumns.add(i);
             }
         }
-        return incorrectCells;
+        incorrectRowsAndColumns.add(incorrectRows);
+        incorrectRowsAndColumns.add(incorrectColumns);
+        return incorrectRowsAndColumns;
     }
   
     /**
@@ -79,7 +94,7 @@ public class Checker {
      * @param isRow         Since the column has been treated as a row, we need to flip the coordinates if we are checking a column.
      * @return              List of coordinates of incorrect cells.
      */
-    public static ArrayList<Integer> checkLine(int[] line, Clue clue, int lineNumber, boolean isRow) {
+    public static boolean checkLine(int[] line, Clue clue) {
         // For global access within the method
         ArrayList<Integer> counts = clue.getCounts();       // Gets the list of counts for this clue.
         ArrayList<Integer> colours = clue.getColours();     // Gets the list of colours for this clue, given as integers.
@@ -87,7 +102,6 @@ public class Checker {
         int positionInRow = 0;      // Keeps track of the position in the row, i.e. the cell number.
         int numSquares = 0;         // This is the count clue, i.e. how many squares are a given colour.
         int squareColour = 0;       // This is the square colour.
-        ArrayList<Integer> wrongCells = new ArrayList<Integer>();       // Where incorrect cells are returned, in the form of the row and column number.
 
         // Loops through the size of the counts list. The length of the counts and colours lists must be the same.
         // Example counts list: [5, 3, 2] which is 5 squares, a space, 3 squares, a space, 2 squares, a space.
@@ -107,14 +121,7 @@ public class Checker {
                         }
                     }
                     else {
-                        if (isRow) {
-                            wrongCells.add(i);              // Row number
-                            wrongCells.add(positionInRow);  // Column number
-                        }
-                        else {
-                            wrongCells.add(positionInRow);  // Row number
-                            wrongCells.add(i);              // Column number
-                        }
+                        return false;
                     }
                 }
   
@@ -126,21 +133,20 @@ public class Checker {
                 // The cell is incorrect if it is any colour other than the square colour, or if it is blank but the clue has not been finished
                 // e.g. Clue was 5 black squares with no spaces but the player entered 2 black, one space, 2 black.
                 else if (line[i] != 2 || (line[i] == 2 && numCorrect > 0 && numSquares != numCorrect)) {
-                    if (isRow) {
-                        wrongCells.add(i);              // Row number
-                        wrongCells.add(positionInRow);  // Column number
-                    }
-                    else {
-                        wrongCells.add(positionInRow);  // Row number
-                        wrongCells.add(i);              // Column number
-                    }
+                    return false;
                 }
   
                 // Go to the next position in the line.
                 positionInRow++;
             }
         }
-        return wrongCells;
+        // Once the whole line has been iterated through, if the number of cells are correct for the clue, true is returned.
+        if (numCorrect == numSquares) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
  
     /**
