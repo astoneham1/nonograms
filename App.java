@@ -36,7 +36,7 @@ public class App {
                     button.putClientProperty("state", 0);
                 }
             }
-            JOptionPane.showMessageDialog(mainPanel, "clear puzzle");
+            JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
         save.addActionListener(e -> {
@@ -81,8 +81,6 @@ public class App {
     }
 
     public void loadGamePuzzle() {
-        JOptionPane.showMessageDialog(mainPanel, "load clicked");
-
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Choose a puzzle (JSON file format)");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
