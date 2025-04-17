@@ -18,6 +18,18 @@ public class App {
     // MISC
     private boolean isMouseDown = false;
 
+    // UI COMPONENTS
+    private JPanel mainPanel;
+    private JPanel colorGuide;
+    private JPanel focus;
+    private JPanel grid;
+    private JPanel controls;
+
+    private JButton loadFile;
+    private JButton clear;
+    private JButton check;
+    private JButton save;
+
     public App(Map<Integer, String> colors) {
         this.colors = colors;
         setupUI();
@@ -81,29 +93,35 @@ public class App {
     }
 
     public void loadGamePuzzle() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Choose a puzzle (JSON file format)");
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JSON files", "json"));
+        // JFileChooser fileChooser = new JFileChooser();
+        // fileChooser.setDialogTitle("Choose a puzzle (JSON file format)");
+        // fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        // fileChooser.setAcceptAllFileFilterUsed(false);
+        // fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JSON files", "json"));
 
-        int result = fileChooser.showOpenDialog(mainPanel);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File puzzleFile = fileChooser.getSelectedFile();
+        // int result = fileChooser.showOpenDialog(mainPanel);
+        // if (result == JFileChooser.APPROVE_OPTION) {
+        //     File puzzleFile = fileChooser.getSelectedFile();
 
-            Parser parser = new Parser();
-            Grid puzzleGrid = parser.getGrid();
+        //     Parser parser = new Parser();
+        //     Grid puzzleGrid = parser.getGrid();
 
-            int rows = grid.rows;
-            int cols = grid.columns;
+        //     int rows = grid.rows;
+        //     int cols = grid.columns;
 
-            ArrayList<Clue> rowClues = grid.rowClues;
-            ArrayList<Clue> columnClues = grid.columnClues;
+        //     ArrayList<Clue> rowClues = grid.rowClues;
+        //     ArrayList<Clue> columnClues = grid.columnClues;
 
-            displayColors();
-            buildGrid(rows, cols);
-            JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
-        }
+        //     displayColors();
+        //     buildGrid(rows, cols);
+        //     JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
+        // }
+
+        int rows = 10;
+        int columns = 7;
+
+        displayColors();
+        buildGrid(rows, columns);
     }
 
     public void displayColors() {
@@ -203,7 +221,6 @@ public class App {
     }
 
     public void cellClicked(JButton cell) {
-        List<Integer> colorKeys = new ArrayList<>(colors.keySet());
         cell.putClientProperty("state", this.selectedColor);
         cell.setBackground(Color.decode(colors.get(this.selectedColor)));
     }
