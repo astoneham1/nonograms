@@ -92,9 +92,13 @@ public class App {
             File puzzleFile = fileChooser.getSelectedFile();
 
             Parser parser = new Parser();
+            Grid puzzleGrid = parser.getGrid();
 
-            int rows = 7;
-            int cols = 9;
+            int rows = grid.rows;
+            int cols = grid.columns;
+
+            ArrayList<Clue> rowClues = grid.rowClues;
+            ArrayList<Clue> columnClues = grid.columnClues;
 
             displayColors();
             buildGrid(rows, cols);
