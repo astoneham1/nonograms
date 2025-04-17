@@ -1,5 +1,5 @@
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Colours {
-    public static HashMap<Integer, String> colours = new HashMap<>();
+    public static LinkedHashMap<Integer, String> colours = new LinkedHashMap<>();
 }
