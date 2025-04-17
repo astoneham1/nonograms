@@ -130,8 +130,7 @@ public class App {
             ArrayList<Clue> rowClues = puzzleGrid.rowClues;
             ArrayList<Clue> columnClues = puzzleGrid.columnClues;
 
-            // this.colors = parser.colours; PARSER METHOD NEEDS TO BE SWITCHED TO A
-            // INTEGER, STRING NOT STRING, STRING
+            this.colors = Colours.colours;
 
             displayColors();
             buildGrid(rows, cols);
