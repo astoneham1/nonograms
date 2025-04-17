@@ -91,6 +91,8 @@ public class App {
         if (result == JFileChooser.APPROVE_OPTION) {
             File puzzleFile = fileChooser.getSelectedFile();
 
+            Parser parser = new Parser();
+
             int rows = 7;
             int cols = 9;
 
