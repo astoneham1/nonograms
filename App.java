@@ -28,9 +28,6 @@ public class App {
     private JPanel rowCluePanel;
     private JPanel columnCluePanel;
 
-    private JComboBox<String> puzzleSelector;
-    private File[] puzzleFiles;
-
     private JButton loadFile;
     private JButton clear;
     private JButton check;
