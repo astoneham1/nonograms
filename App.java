@@ -138,8 +138,10 @@ public class App {
                 options,
                 options[0]);
 
-        // if the user selected a puzzle
-        if (selected != null) {
+        if (selected == null) {
+            System.exit(0);
+        } else {
+
             File selectedFile = new File(puzzleDir, selected);
 
             Parser parser = new Parser();
