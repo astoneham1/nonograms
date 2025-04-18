@@ -34,6 +34,7 @@ public class App {
     private JButton check;
     private JButton save;
     private JButton undo;
+    // method for the user to load a file
 
     // GRIDS
     private Grid puzzleGrid;
@@ -56,6 +57,7 @@ public class App {
                     button.putClientProperty("state", 0);
                 }
             }
+            userGrid.clearAllMoves();
             JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
@@ -251,7 +253,6 @@ public class App {
                 grid.add(cell);
             }
         }
-
         grid.revalidate();
         grid.repaint();
     }

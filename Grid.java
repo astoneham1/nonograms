@@ -109,17 +109,27 @@ public class Grid {
         this.moves.remove(moves.size()-1);
         saveMoves();
     }
+
+    public void clearAllMoves() {
+        for (int i = 0; i < this.rows; i++) {
+            for (int j = 0; j < this.columns; j++) {
+                grid[i][j] = 0;
+            }
+        }
+        moves = new ArrayList<>();
+        saveMoves();
+    }
 }
     // public void redoMove() {
 
     // }
 
 
-        // until I can find a better way to just delete something from a json file, this is what'll have to do for updating it
-        // if (currentMove <= moves.size() - 3) {
-        //     moves.remove(currentMove);
+    //     until I can find a better way to just delete something from a json file, this is what'll have to do for updating it
+    //     if (currentMove <= moves.size() - 3) {
+    //         moves.remove(currentMove);
 
-        // if (currentMove >= 1) {
-            // grid[this.moves.get(currentMove).location[0]][this.moves.get(currentMove).location[1]] = this.moves.get(currentMove).oldColor;
-            // currentMove = currentMove - 1;
-        // }
+    //     if (currentMove >= 1) {
+    //         grid[this.moves.get(currentMove).location[0]][this.moves.get(currentMove).location[1]] = this.moves.get(currentMove).oldColor;
+    //         currentMove = currentMove - 1;
+    //     }
