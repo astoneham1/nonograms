@@ -8,7 +8,6 @@
  *         counts = (5, 3, 2)
  *         colours = (0, 0, 0)      opposed to      colours = (0)
  */
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
