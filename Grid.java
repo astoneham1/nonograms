@@ -64,11 +64,11 @@ public class Grid {
             for (Move m : this.moves) {
                 i++;
                 JsonObject moveObject = factory.createObjectBuilder()
-                            .add(String.valueOf(i), factory.createObjectBuilder()
+                            // .add(String.valueOf(i), factory.createObjectBuilder()
                             .add("row", m.location[0]) 
                             .add("cols", m.location[1])
                             .add("oldColor", m.oldColor)
-                            .add("newColor", m.newColor))
+                            .add("newColor", m.newColor)
                             .build();
                 moveArrayBuilder.add(moveObject);
             }
