@@ -39,9 +39,9 @@ public class Parser {
         JsonStructure jsonst = reader.read();
         getArrayListsFromTree(jsonst, null);
         if (colours.size() == 0) {
-            colours.put("COLOUR_1", "0x000000");
             colours.put("UNKOWN", "0xECECEC");
             colours.put("EMPTY", "0xffffff");
+            colours.put("COLOUR_1", "0x000000");
         }
     }
 
@@ -151,15 +151,25 @@ public class Parser {
     }
 
     //generates a clue from two arraylists
-    public Clue getClue(ArrayList<Integer> counts, ArrayList<Integer> colours){
-        Clue clue = new Clue(counts, colours);
+    public Clue getClue(ArrayList<Integer> counts, ArrayList<Integer> colours)throws JsonFormatException{
+        Clue clue;
+        if (colours.size() == 0) {
+            for(int i = 0; i < counts.size(); i++){
+                colours.add(2);
+            }
+            clue = new Clue(counts, colours);
+        }else if(counts.size() != colours.size()){
+            throw new JsonFormatException();
+        } else {
+            clue = new Clue(counts, colours);
+        }
         return clue;
         //could throw an invalid json error if information is wrong here
         //instead of else use elif and check arrays are the same size
     }
 
     //generates an arraylist of clues
-    public ArrayList<Clue> getClues(ArrayList<ArrayList<Integer>> lines, ArrayList<ArrayList<Integer>> colours){
+    public ArrayList<Clue> getClues(ArrayList<ArrayList<Integer>> lines, ArrayList<ArrayList<Integer>> colours) throws JsonFormatException{
         ArrayList<Clue> clues = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
             clues.add(getClue(lines.get(i), colours.get(i)));
@@ -177,12 +187,8 @@ public class Parser {
     }
 
     //generates the grid
-    public Grid getGrid(String filePath){
-        try {
-            getArrayLists(filePath);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
+    public Grid getGrid(String filePath) throws JsonFormatException, FileNotFoundException{
+        getArrayLists(filePath);
         createColourHashmap(colours);
         Grid grid = new Grid(getClues(rows, rowColour), getClues(columns, columnColour), rows.size(), columns.size());
         return grid;

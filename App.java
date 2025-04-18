@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
@@ -132,7 +133,13 @@ public class App {
             File selectedFile = new File(puzzleDir, selected);
 
             Parser parser = new Parser();
-            puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
+            try {
+                puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
+            } catch (JsonFormatException e) {
+                System.exit(1);
+            } catch (FileNotFoundException e) {
+                System.exit(1);
+            }
             userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/tbd.json"); //need to define a path for selecting a file
 
             int rows = puzzleGrid.rows;
