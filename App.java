@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -163,7 +164,7 @@ public class App {
                     JOptionPane.PLAIN_MESSAGE,
                     null,
                     grids,
-                    grids[grids.length-1]);
+                    grids[grids.length - 1]);
 
             // if the user chooses to make a new grid ask them for a name
             if (returnValue.equals("New Grid")) {
@@ -180,7 +181,8 @@ public class App {
             userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
             System.out.println(puzzleGrid.rows + " " + puzzleGrid.columns + " " + "Moves/" + returnValue);
 
-            // if the user clicked to load an existing grid then update the empty grid to be loaded
+            // if the user clicked to load an existing grid then update the empty grid to be
+            // loaded
             if (!returnValue.equals("New Grid")) {
                 userGrid.loadMoves("Moves/" + returnValue);
             }
@@ -302,17 +304,18 @@ public class App {
 
         rowCluePanel.removeAll();
         columnCluePanel.removeAll();
+        focus.removeAll();
 
         rowCluePanel.setLayout(new GridLayout(rows, 1));
         for (Clue clue : rowClues) {
-            JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
+            JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 15));
             ArrayList<Integer> counts = clue.getCounts();
             ArrayList<Integer> clueColor = clue.getColours();
 
             for (int i = 0; i < counts.size(); i++) {
                 JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
                 int colorKey = clueColor.get(i);
-                String colorCode = colors.getOrDefault(colorKey, "#000000"); // fallback to black
+                String colorCode = colors.getOrDefault(colorKey, "#000000");
                 clueLabel.setForeground(Color.decode(colorCode));
                 clueRow.add(clueLabel);
             }
@@ -330,7 +333,7 @@ public class App {
             for (int i = 0; i < counts.size(); i++) {
                 JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
                 int colorKey = clueColor.get(i);
-                String colorCode = colors.getOrDefault(colorKey, "#000000"); // fallback to black
+                String colorCode = colors.getOrDefault(colorKey, "#000000");
                 clueLabel.setForeground(Color.decode(colorCode));
                 clueColumn.add(clueLabel);
             }
@@ -338,10 +341,28 @@ public class App {
             columnCluePanel.add(clueColumn);
         }
 
-        rowCluePanel.revalidate();
-        rowCluePanel.repaint();
-        columnCluePanel.revalidate();
-        columnCluePanel.repaint();
+        // Top-left spacer
+        JPanel cornerSpacer = new JPanel();
+        cornerSpacer.setPreferredSize(new Dimension(90, 10));
+        cornerSpacer.setBackground(grid.getBackground());
+
+        // Top row: spacer + column clues
+        JPanel topRow = new JPanel(new BorderLayout());
+        topRow.add(cornerSpacer, BorderLayout.WEST);
+        topRow.add(columnCluePanel, BorderLayout.CENTER);
+
+        // Center row: row clues + grid
+        JPanel centerRow = new JPanel(new BorderLayout());
+        centerRow.add(rowCluePanel, BorderLayout.WEST);
+        centerRow.add(grid, BorderLayout.CENTER);
+
+        // Add all to focus panel
+        focus.setLayout(new BorderLayout());
+        focus.add(topRow, BorderLayout.NORTH);
+        focus.add(centerRow, BorderLayout.CENTER);
+
+        focus.revalidate();
+        focus.repaint();
     }
 
     public void cellClicked(JButton cell) {
