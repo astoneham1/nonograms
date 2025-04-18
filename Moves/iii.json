@@ -1,0 +1,100 @@
+{
+    "Moves": [
+        {
+            "1": {
+                "row": 2,
+                "cols": 6,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "2": {
+                "row": 5,
+                "cols": 2,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "3": {
+                "row": 5,
+                "cols": 7,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "4": {
+                "row": 8,
+                "cols": 6,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "5": {
+                "row": 8,
+                "cols": 3,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "6": {
+                "row": 7,
+                "cols": 2,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "7": {
+                "row": 6,
+                "cols": 3,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "8": {
+                "row": 6,
+                "cols": 5,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "9": {
+                "row": 3,
+                "cols": 8,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "10": {
+                "row": 3,
+                "cols": 3,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "11": {
+                "row": 1,
+                "cols": 8,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        },
+        {
+            "12": {
+                "row": 0,
+                "cols": 3,
+                "oldColor": 0,
+                "newColor": 2
+            }
+        }
+    ]
+}

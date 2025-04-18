@@ -162,19 +162,25 @@ public class App {
                     JOptionPane.PLAIN_MESSAGE,
                     null,
                     grids,
-                    grids[0]);
-
-            System.out.println(returnValue);
+                    grids[grids.length-1]);
 
             if (returnValue.equals("New Grid")) {
-                // screen with text box for new grid name
+                returnValue = JOptionPane.showInputDialog(
+                        mainPanel,
+                        "Enter a name for the new grid:",
+                        "New Grid Name",
+                        JOptionPane.PLAIN_MESSAGE);
+
+                returnValue = returnValue.concat(".json");
             }
 
-            userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/tbd.json"); // need to define a path for
-                                                                                        // selecting a file
+            userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
+            System.out.println(puzzleGrid.rows + " " + puzzleGrid.columns + " " + "Moves/" + returnValue);
 
-            int rows = puzzleGrid.rows;
-            int cols = puzzleGrid.columns;
+            if (!returnValue.equals("New Grid")) { 
+                userGrid.loadMoves("Moves/" + returnValue);
+            }
+
 
             ArrayList<Clue> rowClues = puzzleGrid.rowClues;
             ArrayList<Clue> columnClues = puzzleGrid.columnClues;
@@ -182,7 +188,7 @@ public class App {
             this.colors = Colours.colours;
 
             displayColors();
-            buildGrid(rows, cols);
+            buildGrid(puzzleGrid.rows, puzzleGrid.columns);
             displayClues(rowClues, columnClues);
             JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
         }

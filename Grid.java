@@ -101,6 +101,7 @@ public class Grid {
             saveMoves();
         } catch (Exception e) {
             System.out.println(e);
+            e.printStackTrace();
         }
     }
 
