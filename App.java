@@ -36,6 +36,8 @@ public class App {
     private JButton undo;
     // method for the user to load a file
 
+    private boolean isSaved = false;
+
     // GRIDS
     private Grid puzzleGrid;
     private Grid userGrid;
@@ -64,10 +66,12 @@ public class App {
         save.addActionListener(e -> {
             userGrid.saveMoves();
             JOptionPane.showMessageDialog(mainPanel, "save clicked");
+            isSaved = true;
         });
 
         undo.addActionListener(e -> {
             userGrid.undoMoves();
+            buildGrid(puzzleGrid.rows, puzzleGrid.columns);
             // need to add a method that updates the visual grid at this point to ensure that it reflects the userGrid
         });
     }
@@ -170,7 +174,7 @@ public class App {
             String label = switch (key) {
                 case 0 -> "UNKNOWN";
                 case 1 -> "EMPTY";
-                default -> String.valueOf(key);
+                default -> "";
             };
 
             JButton colorButton = new JButton(label);
@@ -214,7 +218,7 @@ public class App {
                 final int col = j;
                 JButton cell = new JButton();
                 cell.setOpaque(true);
-                cell.setBackground(Color.decode(colors.get(0)));
+                cell.setBackground(Color.decode(colors.get(userGrid.grid[i][j])));
 
                 // Borders
                 if (((i + 1) % 5 == 0) && ((j + 1) % 5 == 0)) {
@@ -235,6 +239,7 @@ public class App {
                         isMouseDown = true;
                         cellClicked((JButton) e.getSource());
                         userGrid.updateMove(row, col, selectedColor);
+                        isSaved = false;
                     }
 
                     @Override

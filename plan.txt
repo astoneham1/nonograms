@@ -21,3 +21,10 @@ Colour codes:
 0 - unkown
 1 - empty
 2 - black
+
+
+- TO DO:
+add a method to allow the user to select what kind of gameplay they want
+in terms of saved:prompt user to save 
+create a starter page
+solver!!!
