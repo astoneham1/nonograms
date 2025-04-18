@@ -32,6 +32,11 @@ public class App {
     private JButton clear;
     private JButton check;
     private JButton save;
+    private JButton undo;
+
+    // GRIDS
+    private Grid puzzleGrid;
+    private Grid userGrid;
 
     public App() {
         setupUI();
@@ -54,7 +59,13 @@ public class App {
         });
 
         save.addActionListener(e -> {
+            userGrid.saveMoves();
             JOptionPane.showMessageDialog(mainPanel, "save clicked");
+        });
+
+        undo.addActionListener(e -> {
+            userGrid.undoMoves();
+            // need to add a method that updates the visual grid at this point to ensure that it reflects the userGrid
         });
     }
 
@@ -92,11 +103,13 @@ public class App {
         clear = new JButton("Clear");
         check = new JButton("Check");
         save = new JButton("Save");
+        undo = new JButton("Undo");
 
         controls.add(loadFile);
         controls.add(clear);
         controls.add(check);
         controls.add(save);
+        controls.add(undo);
 
         mainPanel.add(controls, BorderLayout.SOUTH);
     }
@@ -119,7 +132,8 @@ public class App {
             File selectedFile = new File(puzzleDir, selected);
 
             Parser parser = new Parser();
-            Grid puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
+            puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
+            userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/tbd.json"); //need to define a path for selecting a file
 
             int rows = puzzleGrid.rows;
             int cols = puzzleGrid.columns;
@@ -187,6 +201,8 @@ public class App {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
+                final int row = i;
+                final int col = j;
                 JButton cell = new JButton();
                 cell.setOpaque(true);
                 cell.setBackground(Color.decode(colors.get(0)));
@@ -209,6 +225,7 @@ public class App {
                     public void mousePressed(MouseEvent e) {
                         isMouseDown = true;
                         cellClicked((JButton) e.getSource());
+                        userGrid.updateMove(row, col, selectedColor);
                     }
 
                     @Override
