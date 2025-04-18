@@ -137,6 +137,7 @@ public class App {
                 options,
                 options[0]);
 
+        // if the user selected a puzzle
         if (selected != null) {
             File selectedFile = new File(puzzleDir, selected);
 
@@ -164,6 +165,7 @@ public class App {
                     grids,
                     grids[grids.length-1]);
 
+            // if the user chooses to make a new grid ask them for a name
             if (returnValue.equals("New Grid")) {
                 returnValue = JOptionPane.showInputDialog(
                         mainPanel,
@@ -174,13 +176,14 @@ public class App {
                 returnValue = returnValue.concat(".json");
             }
 
+            // create an empty grid with the specified filename
             userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
             System.out.println(puzzleGrid.rows + " " + puzzleGrid.columns + " " + "Moves/" + returnValue);
 
-            if (!returnValue.equals("New Grid")) { 
+            // if the user clicked to load an existing grid then update the empty grid to be loaded
+            if (!returnValue.equals("New Grid")) {
                 userGrid.loadMoves("Moves/" + returnValue);
             }
-
 
             ArrayList<Clue> rowClues = puzzleGrid.rowClues;
             ArrayList<Clue> columnClues = puzzleGrid.columnClues;
