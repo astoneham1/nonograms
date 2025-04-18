@@ -1,15 +1,16 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.Map;
 
 public class App {
     // COLORS
-    private final Map<Integer, String> colors;
+    private LinkedHashMap<Integer, String> colors = new LinkedHashMap<Integer, String>();
 
     // STATE
     private int selectedColor = 0;
@@ -18,8 +19,21 @@ public class App {
     // MISC
     private boolean isMouseDown = false;
 
-    public App(Map<Integer, String> colors) {
-        this.colors = colors;
+    // UI COMPONENTS
+    private JPanel mainPanel;
+    private JPanel colorGuide;
+    private JPanel focus;
+    private JPanel grid;
+    private JPanel controls;
+    private JPanel rowCluePanel;
+    private JPanel columnCluePanel;
+
+    private JButton loadFile;
+    private JButton clear;
+    private JButton check;
+    private JButton save;
+
+    public App() {
         setupUI();
         loadGamePuzzle();
 
@@ -55,12 +69,19 @@ public class App {
         mainPanel.add(colorGuide, BorderLayout.NORTH);
 
         // centre focus area with grid and clues
+        rowCluePanel = new JPanel();
+        columnCluePanel = new JPanel();
+
         focus = new JPanel(new BorderLayout());
         focus.setBackground(new Color(0xD2D2D2));
 
         grid = new JPanel();
         grid.setLayout(new GridLayout(1, 1));
+
         focus.add(grid, BorderLayout.CENTER);
+        focus.add(rowCluePanel, BorderLayout.WEST);
+        focus.add(columnCluePanel, BorderLayout.NORTH);
+
         mainPanel.add(focus, BorderLayout.CENTER);
 
         // bottom of screen controls
@@ -81,21 +102,36 @@ public class App {
     }
 
     public void loadGamePuzzle() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Choose a puzzle (JSON file format)");
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JSON files", "json"));
+        File puzzleDir = new File("Jsons");
+        File[] jsonFiles = puzzleDir.listFiles((dir, name) -> name.endsWith(".json"));
+        String[] options = Arrays.stream(jsonFiles).map(File::getName).toArray(String[]::new);
 
-        int result = fileChooser.showOpenDialog(mainPanel);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File puzzleFile = fileChooser.getSelectedFile();
+        String selected = (String) JOptionPane.showInputDialog(
+                mainPanel,
+                "Select a puzzle to load:",
+                "Puzzle Selector",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                options,
+                options[0]);
 
-            int rows = 7;
-            int cols = 9;
+        if (selected != null) {
+            File selectedFile = new File(puzzleDir, selected);
+
+            Parser parser = new Parser();
+            Grid puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
+
+            int rows = puzzleGrid.rows;
+            int cols = puzzleGrid.columns;
+
+            ArrayList<Clue> rowClues = puzzleGrid.rowClues;
+            ArrayList<Clue> columnClues = puzzleGrid.columnClues;
+
+            this.colors = Colours.colours;
 
             displayColors();
             buildGrid(rows, cols);
+            displayClues(rowClues, columnClues);
             JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
         }
     }
@@ -196,22 +232,63 @@ public class App {
         grid.repaint();
     }
 
+    public void displayClues(ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
+        int rows = rowClues.size();
+        int columns = columnClues.size();
+
+        rowCluePanel.removeAll();
+        columnCluePanel.removeAll();
+
+        rowCluePanel.setLayout(new GridLayout(rows, 1));
+        for (Clue clue : rowClues) {
+            JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
+            ArrayList<Integer> counts = clue.getCounts();
+            ArrayList<Integer> clueColor = clue.getColours();
+
+            for (int i = 0; i < counts.size(); i++) {
+                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
+                int colorKey = clueColor.get(i);
+                String colorCode = colors.getOrDefault(colorKey, "#000000"); // fallback to black
+                clueLabel.setForeground(Color.decode(colorCode));
+                clueRow.add(clueLabel);
+            }
+
+            rowCluePanel.add(clueRow);
+        }
+
+        columnCluePanel.setLayout(new GridLayout(1, columns));
+        for (Clue clue : columnClues) {
+            JPanel clueColumn = new JPanel();
+            clueColumn.setLayout(new BoxLayout(clueColumn, BoxLayout.Y_AXIS));
+            ArrayList<Integer> counts = clue.getCounts();
+            ArrayList<Integer> clueColor = clue.getColours();
+
+            for (int i = 0; i < counts.size(); i++) {
+                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
+                int colorKey = clueColor.get(i);
+                String colorCode = colors.getOrDefault(colorKey, "#000000"); // fallback to black
+                clueLabel.setForeground(Color.decode(colorCode));
+                clueColumn.add(clueLabel);
+            }
+
+            columnCluePanel.add(clueColumn);
+        }
+
+        rowCluePanel.revalidate();
+        rowCluePanel.repaint();
+        columnCluePanel.revalidate();
+        columnCluePanel.repaint();
+    }
+
     public void cellClicked(JButton cell) {
-        List<Integer> colorKeys = new ArrayList<>(colors.keySet());
         cell.putClientProperty("state", this.selectedColor);
         cell.setBackground(Color.decode(colors.get(this.selectedColor)));
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Map<Integer, String> defaultColors = new LinkedHashMap<>();
-            defaultColors.put(0, "#c2bebe");
-            defaultColors.put(1, "#FFFFFF");
-            defaultColors.put(2, "#32a852");
-            defaultColors.put(3, "#4a32a8");
-
+            App a = new App();
             JFrame frame = new JFrame("Nonograms");
-            App a = new App(defaultColors);
             frame.setContentPane(a.mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 800);
