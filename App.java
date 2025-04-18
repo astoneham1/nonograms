@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class App {
     // COLORS
@@ -72,7 +73,8 @@ public class App {
         undo.addActionListener(e -> {
             userGrid.undoMoves();
             buildGrid(puzzleGrid.rows, puzzleGrid.columns);
-            // need to add a method that updates the visual grid at this point to ensure that it reflects the userGrid
+            // need to add a method that updates the visual grid at this point to ensure
+            // that it reflects the userGrid
         });
     }
 
@@ -146,7 +148,30 @@ public class App {
             } catch (FileNotFoundException e) {
                 System.exit(1);
             }
-            userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/tbd.json"); //need to define a path for selecting a file
+
+            // find out if the user wants to load an existing grid or create a new one
+            File gridDir = new File("Moves");
+            File[] gridFiles = gridDir.listFiles((dir, name) -> name.endsWith(".json"));
+            String[] grids = Arrays.stream(gridFiles).map(File::getName).toArray(String[]::new);
+            grids = Stream.concat(Arrays.stream(grids), Stream.of("New Grid")).toArray(String[]::new);
+
+            String returnValue = (String) JOptionPane.showInputDialog(
+                    mainPanel,
+                    "Load a saved grid or make a new one",
+                    "Grid Selector",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    grids,
+                    grids[0]);
+
+            System.out.println(returnValue);
+
+            if (returnValue.equals("New Grid")) {
+                // screen with text box for new grid name
+            }
+
+            userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/tbd.json"); // need to define a path for
+                                                                                        // selecting a file
 
             int rows = puzzleGrid.rows;
             int cols = puzzleGrid.columns;
@@ -174,7 +199,7 @@ public class App {
             String label = switch (key) {
                 case 0 -> "UNKNOWN";
                 case 1 -> "EMPTY";
-                default -> "";
+                default -> " ";
             };
 
             JButton colorButton = new JButton(label);
