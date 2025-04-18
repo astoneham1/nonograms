@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -46,9 +45,9 @@ public class App {
 
     public App() {
         setupUI();
-        loadGamePuzzle();
+        loadGamePuzzle("fromStart");
 
-        loadFile.addActionListener(e -> loadGamePuzzle());
+        loadFile.addActionListener(e -> loadGamePuzzle("fromButton"));
 
         check.addActionListener(e -> {
             JOptionPane.showMessageDialog(mainPanel, "check clicked");
@@ -124,7 +123,7 @@ public class App {
         mainPanel.add(controls, BorderLayout.SOUTH);
     }
 
-    public void loadGamePuzzle() {
+    public void loadGamePuzzle(String source) {
         File puzzleDir = new File("Jsons");
         File[] jsonFiles = puzzleDir.listFiles((dir, name) -> name.endsWith(".json"));
         String[] options = Arrays.stream(jsonFiles).map(File::getName).toArray(String[]::new);
@@ -138,10 +137,7 @@ public class App {
                 options,
                 options[0]);
 
-        if (selected == null) {
-            System.exit(0);
-        } else {
-
+        if (!(selected == null)) {
             File selectedFile = new File(puzzleDir, selected);
 
             Parser parser = new Parser();
@@ -159,6 +155,8 @@ public class App {
             String[] grids = Arrays.stream(gridFiles).map(File::getName).toArray(String[]::new);
             grids = Stream.concat(Arrays.stream(grids), Stream.of("New Grid")).toArray(String[]::new);
 
+            String newGridName = "";
+
             String returnValue = (String) JOptionPane.showInputDialog(
                     mainPanel,
                     "Load a saved grid or make a new one",
@@ -168,36 +166,45 @@ public class App {
                     grids,
                     grids[grids.length - 1]);
 
-            // if the user chooses to make a new grid ask them for a name
-            if (returnValue.equals("New Grid")) {
-                returnValue = JOptionPane.showInputDialog(
-                        mainPanel,
-                        "Enter a name for the new grid:",
-                        "New Grid Name",
-                        JOptionPane.PLAIN_MESSAGE);
+            if (returnValue != null) {
+                // if the user chooses to make a new grid ask them for a name
+                if (returnValue.equals("New Grid")) {
+                    returnValue = JOptionPane.showInputDialog(
+                            mainPanel,
+                            "Enter a name for the new grid:",
+                            "New Grid Name",
+                            JOptionPane.PLAIN_MESSAGE);
 
-                returnValue = returnValue.concat(".json");
+                    newGridName = returnValue.concat(".json");
+                }
+
+                // create an empty grid with the specified filename
+                if (newGridName != "") {
+                    userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + newGridName);
+                } else {
+                    userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
+                }
+
+                // if the user clicked to load an existing grid then update the empty grid to be
+                // loaded
+                if (newGridName == "") {
+                    userGrid.loadMoves("Moves/" + returnValue);
+                }
+
+                ArrayList<Clue> rowClues = puzzleGrid.rowClues;
+                ArrayList<Clue> columnClues = puzzleGrid.columnClues;
+
+                this.colors = Colours.colours;
+
+                displayColors();
+                buildGrid(puzzleGrid.rows, puzzleGrid.columns);
+                displayClues(rowClues, columnClues);
+                JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
+            } else if (source.equals("fromStart")) {
+                System.exit(0);
             }
-
-            // create an empty grid with the specified filename
-            userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
-            System.out.println(puzzleGrid.rows + " " + puzzleGrid.columns + " " + "Moves/" + returnValue);
-
-            // if the user clicked to load an existing grid then update the empty grid to be
-            // loaded
-            if (!returnValue.equals("New Grid")) {
-                userGrid.loadMoves("Moves/" + returnValue);
-            }
-
-            ArrayList<Clue> rowClues = puzzleGrid.rowClues;
-            ArrayList<Clue> columnClues = puzzleGrid.columnClues;
-
-            this.colors = Colours.colours;
-
-            displayColors();
-            buildGrid(puzzleGrid.rows, puzzleGrid.columns);
-            displayClues(rowClues, columnClues);
-            JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
+        } else if (source.equals("fromStart")) {
+            System.exit(0);
         }
     }
 
