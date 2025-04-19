@@ -17,41 +17,24 @@ public class Checker {
      * @param args
      */
     public static void main(String[] args) {
-        int[][] blanksSmiler = createGrid("blanks_smiler");
-        ArrayList<Clue> rowCluesBlankSmiler = createRowClues("blanks_smiler");
-        ArrayList<Clue> columnCluesBlankSmiler = createColumnClues("blanks_smiler");
-        ArrayList<ArrayList<Integer>> blankSmilerIncorrect = checkNonogram(blanksSmiler, rowCluesBlankSmiler, columnCluesBlankSmiler);
+        Checker c = new Checker();
+        int[][] blanksSmiler = c.createGrid("blanks_smiler");
+        ArrayList<Clue> rowCluesBlankSmiler = c.createRowClues("blanks_smiler");
+        ArrayList<Clue> columnCluesBlankSmiler = c.createColumnClues("blanks_smiler");
+        ArrayList<ArrayList<Integer>> blankSmilerCheck = c.checkNonogram(blanksSmiler, rowCluesBlankSmiler, columnCluesBlankSmiler);
         
-        // Print information. Will be removed from final.
-        int counter1 = 0;
-        for (ArrayList<Integer> list : blankSmilerIncorrect) {
-            if (counter1 == 0) {
-                System.out.print("Incorrect row number/s: ");
-            }
-            else {
-                System.out.print("Incorrect column number/s: ");
-            }
-            System.out.println(list);
-            counter1++;
-        }
+        // Print information.
+        String message1 = c.getMessage(blankSmilerCheck, rowCluesBlankSmiler.size(), columnCluesBlankSmiler.size());
+        System.out.println(message1 + "\n");
 
-        int[][] colourWink = createGrid("colour_wink");
-        ArrayList<Clue> rowCluesColourWink = createRowClues("colour_wink");
-        ArrayList<Clue> columnCluesColourWink = createColumnClues("colour_wink");
-        ArrayList<ArrayList<Integer>> colourWinkIncorrect = checkNonogram(colourWink, rowCluesColourWink, columnCluesColourWink);
+        int[][] colourWink = c.createGrid("colour_wink");
+        ArrayList<Clue> rowCluesColourWink = c.createRowClues("colour_wink");
+        ArrayList<Clue> columnCluesColourWink = c.createColumnClues("colour_wink");
+        ArrayList<ArrayList<Integer>> colourWinkCheck = c.checkNonogram(colourWink, rowCluesColourWink, columnCluesColourWink);
         
-        // Print information. Will be removed from final.
-        int counter2 = 0;
-        for (ArrayList<Integer> list : colourWinkIncorrect) {
-            if (counter2 == 0) {
-                System.out.print("Incorrect row number/s: ");
-            }
-            else {
-                System.out.print("Incorrect column number/s: ");
-            }
-            System.out.println(list);
-            counter2++;
-        }
+        //Print information.
+        String message2 = c.getMessage(colourWinkCheck, rowCluesColourWink.size(), columnCluesColourWink.size());
+        System.out.println(message2);
     }
 
     /**
@@ -61,7 +44,7 @@ public class Checker {
      * @param columnClues       List of column clues.
      * @return                  List of lists of coordinates where the incorrect cell is located.
      */
-    public static ArrayList<ArrayList<Integer>> checkNonogram(int[][] grid, ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
+    public ArrayList<ArrayList<Integer>> checkNonogram(int[][] grid, ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
         // Where incorrect rows and columns are kept.
         ArrayList<Integer> incorrectRows = new ArrayList<Integer>();
         ArrayList<Integer> incorrectColumns = new ArrayList<Integer>();
@@ -73,12 +56,13 @@ public class Checker {
             if (!correctRow) {
                 incorrectRows.add(i);
             }
-
+        }
+        for (int j = 0; j < grid[0].length; j++) {
             // Get the ith column, and check it against the corresponding clue.
-            int[] column = getColumn(grid, i);
-            boolean correctColumn = checkLine(column, columnClues.get(i));
+            int[] column = getColumn(grid, j);
+            boolean correctColumn = checkLine(column, columnClues.get(j));
             if (!correctColumn) {
-                incorrectColumns.add(i);
+                incorrectColumns.add(j);
             }
         }
         incorrectRowsAndColumns.add(incorrectRows);
@@ -94,7 +78,7 @@ public class Checker {
      * @param isRow         Since the column has been treated as a row, we need to flip the coordinates if we are checking a column.
      * @return              List of coordinates of incorrect cells.
      */
-    public static boolean checkLine(int[] line, Clue clue) {
+    public boolean checkLine(int[] line, Clue clue) {
         // For global access within the method
         ArrayList<Integer> counts = clue.getCounts();       // Gets the list of counts for this clue.
         ArrayList<Integer> colours = clue.getColours();     // Gets the list of colours for this clue, given as integers.
@@ -130,9 +114,10 @@ public class Checker {
                     numCorrect++;
                 }
  
-                // The cell is incorrect if it is any colour other than the square colour, or if it is blank but the clue has not been finished
+                // The cell is incorrect if it is any colour other than the square colour, (except blank or unknown),
+                //  or if it is blank or unknown but the clue has not been finished (i.e. 22222 is correct, but 220222 is NOT)
                 // e.g. Clue was 5 black squares with no spaces but the player entered 2 black, one space, 2 black.
-                else if (line[i] != 2 || (line[i] == 2 && numCorrect > 0 && numSquares != numCorrect)) {
+                else if ((line[i] != 1 && line[i] != 0) || ((line[i] == 1 || line[i] == 0) && numCorrect > 0 && numSquares != numCorrect)) {
                     return false;
                 }
   
@@ -156,7 +141,7 @@ public class Checker {
      * @param num           The column number, i.e. get all elements from this column.
      * @return              An integer array which is the ith column from the player grid.
      */
-    public static int[] getColumn(int[][] grid, int num) {
+    public int[] getColumn(int[][] grid, int num) {
         int length = grid[0].length;
         int[] column = new int[length];
  
@@ -166,44 +151,86 @@ public class Checker {
  
         return column;
     }
+
+    public String getMessage(ArrayList<ArrayList<Integer>> incorrectLines, int rows, int columns) {
+        StringBuilder sb = new StringBuilder();
+        ArrayList<Integer> incorrectRows = incorrectLines.get(0);
+        ArrayList<Integer> incorrectColumns = incorrectLines.get(1);
+
+        if (incorrectRows.size() == 0) {
+            sb.append("All rows are correct.\n");
+        }
+        if (incorrectColumns.size() == 0) {
+            sb.append("All columns are correct.\n");
+        }
+        if (incorrectColumns.size() == 0 && incorrectRows.size() == 0) {
+            double progress = getProgress(incorrectRows.size(), incorrectColumns.size(), rows, columns);
+            sb.append("Completion: " + progress + "%");
+            String congrats = sb.toString();
+            return congrats;
+        }
+
+        for (int i : incorrectRows) {
+            sb.append("Incorrect row " + i + "\n");
+        }
+        for (int c : incorrectColumns) {
+            sb.append("Incorrect column " + c + "\n");
+        }
+
+        double progress = getProgress(incorrectRows.size(), incorrectColumns.size(), rows, columns);
+        sb.append("Completion: " + progress + "%");
+        String error = sb.toString();
+        return error;
+    }
+
+    public double getProgress(int incorrectRows, int incorrectColumns, int rows, int columns) {
+        int totalCorrectRows = rows - incorrectRows;
+        int totalCorrectColumns = columns - incorrectColumns;
+        int totalCorrectLines = totalCorrectRows + totalCorrectColumns;
+        int totalLines = rows + columns;
+
+        double progress = (double) totalCorrectLines / totalLines;
+        double progressPercent = progress * 100;
+        return progressPercent;
+    }
   
     // ******************************************************************************************************************************************
     // All methods below will most likely not be in the finished product, they are here to test the class and contain hard-coded grids and clues.
     // The grids below represent the players grid. These values can be changed to test the program to see if they match the clues.
-    public static int[][] createGrid(String name) {
+    public int[][] createGrid(String name) {
         int[][] grid = null;
         if (name.equals("blanks_smiler")) {
             grid = new int[][] {
-                {2, 2, 0, 0, 0, 0, 0, 2, 2, 2},
-                {2, 0, 0, 0, 0, 0, 0, 0, 2, 2},
-                {0, 0, 2, 0, 0, 0, 2, 0, 0, 2},
-                {0, 0, 2, 0, 0, 0, 2, 0, 0, 2},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-                {0, 2, 0, 0, 0, 0, 0, 2, 0, 2},
-                {0, 0, 2, 0, 0, 0, 2, 0, 0, 2},
-                {2, 0, 0, 2, 2, 2, 0, 0, 2, 2},
-                {2, 2, 0, 0, 0, 0, 0, 2, 2, 2},
-                {2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
+                {0, 0, 2, 2, 2, 2, 2, 0, 0, 0},
+                {0, 2, 2, 2, 2, 2, 2, 2, 0, 0},
+                {2, 2, 0, 2, 2, 2, 0, 2, 2, 0},
+                {2, 2, 0, 2, 2, 2, 0, 2, 2, 0},
+                {2, 2, 2, 2, 0, 2, 2, 2, 2, 0},
+                {2, 0, 2, 2, 2, 2, 2, 0, 2, 0},
+                {2, 2, 0, 2, 2, 2, 0, 2, 2, 0},
+                {0, 2, 2, 0, 0, 0, 2, 2, 0, 0},
+                {0, 0, 2, 2, 2, 2, 2, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
             };
         }
         else if (name.equals("colour_wink")) {
             // yellow 3, black 0, empty 2
             grid = new int[][] {
-                {2, 2, 3, 3, 3, 3, 3, 2, 2},
-                {2, 3, 3, 3, 3, 3, 3, 3, 2},
-                {3, 3, 0, 3, 3, 3, 3, 3, 3},
-                {3, 3, 0, 3, 3, 3, 0, 3, 3},
+                {0, 0, 3, 3, 3, 3, 3, 0, 0},
+                {0, 3, 3, 3, 3, 3, 3, 3, 0},
+                {3, 3, 2, 3, 3, 3, 3, 3, 3},
+                {3, 3, 2, 3, 3, 3, 2, 3, 3},
                 {3, 3, 3, 3, 3, 3, 3, 3, 3},
                 {3, 3, 3, 3, 3, 3, 3, 3, 3},
-                {3, 3, 0, 3, 3, 3, 0, 3, 3},
-                {2, 3, 3, 0, 0, 0, 3, 3, 2},
-                {2, 2, 3, 3, 3, 3, 3, 2, 2}
+                {3, 3, 2, 3, 3, 3, 2, 3, 3},
+                {2, 3, 3, 2, 2, 2, 3, 3, 2},
+                {0, 0, 3, 3, 3, 3, 3, 0, 0}
             };
         }
         return grid;
     }
   
-    public static ArrayList<Clue> createRowClues(String name) {
+    public ArrayList<Clue> createRowClues(String name) {
         ArrayList<Clue> rowClues = new ArrayList<Clue>();
         if (name.equals("blanks_smiler")) {
             Clue r1 = new Clue(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(0)));
@@ -250,7 +277,7 @@ public class Checker {
         return rowClues;
     }
 
-    public static ArrayList<Clue> createColumnClues(String name) {
+    public ArrayList<Clue> createColumnClues(String name) {
         ArrayList<Clue> columnClues = new ArrayList<Clue>();
         if (name.equals("blanks_smiler")) {
             Clue c1 = new Clue(new ArrayList<>(Arrays.asList(5)), new ArrayList<>(Arrays.asList(0)));
