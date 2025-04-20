@@ -48,6 +48,29 @@ public class Grid {
     public void updateMove(int row, int col, int color) {
         // first update the arraylist of moves
         Move m = new Move(row, col, grid[row][col], color);
+
+        /*
+        Checks the list of all of the moves. Gets the location of the current cell (the one passed into this method) and compares it to the
+        location of the Move object in the list. If these are the same, and the colours are the same (i.e. pressing a pink cell 20 times with the pink colour),
+        and it is on the end of the list, then we remove this Move. If the move list is now empty, OR if the current cell's colour (the one passed into 
+        this method) is exactly equal to the previous cell's old colour (so filling in a pink cell pink again), the oldColor is set to 0, so when undo is
+        pressed, the cell will return to 'UNKNOWN'. Otherwise (so filling in a blue cell with pink), the current cells oldColor is set to the previous one's
+        newColor (so undo works as intended).
+        */
+        for (int i = 0; i < this.moves.size(); i++) {
+            int[] location = new int[] {row, col};
+            if (Arrays.equals(location, this.moves.get(i).location) && color == this.moves.get(i).newColor && i == this.moves.size() - 1) {
+                this.moves.remove(this.moves.get(i));
+                if (this.moves.size() == 0 || (color == this.moves.get(this.moves.size() - 1).newColor)) {
+                    m.oldColor = 0;
+                }
+                else {
+                    m.oldColor = this.moves.get(this.moves.size() - 1).newColor;
+                }
+                break;
+            }
+        }
+
         this.moves.add(m);
         // then update the physcial grid
         this.grid[row][col] = color;
