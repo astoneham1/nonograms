@@ -171,10 +171,12 @@ public class Checker {
         }
 
         for (int i : incorrectRows) {
-            sb.append("Incorrect row " + i + "\n");
+            int rowNum = i+1;
+            sb.append("Incorrect row " + rowNum + "\n");
         }
         for (int c : incorrectColumns) {
-            sb.append("Incorrect column " + c + "\n");
+            int columnNum = c+1;
+            sb.append("Incorrect column " + columnNum + "\n");
         }
 
         double progress = getProgress(incorrectRows.size(), incorrectColumns.size(), rows, columns);
@@ -191,6 +193,8 @@ public class Checker {
 
         double progress = (double) totalCorrectLines / totalLines;
         double progressPercent = progress * 100;
+        // Rounds to 1 decimal place
+        progressPercent = Math.round(progressPercent * Math.pow(10, 1)) / Math.pow(10, 1);
         return progressPercent;
     }
   

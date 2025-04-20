@@ -50,7 +50,11 @@ public class App {
         loadFile.addActionListener(e -> loadGamePuzzle("fromButton"));
 
         check.addActionListener(e -> {
-            JOptionPane.showMessageDialog(mainPanel, "check clicked");
+            // Create checker object, call the checkNonogram method and get the message to output to the screen.
+            Checker c = new Checker();
+            ArrayList<ArrayList<Integer>> a = c.checkNonogram(userGrid.grid, puzzleGrid.rowClues, puzzleGrid.columnClues);
+            String message = c.getMessage(a, puzzleGrid.rowClues.size(), puzzleGrid.columnClues.size());
+            JOptionPane.showMessageDialog(mainPanel, message);
         });
 
         clear.addActionListener(e -> {
@@ -296,6 +300,7 @@ public class App {
                     public void mouseEntered(MouseEvent e) {
                         if (isMouseDown) {
                             cellClicked((JButton) e.getSource());
+                            userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid, so the checker will work if they have dragged it since all the cells are being updated in userGrid.grid
                         }
                     }
                 });
