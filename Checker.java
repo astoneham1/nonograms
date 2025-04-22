@@ -74,8 +74,6 @@ public class Checker {
      * This checks a specific line abides with a specific clue.
      * @param line          The row or column which is being checked.
      * @param clue          The clue which the row or column is being checked against.
-     * @param lineNumber    This is needed so the incorrect coordinates can be returned.
-     * @param isRow         Since the column has been treated as a row, we need to flip the coordinates if we are checking a column.
      * @return              List of coordinates of incorrect cells.
      */
     public boolean checkLine(int[] line, Clue clue) {
@@ -87,15 +85,21 @@ public class Checker {
         int numSquares = 0;         // This is the count clue, i.e. how many squares are a given colour.
         int squareColour = 0;       // This is the square colour.
 
+        // If line is blank (i.e. count is 0) then check each cell and make sure they are unknown or empty.
+        if (counts.size() == 0) {
+            for (int k = 0; k < line.length; k++) {
+                if (line[k] != 1 && line[k] != 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // Loops through the size of the counts list. The length of the counts and colours lists must be the same.
         // Example counts list: [5, 3, 2] which is 5 squares, a space, 3 squares, a space, 2 squares, a space.
         for (int j = 0; j < counts.size(); j++) {
             numCorrect = 0;
             numSquares = counts.get(j);
-            // i.e. No clue for a given row (see unsolvable smiler)
-            if (numSquares == 0) {
-                break;
-            }
             squareColour = colours.get(j);
   
             // Loops through each cell in the line, starting from 0.
