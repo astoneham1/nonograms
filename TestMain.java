@@ -5,6 +5,24 @@ public class TestMain {
     public static Grid inProgressGrid; // grid that represents the progress of the user in terms of clues
 
     public static void main(String [] args) {
+    try {
+        Parser p = new Parser();
+        Grid g = p.getGrid("Jsons/smiler.json");
+        SolverMain s = new SolverMain(g);
+        s.solver();
+        for (int i = 0; i < s.solverGrid.rows; i++) {
+            for (int j = 0; j < s.solverGrid.columns; j++) {
+                System.out.print(s.solverGrid.grid[i][j]);
+            }
+            System.out.println();
+        }
+    } catch (Exception e) {
+        System.out.println(e);
+    }
+
+    }
+
+}
         //load the currentGrid from the parser
         //create inProgressGrid that has the same params as the current Grid 
     //     int row = 5;
@@ -30,16 +48,11 @@ public class TestMain {
     //     }
     //     g.saveMoves();
     //     GridManipulation.convertToClues(g);
-    try {
-        Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/cat.json");
-        Solver s = new Solver(g);
-        s.solve();        
-    } catch (Exception e) {
-        System.out.print(e);
-    }
 
-    }
+
+
+
+
 
 
 //     // Summary of the gameplay:
@@ -56,5 +69,3 @@ public class TestMain {
 //             // 3. the checker cross references the "currentGrid"'s clues with the actual clues provided by the parser and reports whether or not they are satisfied
 //             // 4. the GUI responds accordingly and marks the square as incorrect or not
 
-
-}
