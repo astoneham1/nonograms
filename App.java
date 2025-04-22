@@ -301,6 +301,7 @@ public class App {
                         if (isMouseDown) {
                             cellClicked((JButton) e.getSource());
                             userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid, so the checker will work if they have dragged it since all the cells are being updated in userGrid.grid
+                            isSaved = false;
                         }
                     }
                 });
