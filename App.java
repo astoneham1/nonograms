@@ -267,6 +267,12 @@ public class App {
                 final int col = j;
                 JButton cell = new JButton();
                 cell.setOpaque(true);
+                // When loading a new puzzle where the colour does not exist (i.e. colour 3 exists in colour cat but not blanks smiler),
+                // the colour and state of the grid are set to 0 (unknown).
+                if (colors.get(userGrid.grid[i][j]) == null) {
+                    userGrid.grid[i][j] = 0;
+                    cell.putClientProperty("state", 0);
+                }
                 cell.setBackground(Color.decode(colors.get(userGrid.grid[i][j])));
 
                 // Borders
@@ -301,6 +307,7 @@ public class App {
                         if (isMouseDown) {
                             cellClicked((JButton) e.getSource());
                             userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid, so the checker will work if they have dragged it since all the cells are being updated in userGrid.grid
+                            isSaved = false;
                         }
                     }
                 });

@@ -92,6 +92,10 @@ public class Checker {
         for (int j = 0; j < counts.size(); j++) {
             numCorrect = 0;
             numSquares = counts.get(j);
+            // i.e. No clue for a given row (see unsolvable smiler)
+            if (numSquares == 0) {
+                break;
+            }
             squareColour = colours.get(j);
   
             // Loops through each cell in the line, starting from 0.

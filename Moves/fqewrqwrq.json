@@ -1,1 +1,52 @@
-{"Moves":[{"row":4,"cols":3,"oldColor":0,"newColor":0},{"row":4,"cols":5,"oldColor":0,"newColor":0},{"row":4,"cols":2,"oldColor":0,"newColor":2},{"row":1,"cols":7,"oldColor":0,"newColor":2},{"row":4,"cols":8,"oldColor":0,"newColor":2},{"row":6,"cols":4,"oldColor":0,"newColor":2},{"row":4,"cols":5,"oldColor":0,"newColor":2},{"row":2,"cols":2,"oldColor":0,"newColor":2}]}
+{
+    "Moves": [
+        {
+            "row": 4,
+            "cols": 3,
+            "oldColor": 0,
+            "newColor": 0
+        },
+        {
+            "row": 4,
+            "cols": 5,
+            "oldColor": 0,
+            "newColor": 0
+        },
+        {
+            "row": 4,
+            "cols": 2,
+            "oldColor": 0,
+            "newColor": 2
+        },
+        {
+            "row": 1,
+            "cols": 7,
+            "oldColor": 0,
+            "newColor": 2
+        },
+        {
+            "row": 4,
+            "cols": 8,
+            "oldColor": 0,
+            "newColor": 2
+        },
+        {
+            "row": 6,
+            "cols": 4,
+            "oldColor": 0,
+            "newColor": 2
+        },
+        {
+            "row": 4,
+            "cols": 5,
+            "oldColor": 0,
+            "newColor": 2
+        },
+        {
+            "row": 2,
+            "cols": 2,
+            "oldColor": 0,
+            "newColor": 2
+        }
+    ]
+}
