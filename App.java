@@ -267,6 +267,12 @@ public class App {
                 final int col = j;
                 JButton cell = new JButton();
                 cell.setOpaque(true);
+                // When loading a new puzzle where the colour does not exist (i.e. colour 3 exists in colour cat but not blanks smiler),
+                // the colour and state of the grid are set to 0 (unknown).
+                if (colors.get(userGrid.grid[i][j]) == null) {
+                    userGrid.grid[i][j] = 0;
+                    cell.putClientProperty("state", 0);
+                }
                 cell.setBackground(Color.decode(colors.get(userGrid.grid[i][j])));
 
                 // Borders
