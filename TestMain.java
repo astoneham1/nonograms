@@ -7,8 +7,8 @@ public class TestMain {
     public static void main(String [] args) {
     try {
         Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/smiler.json");
-        SolverMain s = new SolverMain(g);
+        Grid g = p.getGrid("Jsons/colour_wink.json");
+        SolverMain s = new SolverMain(g, true);
         s.solver();
         for (int i = 0; i < s.solverGrid.rows; i++) {
             for (int j = 0; j < s.solverGrid.columns; j++) {
