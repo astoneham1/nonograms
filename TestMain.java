@@ -7,15 +7,13 @@ public class TestMain {
     public static void main(String [] args) {
     try {
         Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/colour_cat.json");
-        Arrangements a = new Arrangements(g, g.rows, g.rowClues.get(0));
+        Grid g = p.getGrid("Jsons/cat.json");
+        Arrangements a = new Arrangements(g, g.rows, g.rowClues.get(5));
         for (Node n: a.arrangement) {
             System.out.println(n.places);
         }
         // for (int i = 0; i <= a.arrangement.size(); i++) {
-        //     for (Node n: a.arrangement.get(i)) {
 
-        //     }
         // }
     } catch (Exception e) {
         System.out.println(e);

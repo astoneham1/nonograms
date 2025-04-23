@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Arrangements {
     ArrayList<Node> arrangement;
@@ -20,17 +21,16 @@ public class Arrangements {
         ArrayList<Integer> primaryPlacement = firstPlacement(blocks);
         arrangement.add(new Node(c, primaryPlacement));
         int trailingBlock = 0;
-        ArrayList<Integer> placement = primaryPlacement;
-        for (int i = blocks.size() - 1; i > 0; i--) {
+        ArrayList<Integer> placement = new ArrayList<>(primaryPlacement);
+        for (int i = blocks.size() - 1; i >= 0; i--) {
             while (placement.get(i) + blocks.get(i) + trailingBlock < lineLength) {
                 // modify placement for all the blocks
-                for (int j = i; j <= blocks.size(); j++) {
-                    placement.set(j, placement.get(j+1));
-                    System.out.println(placement);
+                for (int j = i; j < blocks.size(); j++) {
+                    placement.set(j, placement.get(j) + 1);
                 }
-                arrangement.add(new Node(c, placement));
+                arrangement.add(new Node(c, new ArrayList<Integer>(placement)));
             }
-            placement = primaryPlacement;
+            placement = new ArrayList<Integer>(primaryPlacement);
             trailingBlock += blocks.get(i);
         }
         // each node will contain the Clue c and then an integer array for their placement
@@ -41,8 +41,10 @@ public class Arrangements {
     public ArrayList<Integer> firstPlacement(ArrayList<Integer> blocks) {
         ArrayList<Integer> primaryPlacement = new ArrayList<>();
         primaryPlacement.add(0);
+        int currentPlace = 0;
         for (int i = 0; i < blocks.size() - 1; i++) {
-            primaryPlacement.add(blocks.get(i));
+            currentPlace += blocks.get(i);
+            primaryPlacement.add(currentPlace);
         }
         return primaryPlacement;
     }
