@@ -6,6 +6,7 @@ public class TestChecker {
         Checker c = new Checker();
         TestChecker tc = new TestChecker();
 
+        // Get the grid, clues and message for blanks smiler where the user has successfully completed it and all other cells are 'unknown' and print the test.
         int[][] blanksSmiler = tc.createGrid("blanks_smiler");
         ArrayList<Clue> rowCluesBlankSmiler = tc.createRowClues("blanks_smiler");
         ArrayList<Clue> columnCluesBlankSmiler = tc.createColumnClues("blanks_smiler");
@@ -14,6 +15,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST ONE:\u001B[0m Player has the correct blank_smiler grid (All constraints met) and the rest of the cells are marked as 'unknown'.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blanksSmilerMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clues and message for blanks smiler where the user has successfullu completed it and all other cells are 'empty' and print the test.
         int[][] blanksSmilerEmpty = tc.createGrid("blanks_smiler_empty");
         ArrayList<Clue> rowCluesBlankSmilerEmpty = tc.createRowClues("blanks_smiler_empty");
         ArrayList<Clue> columnCluesBlankSmilerEmpty = tc.createColumnClues("blanks_smiler_empty");
@@ -22,6 +24,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST TWO:\u001B[0m Player has the correct blank_smiler grid (All constraints met) and the rest of the cells are marked as 'empty'. ");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blanksSmilerMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clues and message for unsolvable smiler where the user has successfully completed it and print the test.
         int[][] unsolvableSmiler = tc.createGrid("unsolvable_smiler");
         ArrayList<Clue> rowCluesUnsolvableSmiler = tc.createRowClues("unsolvable_smiler");
         ArrayList<Clue> columnCluesUnsolvableSmiler = tc.createColumnClues("unsolvable_smiler");
@@ -30,6 +33,8 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST THREE:\u001B[0m Player has attempted to solve the unsolvable_smiler.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + unsolvableSmilerMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clues and message for the unsolvable smiler where the user has attempted to fill the final row by colouring the bottom-right cell
+        // (the row has no constraint), and print the test.
         int[][] unsolvableSmiler2 = tc.createGrid("unsolvable_smiler_2");
         ArrayList<Clue> rowCluesUnsolvableSmiler2 = tc.createRowClues("unsolvable_smiler_2");
         ArrayList<Clue> columnCluesUnsolvableSmiler2 = tc.createColumnClues("unsolvable_smiler_2");
@@ -38,6 +43,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST FOUR:\u001B[0m Player has attempted to solve the unsolvable_smiler and has (row 10, column 10) filled.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + unsolvableSmiler2Message + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n\u001B[0m");
 
+        // Get the grid, clues and message for the colour wink where the user has completed it and print the test.
         int[][] colourWink = tc.createGrid("colour_wink");
         ArrayList<Clue> rowCluesColourWink = tc.createRowClues("colour_wink");
         ArrayList<Clue> columnCluesColourWink = tc.createColumnClues("colour_wink");
@@ -46,6 +52,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST FIVE:\u001B[0m Player has the correct colour_wink grid (All constraints met).");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + colourWinkMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clues and message for the multi checks where the user has successfully completed it and print the test.
         int[][] multiChecks1 = tc.createGrid("multi_checks_1");
         ArrayList<Clue> rowCluesMultiChecks1 = tc.createRowClues("multi_checks_1");
         ArrayList<Clue> columnCluesMultiChecks1 = tc.createColumnClues("multi_checks_1");
@@ -54,6 +61,8 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST SIX:\u001B[0m Player has the correct multi_checks_1 grid (All constraints met).");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multiChecks1Message + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clue and message for multi checks where the user has successfully completed it and print the test.
+        // Since the constraints are the same but the solution is different this tests the checker can handle multiple correct solutions.
         int[][] multiChecks2 = tc.createGrid("multi_checks_2");
         ArrayList<Clue> rowCluesMultiChecks2 = tc.createRowClues("multi_checks_2");
         ArrayList<Clue> columnCluesMultiChecks2 = tc.createColumnClues("multi_checks_2");
@@ -62,6 +71,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST SEVEN:\u001B[0m Player has the correct multi_checks_2 grid (All constraints met).");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multiChecks2Message + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clues and message for colour cat where the user has successfully completed it and print the test.
         int[][] colourCat = tc.createGrid("colour_cat");
         ArrayList<Clue> rowCluesColourCat = tc.createRowClues("colour_cat");
         ArrayList<Clue> columnCluesColourCat = tc.createColumnClues("colour_cat");
@@ -70,6 +80,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST EIGHT:\u001B[0m Player has the correct colour_cat grid (All constraints met).");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + colourCatMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clues and message for cat where the user has made one error, and print the test.
         int[][] incorrectCat = tc.createGrid("incorrect_cat");
         ArrayList<Clue> rowCluesIncorrectCat = tc.createRowClues("incorrect_cat");
         ArrayList<Clue> columnCluesIncorrectCat = tc.createColumnClues("incorrect_cat");
@@ -78,6 +89,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST NINE:\u001B[0m Player has an incorrect cat grid with one error in row 2, column 7.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + incorrectCatMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Get the grid, clues and message for cat where the user has made multiple different errors, and print the test.
         int[][] multipleIncorrectCat = tc.createGrid("multiple_incorrect_cat");
         ArrayList<Clue> rowCluesMultipleIncorrectCat = tc.createRowClues("multiple_incorrect_cat");
         ArrayList<Clue> columnCluesMultipleIncorrectCat = tc.createColumnClues("multiple_incorrect_cat");
@@ -86,6 +98,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST TEN:\u001B[0m Player has an incorrect cat grid with multiple errors in rows 1, 4, 8, 10 and columns 3, 5, 6, 9.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multipleIncorrectCatMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Get the grid, clues and message for cat where the user has not filled any of the grid in correctly, and print the test.
         int[][] blankGridCat = tc.createGrid("blank_grid_cat");
         ArrayList<Clue> rowCluesBlankGridCat = tc.createRowClues("blank_grid_cat");
         ArrayList<Clue> columnCluesBlankGridCat = tc.createColumnClues("blank_grid_cat");
@@ -94,59 +107,77 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST ELEVEN:\u001B[0m Player has an incorrect cat grid which is completely blank (filled with unknown and empty cells only). All constraints failed.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blankGridCatMessage + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Create a line and a clue, and get the message, where the user has entered too many cells (i.e. the counts are wrong), and print the test.
         int[] errorType1 = {2, 2, 2, 2, 2, 2}; // Clue is 5 but found 6
         Clue clueErrorType1 = new Clue(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(2)));
         Boolean errorType1Status = c.checkLine(errorType1, clueErrorType1);
         System.out.println("\u001B[94mTEST TWELVE:\u001B[0m The line has 6 squares instead of 5 like the clue states. False should be returned since the line is wrong.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + errorType1Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Create a line and a clue, and get the message, where the user has the correct quantity of cells but in the wrong arrangement, and print the test.
         int[] errorType2 = {2, 2, 0, 2, 2, 2}; // Clue is 5 but found 2, 3
         Clue clueErrorType2 = new Clue(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(2)));
         Boolean errorType2Status = c.checkLine(errorType2, clueErrorType2);
         System.out.println("\u001B[94mTEST THIRTEEN:\u001B[0m The line has 2 squares, a space (unknown), and 3 squares instead of 5 like the clue states.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + errorType2Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Create a line and a clue, and get the message, where the user has the correct count but the wrong colour, and print the test.
         int[] errorType3 = {3, 3, 3, 3, 3}; // Clue is 5 in colour 2 but found 5 in colour 3
         Clue clueErrorType3 = new Clue(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(2)));
         Boolean errorType3Status = c.checkLine(errorType3, clueErrorType3);
         System.out.println("\u001B[94mTEST FOURTEEN:\u001B[0m The line has 5 squares in colour 3 instead of in colour 2 like the clue states.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + errorType3Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Create a line and a clue, and get the message, where the user has the incorrect count and colour, and print the test.
         int[] errorType4 = {3, 3, 0, 3, 3, 3}; // Clue is 5 in colour 2 but found 2, 3 in colour 3
         Clue clueErrorType4 = new Clue(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(2)));
         Boolean errorType4Status = c.checkLine(errorType4, clueErrorType4);
         System.out.println("\u001B[94mTEST FIFTEEN:\u001B[0m The line has 2 squares in colour 3, a space (unknown), and 3 squares in colour 3 instead of 5 squares in colour 2 like the clue states.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + errorType4Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Create a line and a clue, and get the message where the user has the correct quantity but did not include a space (unknown/empty), and print the test.
         int[] errorType5 = {2, 2, 2, 2, 2, 2}; // Clue is 4, 2 but found 6
         Clue clueErrorType5 = new Clue(new ArrayList<Integer>(Arrays.asList(4, 2)), new ArrayList<Integer>(Arrays.asList(2, 2)));
         Boolean errorType5Status = c.checkLine(errorType5, clueErrorType5);
         System.out.println("\u001B[94mTEST SIXTEEN:\u001B[0m The line has 6 squares instead of 4 squares, a space, 2 squares like the clue states.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + errorType5Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Create a line and a clue, and get the message where the user has the met the constraints for a clue with one count, and print the test.
         int[] correctLine1 = {2, 2, 2, 2};
         Clue clueCorrectLine1 = new Clue(new ArrayList<Integer>(Arrays.asList(4)), new ArrayList<Integer>(Arrays.asList(2)));
         Boolean correctLine1Status = c.checkLine(correctLine1, clueCorrectLine1);
         System.out.println("\u001B[94mTEST SEVENTEEN:\u001B[0m The line has 4 squares in colour 2, which meets the constraint.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine1Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
 
+        // Create a line and a clue, and get the message, where the user has met the constraints for a clue with multiple counts and colours.
         int[] correctLine2 = {2, 2, 2, 3, 3};
         Clue clueCorrectLine2 = new Clue(new ArrayList<Integer>(Arrays.asList(3, 2)), new ArrayList<Integer>(Arrays.asList(2, 3)));
         Boolean correctLine2Status = c.checkLine(correctLine2, clueCorrectLine2);
         System.out.println("\u001B[94mTEST EIGHTEEN:\u001B[0m The line has 3 squares in colour 2 and 2 squares in colour 3, which meets the constraint.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine2Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Create a line and a clue, and get the message, where the user has met the constraints for a clue with an (optional) empty cell in between,
+        // since the colours are different there does not need to be a space here.
         int[] correctLine3 = {2, 2, 2, 1, 3, 3};
         Clue clueCorrectLine3 = new Clue(new ArrayList<Integer>(Arrays.asList(3, 2)), new ArrayList<Integer>(Arrays.asList(2, 3)));
         Boolean correctLine3Status = c.checkLine(correctLine3, clueCorrectLine3);
         System.out.println("\u001B[94mTEST NINETEEN:\u001B[0m The line has 3 squares in colour 2, a space (empty) and 2 squares in colour 3, which meets the constraint.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine3Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
     
+        // Create a line and a clue, and get the message, where the user has met the constraints for a clue with multiple (optional) unknown/empty cells in between.
         int[] correctLine4 = {2, 2, 2, 0, 1, 0, 3, 3};
         Clue clueCorrectLine4 = new Clue(new ArrayList<Integer>(Arrays.asList(3, 2)), new ArrayList<Integer>(Arrays.asList(2, 3)));
         Boolean correctLine4Status = c.checkLine(correctLine4, clueCorrectLine4);
         System.out.println("\u001B[94mTEST TWENTY:\u001B[0m The line has 3 squares in colour 2, 3 spaces (unknown and empty cells only) and 2 squares in colour 3, which meets the constraint.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine4Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n\u001B[0m");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine4Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\n");
+
+        // Create a line and a clue, and get the message, where the user has met the constraints for a clue with multiple counts but the same colour, i.e.
+        // there must be atleast one unknown/empty cell in between them, and print the test.
+        int[] correctLine5 = {2, 2, 0, 2, 2, 2};
+        Clue clueCorrectLine5 = new Clue(new ArrayList<Integer>(Arrays.asList(2, 3)), new ArrayList<Integer>(Arrays.asList(2, 2)));
+        Boolean correctLine5Status = c.checkLine(correctLine5, clueCorrectLine5);
+        System.out.println("\u001B[94mTEST TWENTY ONE:\u001B[0m The line has 2 squares in colour 2, 1 unknown, and 1 square in colour 2, which meets the constraint.");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine5Status + "\n\u001B[94mTEST STATUS:\u001B[32m Pass\u001B[0m");
     }
 
     public int[][] createGrid(String name) {
