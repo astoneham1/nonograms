@@ -115,7 +115,7 @@ public class Checker {
      * @return              An integer array which is the ith column from the player grid.
      */
     public int[] getColumn(int[][] grid, int num) {
-        int length = grid[0].length;
+        int length = grid.length;
         int[] column = new int[length];
  
         for (int i = 0; i < grid.length; i++) {
