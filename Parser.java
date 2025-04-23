@@ -2,6 +2,7 @@ import javax.json.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 public class Parser {
@@ -186,10 +187,22 @@ public class Parser {
         }
     }
 
+    public void checkNumColour() throws JsonFormatException{
+        HashSet<Integer> checkNumColour = new HashSet<>();
+        for (ArrayList<Integer> columns : columnColour) {
+            for (Integer colour : columns) {
+                checkNumColour.add(colour);
+            }
+        }
+        if (checkNumColour.size() != (Colours.colours.size()- 2)) {
+            throw new JsonFormatException();
+        }
+    }
     //generates the grid
     public Grid getGrid(String filePath) throws JsonFormatException, FileNotFoundException{
         getArrayLists(filePath);
         createColourHashmap(colours);
+        checkNumColour();
         Grid grid = new Grid(getClues(rows, rowColour), getClues(columns, columnColour), rows.size(), columns.size());
         return grid;
     }

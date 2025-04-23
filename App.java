@@ -1,3 +1,4 @@
+import javax.json.stream.JsonParsingException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -42,6 +43,10 @@ public class App {
     // GRIDS
     private Grid puzzleGrid;
     private Grid userGrid;
+
+    public static void main(String[] args) {
+        new App();
+    }
 
     public App() {
         setupUI();
@@ -148,8 +153,13 @@ public class App {
             try {
                 puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
             } catch (JsonFormatException e) {
+                System.out.println(e.getMessage());
                 System.exit(1);
             } catch (FileNotFoundException e) {
+                System.out.println(e.getMessage());
+                System.exit(1);
+            } catch (JsonParsingException e) {
+                System.out.println(e.getMessage());
                 System.exit(1);
             }
 
@@ -307,7 +317,6 @@ public class App {
                         if (isMouseDown) {
                             cellClicked((JButton) e.getSource());
                             userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid, so the checker will work if they have dragged it since all the cells are being updated in userGrid.grid
-                            isSaved = false;
                         }
                     }
                 });
@@ -391,16 +400,4 @@ public class App {
         cell.setBackground(Color.decode(colors.get(this.selectedColor)));
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            App a = new App();
-            JFrame frame = new JFrame("Nonograms");
-            frame.setContentPane(a.mainPanel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 800);
-            frame.setResizable(false);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
-    }
 }
