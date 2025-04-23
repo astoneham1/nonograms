@@ -1,6 +1,7 @@
 import javax.json.stream.JsonParsingException;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -32,7 +33,7 @@ public class App {
     private JPanel columnCluePanel;
 
     private JButton loadFile;
-    private JButton clear;
+    private JButton reset;
     private JButton check;
     private JButton save;
     private JButton undo;
@@ -60,7 +61,7 @@ public class App {
             JOptionPane.showMessageDialog(mainPanel, message);
         });
 
-        clear.addActionListener(e -> {
+        reset.addActionListener(e -> {
             for (Component c : grid.getComponents()) {
                 if (c instanceof JButton button) {
                     button.setBackground(Color.decode(colors.get(0)));
@@ -68,6 +69,10 @@ public class App {
                 }
             }
             userGrid.clearAllMoves();
+            undo.setBackground(Color.GRAY);
+            undo.setEnabled(false);
+            undoAllowed = false;
+
             JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
@@ -130,18 +135,25 @@ public class App {
         controls.setLayout(new GridLayout(1, 4));
 
         loadFile = new JButton("Load Puzzle");
-        clear = new JButton("Clear");
+        reset = new JButton("Reset");
         check = new JButton("Check");
         save = new JButton("Save");
         undo = new JButton("Undo");
 
         controls.add(loadFile);
-        controls.add(clear);
+        controls.add(reset);
         controls.add(check);
         controls.add(save);
         controls.add(undo);
 
         mainPanel.add(controls, BorderLayout.SOUTH);
+
+        // hotkeys
+        loadFile.setMnemonic(KeyEvent.VK_O);
+        reset.setMnemonic(KeyEvent.VK_R);
+        check.setMnemonic(KeyEvent.VK_C);
+        save.setMnemonic(KeyEvent.VK_S);
+        undo.setMnemonic(KeyEvent.VK_Z);
     }
 
     public void loadGamePuzzle(String source) {
@@ -165,13 +177,13 @@ public class App {
             try {
                 puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
             } catch (JsonFormatException e) {
-                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
                 System.exit(1);
             } catch (FileNotFoundException e) {
-                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
                 System.exit(1);
             } catch (JsonParsingException e) {
-                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
                 System.exit(1);
             }
 
