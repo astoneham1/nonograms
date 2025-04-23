@@ -46,10 +46,6 @@ public class App {
     private Grid userGrid;
     private String currentGridName;
 
-    public static void main(String[] args) {
-        new App();
-    }
-
     public App() {
         setupUI();
         loadGamePuzzle("fromStart");
@@ -435,4 +431,16 @@ public class App {
         cell.setBackground(Color.decode(colors.get(this.selectedColor)));
     }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            App a = new App();
+            JFrame frame = new JFrame("Nonograms");
+            frame.setContentPane(a.mainPanel);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 800);
+            frame.setResizable(false);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
+    }
 }
