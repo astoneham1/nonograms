@@ -69,6 +69,10 @@ public class App {
                 }
             }
             userGrid.clearAllMoves();
+            undo.setBackground(Color.GRAY);
+            undo.setEnabled(false);
+            undoAllowed = false;
+
             JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
@@ -143,6 +147,13 @@ public class App {
         controls.add(undo);
 
         mainPanel.add(controls, BorderLayout.SOUTH);
+
+        // hotkeys
+        loadFile.setMnemonic(KeyEvent.VK_O);
+        reset.setMnemonic(KeyEvent.VK_R);
+        check.setMnemonic(KeyEvent.VK_C);
+        save.setMnemonic(KeyEvent.VK_S);
+        undo.setMnemonic(KeyEvent.VK_Z);
     }
 
     public void loadGamePuzzle(String source) {
@@ -166,13 +177,13 @@ public class App {
             try {
                 puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
             } catch (JsonFormatException e) {
-                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
                 System.exit(1);
             } catch (FileNotFoundException e) {
-                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
                 System.exit(1);
             } catch (JsonParsingException e) {
-                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
                 System.exit(1);
             }
 
