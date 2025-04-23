@@ -194,7 +194,10 @@ public class Parser {
                 checkNumColour.add(colour);
             }
         }
-        if (checkNumColour.size() != (Colours.colours.size()- 2)) {
+        if (checkNumColour.isEmpty() && !columnColour.isEmpty()) {
+            checkNumColour.add(2);
+        }
+        if ((checkNumColour.size() != (Colours.colours.size()- 2))) {
             throw new JsonFormatException();
         }
     }
