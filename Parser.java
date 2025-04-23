@@ -165,8 +165,6 @@ public class Parser {
             clue = new Clue(counts, colours);
         }
         return clue;
-        //could throw an invalid json error if information is wrong here
-        //instead of else use elif and check arrays are the same size
     }
 
     //generates an arraylist of clues
