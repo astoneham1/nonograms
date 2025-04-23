@@ -1,6 +1,8 @@
 import javax.json.stream.JsonParsingException;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,6 +34,7 @@ public class App {
     private JPanel rowCluePanel;
     private JPanel columnCluePanel;
 
+    private JLabel loadedName;
     private JButton loadFile;
     private JButton reset;
     private JButton check;
@@ -51,12 +54,17 @@ public class App {
         setupUI();
         loadGamePuzzle("fromStart");
 
-        loadFile.addActionListener(e -> loadGamePuzzle("fromButton"));
+        loadFile.addActionListener(e -> {
+            saveGame();
+            loadGamePuzzle("fromButton");
+        });
 
         check.addActionListener(e -> {
-            // Create checker object, call the checkNonogram method and get the message to output to the screen.
+            // Create checker object, call the checkNonogram method and get the message to
+            // output to the screen.
             Checker c = new Checker();
-            ArrayList<ArrayList<Integer>> a = c.checkNonogram(userGrid.grid, puzzleGrid.rowClues, puzzleGrid.columnClues);
+            ArrayList<ArrayList<Integer>> a = c.checkNonogram(userGrid.grid, puzzleGrid.rowClues,
+                    puzzleGrid.columnClues);
             String message = c.getMessage(a, puzzleGrid.rowClues.size(), puzzleGrid.columnClues.size());
             JOptionPane.showMessageDialog(mainPanel, message);
         });
@@ -69,20 +77,12 @@ public class App {
                 }
             }
             userGrid.clearAllMoves();
-            undo.setBackground(Color.GRAY);
-            undo.setEnabled(false);
-            undoAllowed = false;
+            disableUndo();
 
             JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
-        save.addActionListener(e -> {
-            userGrid.saveMoves();
-            JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
-            isSaved = true;
-            save.setBackground(Color.GRAY);
-            save.setEnabled(false);
-        });
+        save.addActionListener(e -> saveGame() );
 
         undo.addActionListener(e -> {
             if (undoAllowed) {
@@ -91,15 +91,11 @@ public class App {
             }
 
             if (userGrid.moves.size() == 0) {
-                undo.setBackground(Color.GRAY);
-                undo.setEnabled(false);
-                undoAllowed = false;
+                disableUndo();
             }
 
             if (isSaved) {
-                save.setBackground(check.getBackground());
-                save.setEnabled(true);
-                isSaved = false;
+                allowSave();
             }
         });
     }
@@ -134,12 +130,15 @@ public class App {
         controls = new JPanel();
         controls.setLayout(new GridLayout(1, 4));
 
-        loadFile = new JButton("Load Puzzle");
+        loadedName = new JLabel("", SwingConstants.CENTER);
+
+        loadFile = new JButton("Load");
         reset = new JButton("Reset");
         check = new JButton("Check");
         save = new JButton("Save");
         undo = new JButton("Undo");
 
+        controls.add(loadedName);
         controls.add(loadFile);
         controls.add(reset);
         controls.add(check);
@@ -153,7 +152,19 @@ public class App {
         reset.setMnemonic(KeyEvent.VK_R);
         check.setMnemonic(KeyEvent.VK_C);
         save.setMnemonic(KeyEvent.VK_S);
-        undo.setMnemonic(KeyEvent.VK_Z);
+        undo.setMnemonic(KeyEvent.VK_U);
+    }
+
+    public void restartApp(String source) {
+        if (source.equals("fromStart")) {
+            loadGamePuzzle("fromStart");
+        }
+    }
+
+    public void saveGame() {
+        userGrid.saveMoves();
+        JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
+        disableSave();
     }
 
     public void loadGamePuzzle(String source) {
@@ -176,79 +187,83 @@ public class App {
             Parser parser = new Parser();
             try {
                 puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
+
+                // find out if the user wants to load an existing grid or create a new one
+                File gridDir = new File("Moves");
+                File[] gridFiles = gridDir.listFiles((dir, name) -> name.endsWith(".json"));
+                String[] grids = Arrays.stream(gridFiles).map(File::getName).toArray(String[]::new);
+                grids = Stream.concat(Arrays.stream(grids), Stream.of("New Grid")).toArray(String[]::new);
+
+                String newGridName = "";
+
+                String returnValue = (String) JOptionPane.showInputDialog(
+                        mainPanel,
+                        "Load a saved grid or make a new one",
+                        "Grid Selector",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        grids,
+                        grids[grids.length - 1]);
+
+                if (returnValue != null) {
+                    // if the user chooses to make a new grid ask them for a name
+                    if (returnValue.equals("New Grid")) {
+                        returnValue = JOptionPane.showInputDialog(
+                                mainPanel,
+                                "Enter a name for the new grid:",
+                                "New Grid Name",
+                                JOptionPane.PLAIN_MESSAGE);
+
+                        newGridName = returnValue.concat(".json");
+                    }
+
+                    // create an empty grid with the specified filename
+                    if (newGridName != "") {
+                        userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + newGridName);
+                        currentGridName = newGridName;
+                    } else {
+                        userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
+                        currentGridName = returnValue;
+                    }
+
+                    // if the user clicked to load an existing grid then update the empty grid to be
+                    // loaded
+                    if (newGridName == "") {
+                        userGrid.loadMoves("Moves/" + returnValue);
+                    }
+
+                    if (userGrid.moves.size() > 0) {
+                        undoAllowed = true;
+                    } else {
+                        disableUndo();
+                    }
+
+                    ArrayList<Clue> rowClues = puzzleGrid.rowClues;
+                    ArrayList<Clue> columnClues = puzzleGrid.columnClues;
+
+                    loadedName.setText(currentGridName.substring(0, currentGridName.length() - 5));
+                    this.colors = Colours.colours;
+
+                    displayColors();
+                    buildGrid(puzzleGrid.rows, puzzleGrid.columns);
+                    displayClues(rowClues, columnClues);
+                } else if (source.equals("fromStart")) {
+                    System.exit(0);
+                }
             } catch (JsonFormatException e) {
-                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
-                System.exit(1);
+                JOptionPane.showMessageDialog(mainPanel,
+                        "Error: JSON file is incorrectly formatted. Please choose a different puzzle.");
+                restartApp(source);
             } catch (FileNotFoundException e) {
-                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
-                System.exit(1);
+                JOptionPane.showMessageDialog(mainPanel,
+                        "Error: File was not found. Please choose a different puzzle.");
+                restartApp(source);
             } catch (JsonParsingException e) {
-                JOptionPane.showMessageDialog(mainPanel, e.getMessage());
-                System.exit(1);
+                JOptionPane.showMessageDialog(mainPanel,
+                        "Error: Could not parse JSON file. Please choose a different puzzle.");
+                restartApp(source);
             }
 
-            // find out if the user wants to load an existing grid or create a new one
-            File gridDir = new File("Moves");
-            File[] gridFiles = gridDir.listFiles((dir, name) -> name.endsWith(".json"));
-            String[] grids = Arrays.stream(gridFiles).map(File::getName).toArray(String[]::new);
-            grids = Stream.concat(Arrays.stream(grids), Stream.of("New Grid")).toArray(String[]::new);
-
-            String newGridName = "";
-
-            String returnValue = (String) JOptionPane.showInputDialog(
-                    mainPanel,
-                    "Load a saved grid or make a new one",
-                    "Grid Selector",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    grids,
-                    grids[grids.length - 1]);
-
-            if (returnValue != null) {
-                // if the user chooses to make a new grid ask them for a name
-                if (returnValue.equals("New Grid")) {
-                    returnValue = JOptionPane.showInputDialog(
-                            mainPanel,
-                            "Enter a name for the new grid:",
-                            "New Grid Name",
-                            JOptionPane.PLAIN_MESSAGE);
-
-                    newGridName = returnValue.concat(".json");
-                }
-
-                // create an empty grid with the specified filename
-                if (newGridName != "") {
-                    userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + newGridName);
-                    currentGridName = newGridName;
-                } else {
-                    userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
-                    currentGridName = returnValue;
-                }
-
-                // if the user clicked to load an existing grid then update the empty grid to be
-                // loaded
-                if (newGridName == "") {
-                    userGrid.loadMoves("Moves/" + returnValue);
-                }
-
-                if (userGrid.moves.size() > 0) {
-                    undoAllowed = true;
-                } else {
-                    undo.setBackground(Color.GRAY);
-                    undo.setEnabled(false);
-                }
-
-                ArrayList<Clue> rowClues = puzzleGrid.rowClues;
-                ArrayList<Clue> columnClues = puzzleGrid.columnClues;
-
-                this.colors = Colours.colours;
-
-                displayColors();
-                buildGrid(puzzleGrid.rows, puzzleGrid.columns);
-                displayClues(rowClues, columnClues);
-            } else if (source.equals("fromStart")) {
-                System.exit(0);
-            }
         } else if (source.equals("fromStart")) {
             System.exit(0);
         }
@@ -285,6 +300,18 @@ public class App {
                 selectedButton = colorButton;
             });
 
+            // keybinding to the hashmap value (0,1,2,3 etc)
+            InputMap inputMap = colorGuide.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+            ActionMap actionMap = colorGuide.getActionMap();
+
+            inputMap.put(KeyStroke.getKeyStroke(String.valueOf(key)), "clicked" + key);
+            actionMap.put("clicked" + key, new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    colorButton.doClick();
+                }
+            });
+
             colorGuide.add(colorButton);
         }
 
@@ -309,7 +336,8 @@ public class App {
                 final int col = j;
                 JButton cell = new JButton();
                 cell.setOpaque(true);
-                // When loading a new puzzle where the colour does not exist (i.e. colour 3 exists in colour cat but not blanks smiler),
+                // When loading a new puzzle where the colour does not exist (i.e. colour 3
+                // exists in colour cat but not blanks smiler),
                 // the colour and state of the grid are set to 0 (unknown).
                 if (colors.get(userGrid.grid[i][j]) == null) {
                     userGrid.grid[i][j] = 0;
@@ -338,15 +366,11 @@ public class App {
                         userGrid.updateMove(row, col, selectedColor);
 
                         if (isSaved) {
-                            save.setBackground(check.getBackground());
-                            save.setEnabled(true);
-                            isSaved = false;
+                            allowSave();
                         }
 
                         if (!undoAllowed) {
-                            undo.setBackground(check.getBackground());
-                            undo.setEnabled(true);
-                            undoAllowed = true;
+                            allowUndo();
                         }
                     }
 
@@ -359,7 +383,10 @@ public class App {
                     public void mouseEntered(MouseEvent e) {
                         if (isMouseDown) {
                             cellClicked((JButton) e.getSource());
-                            userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid, so the checker will work if they have dragged it since all the cells are being updated in userGrid.grid
+                            userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid,
+                                                                          // so the checker will work if they have
+                                                                          // dragged it since all the cells are being
+                                                                          // updated in userGrid.grid
                         }
                     }
                 });
@@ -441,6 +468,30 @@ public class App {
     public void cellClicked(JButton cell) {
         cell.putClientProperty("state", this.selectedColor);
         cell.setBackground(Color.decode(colors.get(this.selectedColor)));
+    }
+
+    public void allowUndo() {
+        undo.setBackground(check.getBackground());
+        undo.setEnabled(true);
+        undoAllowed = true;
+    }
+
+    public void disableUndo() {
+        undo.setBackground(Color.GRAY);
+        undo.setEnabled(false);
+        undoAllowed = false;
+    }
+
+    public void allowSave() {
+        save.setBackground(check.getBackground());
+        save.setEnabled(true);
+        isSaved = false;
+    }
+
+    public void disableSave() {
+        save.setBackground(Color.GRAY);
+        save.setEnabled(false);
+        isSaved = true;
     }
 
     public static void main(String[] args) {
