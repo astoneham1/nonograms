@@ -38,10 +38,12 @@ public class App {
     // method for the user to load a file
 
     private boolean isSaved = false;
+    private boolean undoAllowed = false;
 
     // GRIDS
     private Grid puzzleGrid;
     private Grid userGrid;
+    private String currentGridName;
 
     public App() {
         setupUI();
@@ -70,15 +72,29 @@ public class App {
 
         save.addActionListener(e -> {
             userGrid.saveMoves();
-            JOptionPane.showMessageDialog(mainPanel, "save clicked");
+            JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
             isSaved = true;
+            save.setBackground(Color.GRAY);
+            save.setEnabled(false);
         });
 
         undo.addActionListener(e -> {
-            userGrid.undoMoves();
-            buildGrid(puzzleGrid.rows, puzzleGrid.columns);
-            // need to add a method that updates the visual grid at this point to ensure
-            // that it reflects the userGrid
+            if (undoAllowed) {
+                userGrid.undoMoves();
+                buildGrid(puzzleGrid.rows, puzzleGrid.columns);
+            }
+
+            if (userGrid.moves.size() == 0) {
+                undo.setBackground(Color.GRAY);
+                undo.setEnabled(false);
+                undoAllowed = false;
+            }
+
+            if (isSaved) {
+                save.setBackground(check.getBackground());
+                save.setEnabled(true);
+                isSaved = false;
+            }
         });
     }
 
@@ -185,14 +201,23 @@ public class App {
                 // create an empty grid with the specified filename
                 if (newGridName != "") {
                     userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + newGridName);
+                    currentGridName = newGridName;
                 } else {
                     userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
+                    currentGridName = returnValue;
                 }
 
                 // if the user clicked to load an existing grid then update the empty grid to be
                 // loaded
                 if (newGridName == "") {
                     userGrid.loadMoves("Moves/" + returnValue);
+                }
+
+                if (userGrid.moves.size() > 0) {
+                    undoAllowed = true;
+                } else {
+                    undo.setBackground(Color.GRAY);
+                    undo.setEnabled(false);
                 }
 
                 ArrayList<Clue> rowClues = puzzleGrid.rowClues;
@@ -203,7 +228,6 @@ public class App {
                 displayColors();
                 buildGrid(puzzleGrid.rows, puzzleGrid.columns);
                 displayClues(rowClues, columnClues);
-                JOptionPane.showMessageDialog(mainPanel, "loaded puzzle");
             } else if (source.equals("fromStart")) {
                 System.exit(0);
             }
@@ -294,7 +318,18 @@ public class App {
                         isMouseDown = true;
                         cellClicked((JButton) e.getSource());
                         userGrid.updateMove(row, col, selectedColor);
-                        isSaved = false;
+
+                        if (isSaved) {
+                            save.setBackground(check.getBackground());
+                            save.setEnabled(true);
+                            isSaved = false;
+                        }
+
+                        if (!undoAllowed) {
+                            undo.setBackground(check.getBackground());
+                            undo.setEnabled(true);
+                            undoAllowed = true;
+                        }
                     }
 
                     @Override
@@ -307,7 +342,6 @@ public class App {
                         if (isMouseDown) {
                             cellClicked((JButton) e.getSource());
                             userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid, so the checker will work if they have dragged it since all the cells are being updated in userGrid.grid
-                            isSaved = false;
                         }
                     }
                 });
