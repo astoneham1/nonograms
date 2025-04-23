@@ -1,6 +1,7 @@
 import javax.json.stream.JsonParsingException;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -32,7 +33,7 @@ public class App {
     private JPanel columnCluePanel;
 
     private JButton loadFile;
-    private JButton clear;
+    private JButton reset;
     private JButton check;
     private JButton save;
     private JButton undo;
@@ -46,9 +47,9 @@ public class App {
     private Grid userGrid;
     private String currentGridName;
 
-    public static void main(String[] args) {
-        new App();
-    }
+    // public static void main(String[] args) {
+    //     new App();
+    // }
 
     public App() {
         setupUI();
@@ -64,7 +65,7 @@ public class App {
             JOptionPane.showMessageDialog(mainPanel, message);
         });
 
-        clear.addActionListener(e -> {
+        reset.addActionListener(e -> {
             for (Component c : grid.getComponents()) {
                 if (c instanceof JButton button) {
                     button.setBackground(Color.decode(colors.get(0)));
@@ -134,13 +135,13 @@ public class App {
         controls.setLayout(new GridLayout(1, 4));
 
         loadFile = new JButton("Load Puzzle");
-        clear = new JButton("Clear");
+        reset = new JButton("Reset");
         check = new JButton("Check");
         save = new JButton("Save");
         undo = new JButton("Undo");
 
         controls.add(loadFile);
-        controls.add(clear);
+        controls.add(reset);
         controls.add(check);
         controls.add(save);
         controls.add(undo);
