@@ -7,15 +7,16 @@ public class TestMain {
     public static void main(String [] args) {
     try {
         Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/colour_wink.json");
-        SolverMain s = new SolverMain(g, true);
-        s.solver();
-        for (int i = 0; i < s.solverGrid.rows; i++) {
-            for (int j = 0; j < s.solverGrid.columns; j++) {
-                System.out.print(s.solverGrid.grid[i][j]);
-            }
-            System.out.println();
+        Grid g = p.getGrid("Jsons/colour_cat.json");
+        Arrangements a = new Arrangements(g, g.rows, g.rowClues.get(0));
+        for (Node n: a.arrangement) {
+            System.out.println(n.places);
         }
+        // for (int i = 0; i <= a.arrangement.size(); i++) {
+        //     for (Node n: a.arrangement.get(i)) {
+
+        //     }
+        // }
     } catch (Exception e) {
         System.out.println(e);
     }
@@ -23,8 +24,21 @@ public class TestMain {
     }
 
 }
-        //load the currentGrid from the parser
-        //create inProgressGrid that has the same params as the current Grid 
+
+
+        // SolverMain s = new SolverMain(g, true);
+        // s.solver();
+        // for (int i = 0; i < s.solverGrid.rows; i++) {
+        //     for (int j = 0; j < s.solverGrid.columns; j++) {
+        //         System.out.print(s.solverGrid.grid[i][j]);
+        //     }
+        //     System.out.println();
+        // }
+    
+
+
+    //load the currentGrid from the parser
+    //create inProgressGrid that has the same params as the current Grid 
     //     int row = 5;
     //     int col = 5;
     //     Grid g = new Grid(row, col, "Jsons/hello.json");

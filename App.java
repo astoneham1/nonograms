@@ -46,9 +46,9 @@ public class App {
     private Grid userGrid;
     private String currentGridName;
 
-    public static void main(String[] args) {
-        new App();
-    }
+    // public static void main(String[] args) {
+    //     new App();
+    // }
 
     public App() {
         setupUI();
