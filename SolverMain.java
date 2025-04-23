@@ -1,4 +1,3 @@
-import java.util.stream.IntStream;
 
 public class SolverMain {
     Grid puzzleGrid;
@@ -20,9 +19,42 @@ public class SolverMain {
         optimization();
     }
 
+
+    // This method scans the grid and then optimizes it
     public void optimization() {
-        int sum = 0;
-        int place = 0;
+        optimizeRow(0,0);
+        optimizeCol(0,0);
+    }
+
+    public void optimizeRow(int sum, int place) {
+        for (int i = 0; i < puzzleGrid.rowClues.size(); i++) {
+            sum = place = 0;
+            for (Integer j : puzzleGrid.rowClues.get(i).counts) {
+                if (j == rows) {
+                    updateRangeRow(0, rows, puzzleGrid.columnClues.get(i).colour.get(0), i);
+                }
+                if (j == rows - 1) {
+                    updateRangeRow(1, rows - 1, puzzleGrid.columnClues.get(i).colour.get(0), i);
+                }
+                sum += j;
+            }
+            if (sum + puzzleGrid.rowClues.get(i).counts.size() - 1 == rows && color == false) {
+                for (int j = 0; j < puzzleGrid.rowClues.get(i).counts.size(); j++) {
+                    updateRangeRow(place, puzzleGrid.rowClues.get(i).counts.get(j) + place, puzzleGrid.rowClues.get(i).colour.get(j), i);
+                    place += puzzleGrid.rowClues.get(i).counts.get(j) + 1;
+                }
+            }
+            if (sum == rows && color == true) {
+                for (int j = 0; j < puzzleGrid.rowClues.get(i).counts.size(); j++) {
+                    updateRangeRow(place, puzzleGrid.rowClues.get(i).counts.get(j) + place, puzzleGrid.rowClues.get(i).colour.get(j), i);
+                    place += puzzleGrid.rowClues.get(i).counts.get(j);
+                }
+            }
+        }
+    }
+
+
+    public void optimizeCol(int sum, int place) {
         for (int i = 0; i < puzzleGrid.columnClues.size(); i++) {
             sum = place = 0;
             // place = 0;
@@ -48,34 +80,7 @@ public class SolverMain {
                 }
             }
         }
-        for (int i = 0; i < puzzleGrid.rowClues.size(); i++) {
-            sum = place = 0;
-            for (Integer j : puzzleGrid.rowClues.get(i).counts) {
-                if (j == rows) {
-                    updateRangeRow(0, rows, puzzleGrid.columnClues.get(i).colour.get(0), i);
-                }
-                if (j == rows - 1) {
-                    updateRangeRow(1, rows - 1, puzzleGrid.columnClues.get(i).colour.get(0), i);
-                }
-                sum += j;
-            }
-            if (sum + puzzleGrid.rowClues.get(i).counts.size() - 1 == rows && color == false) {
-                for (int j = 0; j < puzzleGrid.rowClues.get(i).counts.size(); j++) {
-                    updateRangeRow(place, puzzleGrid.rowClues.get(i).counts.get(j) + place, puzzleGrid.rowClues.get(i).colour.get(j), i);
-                    place += puzzleGrid.rowClues.get(i).counts.get(j) + 1;
-                }
-            }
-            if (sum == rows && color == true) {
-                // sum = place = 0;
-                System.out.println("here we are!!" + i);
-                for (int j = 0; j < puzzleGrid.rowClues.get(i).counts.size(); j++) {
-                    updateRangeRow(place, puzzleGrid.rowClues.get(i).counts.get(j) + place, puzzleGrid.rowClues.get(i).colour.get(j), i);
-                    place += puzzleGrid.rowClues.get(i).counts.get(j);
-                }
-            }
-        }
     }
-
 
     public void updateRangeRow(int start, int end, int color, int row) {
         for (int i = start; i < end; i++) {
