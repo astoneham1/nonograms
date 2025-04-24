@@ -52,51 +52,6 @@ public class App {
     public App() {
         setupUI();
         loadGamePuzzle("fromStart");
-
-        loadFile.addActionListener(e -> {
-            saveGame();
-            loadGamePuzzle("fromButton");
-        });
-
-        check.addActionListener(e -> {
-            // Create checker object, call the checkNonogram method and get the message to
-            // output to the screen.
-            Checker c = new Checker();
-            ArrayList<ArrayList<Integer>> a = c.checkNonogram(userGrid.grid, puzzleGrid.rowClues,
-                    puzzleGrid.columnClues);
-            String message = c.getMessage(a, puzzleGrid.rowClues.size(), puzzleGrid.columnClues.size());
-            JOptionPane.showMessageDialog(mainPanel, message);
-        });
-
-        reset.addActionListener(e -> {
-            for (Component c : grid.getComponents()) {
-                if (c instanceof JButton button) {
-                    button.setBackground(Color.decode(colors.get(0)));
-                    button.putClientProperty("state", 0);
-                }
-            }
-            userGrid.clearAllMoves();
-            disableUndo();
-
-            JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
-        });
-
-        save.addActionListener(e -> saveGame() );
-
-        undo.addActionListener(e -> {
-            if (undoAllowed) {
-                userGrid.undoMoves();
-                buildGrid(puzzleGrid.rows, puzzleGrid.columns);
-            }
-
-            if (userGrid.moves.size() == 0) {
-                disableUndo();
-            }
-
-            if (isSaved) {
-                allowSave();
-            }
-        });
     }
 
     private void setupUI() {
@@ -152,6 +107,52 @@ public class App {
         check.setMnemonic(KeyEvent.VK_C);
         save.setMnemonic(KeyEvent.VK_S);
         undo.setMnemonic(KeyEvent.VK_U);
+
+        // action listeners
+        loadFile.addActionListener(e -> {
+            saveGame();
+            loadGamePuzzle("fromButton");
+        });
+
+        check.addActionListener(e -> {
+            // Create checker object, call the checkNonogram method and get the message to
+            // output to the screen.
+            Checker c = new Checker();
+            ArrayList<ArrayList<Integer>> a = c.checkNonogram(userGrid.grid, puzzleGrid.rowClues,
+                    puzzleGrid.columnClues);
+            String message = c.getMessage(a, puzzleGrid.rowClues.size(), puzzleGrid.columnClues.size());
+            JOptionPane.showMessageDialog(mainPanel, message);
+        });
+
+        reset.addActionListener(e -> {
+            for (Component c : grid.getComponents()) {
+                if (c instanceof JButton button) {
+                    button.setBackground(Color.decode(colors.get(0)));
+                    button.putClientProperty("state", 0);
+                }
+            }
+            userGrid.clearAllMoves();
+            disableUndo();
+
+            JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
+        });
+
+        save.addActionListener(e -> saveGame() );
+
+        undo.addActionListener(e -> {
+            if (undoAllowed) {
+                userGrid.undoMoves();
+                buildGrid(puzzleGrid.rows, puzzleGrid.columns);
+            }
+
+            if (userGrid.moves.size() == 0) {
+                disableUndo();
+            }
+
+            if (isSaved) {
+                allowSave();
+            }
+        });
     }
 
     public void restartApp(String source) {
