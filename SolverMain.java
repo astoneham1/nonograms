@@ -22,64 +22,57 @@ public class SolverMain {
     public void solver() {
         // creates solverspace by creating an array of possible clue arrangements for the rows and columns
         // then, if there is only one possible arrangement for each row/col, this is drawn to the board
-        colArrangements = rowArrangements = new ArrayList<>();
+        colArrangements = new ArrayList<>();
+        rowArrangements = new ArrayList<>();
         for (int i = 0; i < colNum; i++) {
             colArrangements.add(new Arrangements(puzzleGrid, colLen, puzzleGrid.columnClues.get(i)));
             if (colArrangements.get(i).arrangement.size() == 1) {
                 drawNodeCol(colArrangements.get(i).arrangement.get(0), i);
-            }
+            }   
         }
- /*
+ 
         for (int i = 0; i < rowNum; i++) {
             rowArrangements.add(new Arrangements(puzzleGrid, rowLen, puzzleGrid.rowClues.get(i)));
             if (rowArrangements.get(i).arrangement.size() == 1) {
                 drawNodeRow(rowArrangements.get(i).arrangement.get(0), i);
-            }
+            }   
         }
- */
+ 
 
-        // solve();
+        solve();
     }
 
 
 // solver
 // recursive funct that will back track and then solve, need to implement
-    // public void solve() {
-    //     // loop through the rows and columns and check their arrangements 
-    //     for (int r = 0; r < rowNum; r ++) {
-    //         for (int c = 0; c < colNum; c ++) {
-    //             if (compatibleRow(rowArrangements.get(r), r) && compatibleCol(colArrangements.get(c), c)) {
-
-    //             }
-    //         }
-    //     }
-    // }
+    public void solve() {
+        // loop through the rows and columns and check their arrangements 
+        for (int c = 0; c < colNum; c ++) {
+            if (compatibleCol(colArrangements.get(c), c)) {
+                for (int r = 0; r < rowNum; r ++) {
+                    
+                }    
+            }
+            else {
+                // recurse and try a new col state
+            }
+        }
+    }
 
 // check line compatability
 
-    // public boolean compatibleRow(Arrangements a, int rowNum) {
-    //     for (Node n : a.arrangement) {
-
-    //     // so we need to loop through each clue's placement that is present in the node --> 
-    //         // then we need to loop through the pertinent parts of the row and if there is an incorrect color in that arrangement --> break to check next node
-    //         // if there a node's placement works with the 
-    //     }
-    //     a.solved = false;
-    //     return false;
-    // }
-
-    // this method checks if the node is possible with the current state of the board and return 
-    public boolean checkNodeCol(Node n, int column) {
-        for (int i = 0; i < n.places.size(); i ++) {
-            for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
-                if (solverGrid.grid[column][j] != n.c.colour.get(i)) {
-                    return false;
-                }
+    // these methods go through a set of arrangements and check if they are compatible and if there is a correct arrangement, assign a node state
+    public boolean compatibleRow(Arrangements a, int rowNum) {
+        for (Node n : a.arrangement) {
+            if (checkNodeRow(n, rowNum)) {
+                a.solved = true;
+                return true;
             }
         }
-        drawNodeCol(n, column);
-        return true;
+        a.solved = false;
+        return false;
     }
+
 
     public boolean compatibleCol(Arrangements a, int colNum) {
         for (Node n : a.arrangement) {
@@ -90,6 +83,31 @@ public class SolverMain {
         }
         a.solved = false;
         return false;
+    }
+
+    // helper methods for the previous two
+    public boolean checkNodeRow(Node n, int row) {
+        for (int i = 0; i < n.places.size(); i ++) {
+            for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
+                if (solverGrid.grid[j][row] != n.c.colour.get(i)) {
+                    return false;
+                }
+            }
+        }
+        drawNodeRow(n, row);
+        return true;
+    }
+
+    public boolean checkNodeCol(Node n, int column) {
+        for (int i = 0; i < n.places.size(); i ++) {
+            for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
+                if (solverGrid.grid[column][j] != n.c.colour.get(i)) {
+                    return false;
+                }
+            }
+        }
+        drawNodeCol(n, column);
+        return true;
     }
 
 
@@ -123,6 +141,25 @@ public class SolverMain {
             solverGrid.updateMove(i, col, color);
         }   
     }
+
+
+    // for (int i = 0; i < rowNum; i ++) {
+    //     for (int j = 0; j < colNum; j++) {
+    //         System.out.print(solverGrid.grid[i][j]);
+    //     }
+    //     System.out.println();
+    // }
+    // // solverGrid.updateMove(1, 3, 3);
+    // drawNodeCol(0, colLen, 3, 0);
+    // updateRangeRow(0, rowLen, 4, 0);
+    // System.out.println("-------------------------------------------");
+    // for (int i = 0; i < rowNum; i ++) {
+    //     for (int j = 0; j < colNum; j++) {
+    //         System.out.print(solverGrid.grid[i][j]);
+    //     }
+    //     System.out.println();
+    // }
+    // System.out.println("-------------------------------------------");
 
 
     // // This method scans the grid and then optimizes it
