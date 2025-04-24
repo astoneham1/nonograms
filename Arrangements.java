@@ -5,6 +5,7 @@ import java.util.List;
 public class Arrangements {
     ArrayList<Node> arrangement;
     int lineLength;
+    boolean solved;
 
 
     public Arrangements(Grid inProgress, int lineLength, Clue c) {
@@ -49,6 +50,7 @@ public class Arrangements {
         return primaryPlacement;
     }
 
+    // takes in the clues and converts them into blocks that take account for the 
     public ArrayList<Integer> findBlocks(Clue c) {
         ArrayList<Integer> blocks = new ArrayList<>();
         for (int i = 0; i < c.counts.size(); i++) {
@@ -61,9 +63,4 @@ public class Arrangements {
         }
         return blocks;
     }
-
-    public ArrayList<Node> eliminateNodes(ArrayList<Node> prelimArrangement, Grid inProgress) {
-        return prelimArrangement;
-    }
-
 }

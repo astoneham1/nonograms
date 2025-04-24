@@ -1,39 +1,56 @@
-// import javax.json.JsonWriter;
-
-public class TestMain { 
-    public static Grid currentGrid; // current grid of clues  
+public class TestModel {
     public static Grid inProgressGrid; // grid that represents the progress of the user in terms of clues
+    public static int row, col;
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_GREY = "\u001B[90m";
     public static final String ANSI_YELLOW = "\u001B[93m";
 
+
     public static void main(String [] args) {
-    try {
-        Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/colour_wink.json");
-        SolverMain s = new SolverMain(g, true);
-        s.solver();
-        for (int i = 0; i < s.solverGrid.rows; i++) {
-            for (int j = 0; j < s.solverGrid.columns; j++) {
-                System.out.print(prettyPrint(s.solverGrid.grid[i][j]));
+        try {
+            Parser p = new Parser();
+            int row = 4;
+            int col = 4;
+            inProgressGrid = new Grid(row, col, "Moves/modelTests.json");
+            updateMove();
+            saveMove();
+            undoMove();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
+
+    public static void updateMove() {
+        System.out.println("Prior to initiating move:");
+        printGrid();
+        inProgressGrid.updateMove(1, 2, 3);
+        inProgressGrid.updateMove(1, 1, 3);
+        inProgressGrid.updateMove(1, 3, 4);
+        inProgressGrid.updateMove(1, 1, 1);
+        System.out.println("-----------------------------------------------------------------");
+        System.out.print("Post updating the moves:");
+        printGrid();
+        
+    }
+
+    public static void saveMove() {
+
+    }
+
+    public static void undoMove() {
+
+    }
+
+    public static void printGrid() {
+        for (int i = 0; i < row; i ++) {
+            for (int j = 0; j < col; j++) {
+                System.out.print(inProgressGrid.grid[i][j]);
             }
             System.out.println();
         }
-
-        System.out.println("----------------------------------------------------------");
-
-        Arrangements a = new Arrangements(g, g.columns, g.rowClues.get(5));
-        for (Node n: a.arrangement) {
-            System.out.println(n.places);
-        }
-        // for (int i = 0; i <= a.arrangement.size(); i++) {
-
-        // }
-    } catch (Exception e) {
-        System.out.println(e);
-    }
-
     }
 
     public static String prettyPrint(int i) {
@@ -46,6 +63,10 @@ public class TestMain {
             case 2:
                 String j = ANSI_GREY + Integer.toString(i) + ANSI_RESET;
                 return j;
+            case 4:
+                j = ANSI_GREEN + Integer.toString(i) + ANSI_RESET;
+                return j;
+            
         }
         return Integer.toString(i);
     }
@@ -109,4 +130,6 @@ public class TestMain {
 //                 // (eg. row 1 is [[1,1]] and col 3 is [[1,1]] meaning that row one now has one black square and five unknown squares, col three has the same)
 //             // 3. the checker cross references the "currentGrid"'s clues with the actual clues provided by the parser and reports whether or not they are satisfied
 //             // 4. the GUI responds accordingly and marks the square as incorrect or not
+
+
 
