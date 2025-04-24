@@ -209,7 +209,37 @@ public class TestChecker {
         Boolean correctLine5Status = c.checkLine(correctLine5, clueCorrectLine5);
         String testTwentyOneStatus = tc.checkTestStatus(21, correctLine5Status);
         System.out.println("\u001B[94mTEST TWENTY ONE:\u001B[0m The line has 2 squares in colour 2, 1 unknown, and 1 square in colour 2, which meets the constraint.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine5Status + "\n\u001B[94mTEST STATUS:" + testTwentyOneStatus + "\u001B[0m");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine5Status + "\n\u001B[94mTEST STATUS:" + testTwentyOneStatus + "\n");
+    
+        // Create a grid and get the columns, and check if they are the expected columns, and print the test.
+        int[][] testGetColumn = tc.createGrid("test_get_column");
+        int[] column1 = c.getColumn(testGetColumn, 0);
+        int[] column2 = c.getColumn(testGetColumn, 1);
+        int[] column3 = c.getColumn(testGetColumn, 2);
+        String testTwentyTwoStatus = tc.checkTestStatus(column1, column2, column3);
+        System.out.println("\u001B[94mTEST TWENTY TWO:\u001B[0m Tests the columns are successfully extracted from the 2D array grid.");
+        System.out.println("\u001B[94mTEST OUTPUT:\n\u001B[0m" + tc.getArrayString(column1) + "\n" + tc.getArrayString(column2) + "\n" + tc.getArrayString(column3));
+        System.out.println("\u001B[94mTEST STATUS:" + testTwentyTwoStatus + "\n");
+
+        // Create the number of lines and incorrect lines and check if the progress calculation is correct, and print the test.
+        int incorrectRowsWhole = 4;
+        int incorrectColumnsWhole = 4;
+        int totalRowsWhole = 8;
+        int totalColumnsWhole = 8;
+        double progressWhole = c.getProgress(incorrectRowsWhole, incorrectRowsWhole, totalRowsWhole, totalColumnsWhole);
+        String testTwentyThreeStatus = tc.checkTestStatus(1, progressWhole);
+        System.out.println("\u001B[94mTEST TWENTY THREE:\u001B[0m The progress for 16 total lines where 8 are incorrect (and so 8 are correct).");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + progressWhole + "\n\u001B[94mTEST STATUS:" + testTwentyThreeStatus + "\n");
+
+        // Create the number of lines and incorrect lines and check if the progress calculation is correct, and print the test.
+        int incorrectRowsDecimal = 2;
+        int incorrectColumnsDecimal = 3;
+        int totalRowsDecimal = 14;
+        int totalColumnsDecimal = 12;
+        double progressDecimal = c.getProgress(incorrectRowsDecimal, incorrectColumnsDecimal, totalRowsDecimal, totalColumnsDecimal);
+        String testTwentyFourStatus = tc.checkTestStatus(2, progressDecimal);
+        System.out.println("\u001B[94mTEST TWENTY FOUR:\u001B[0m The progress for 26 total lines where 5 are incorrect (and so 21 are correct).");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + progressDecimal + "\n\u001B[94mTEST STATUS:" + testTwentyFourStatus + "\u001B[0m");
     }
 
     public int[][] createGrid(String name) {
@@ -364,6 +394,15 @@ public class TestChecker {
                 {0, 1, 0, 0, 1, 0, 1, 0, 1, 0},
                 {0, 1, 1, 0, 0, 0, 1, 0, 1, 0},
                 {1, 1, 0, 0, 0, 1, 1, 0, 0, 1}
+            };
+        }
+        else if (name.equals("test_get_column")) {
+            grid = new int[][] {
+                {0, 1, 5},
+                {2, 3, 4},
+                {4, 5, 3},
+                {6, 7, 2},
+                {8, 9, 1}
             };
         }
         return grid;
@@ -754,5 +793,61 @@ public class TestChecker {
                 break;
         }
         return status;
+    }
+
+    public String checkTestStatus(int[] column1, int[] column2, int[] column3) {
+        String status = "";
+        int[] correctColumn1 = new int[] {0, 2, 4, 6, 8};
+        int[] correctColumn2 = new int[] {1, 3, 5, 7, 9};
+        int[] correctColumn3 = new int[] {5, 4, 3, 2, 1};
+        
+        if (Arrays.equals(column1, correctColumn1) && Arrays.equals(column2, correctColumn2) && Arrays.equals(column3, correctColumn3)) {
+            status = "\u001B[32m Pass";
+        }
+        else {
+            status = "\u001B[31m Fail";
+        }
+        
+        return status;
+    }
+
+    public String checkTestStatus(int testCaseNumber, double progress) {
+        String status = "";
+
+        switch(testCaseNumber) {
+            case 1:
+                if (progress == 50.0) {
+                    status = "\u001B[32m Pass";
+                }
+                else {
+                    status = "\u001B[31m Fail";
+                }
+                break;
+            case 2:
+                if (progress == 80.8) {
+                    status = "\u001B[32m Pass";
+                }
+                else {
+                    status = "\u001B[31m Fail";
+                }
+                break;
+        }
+
+        return status;
+    }
+
+    public String getArrayString(int[] array) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (int i = 0; i < array.length; i++) {
+            sb.append(array[i]);
+            if (i != array.length - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        String arrayString = sb.toString();
+        return arrayString;
     }
 }
