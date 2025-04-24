@@ -46,7 +46,7 @@ public class Checker {
         ArrayList<Integer> counts = clue.getCounts();       // Gets the list of counts for this clue.
         ArrayList<Integer> colours = clue.getColours();     // Gets the list of colours for this clue, given as integers.
         int numCorrect = 0;         // Keeps track of the number of cells which are correct for a given clue.
-        int positionInRow = 0;      // Keeps track of the position in the row, i.e. the cell number.
+        int positionInLine = 0;      // Keeps track of the position in the row, i.e. the cell number.
         int numSquares = 0;         // This is the count clue, i.e. how many squares are a given colour.
         int squareColour = 0;       // This is the square colour.
 
@@ -68,7 +68,7 @@ public class Checker {
             squareColour = colours.get(j);
   
             // Loops through each cell in the line, starting from 0.
-            for (int i = positionInRow; i < line.length; i++) {
+            for (int i = positionInLine; i < line.length; i++) {
                 // Checks if the number of squares matches the clue count, which signals that that part of the clue is complete.
                 if (numCorrect == numSquares) {
                     if (line[i] != squareColour) { // The cell MUST be a different colour, otherwise the clue has not been satisfied (e.g. the clue is 4 but there are 5 filled in)
@@ -95,7 +95,7 @@ public class Checker {
                 }
   
                 // Go to the next position in the line.
-                positionInRow++;
+                positionInLine++;
             }
         }
         // Once the whole line has been iterated through, if the number of cells are correct for the clue, true is returned.
