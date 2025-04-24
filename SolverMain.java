@@ -48,15 +48,16 @@ public class SolverMain {
     public void solve() {
         // loop through the rows and columns and check their arrangements 
         for (int c = 0; c < colNum; c ++) {
-            if (compatibleCol(colArrangements.get(c), c)) {
-                for (int r = 0; r < rowNum; r ++) {
-                    
-                }    
+            compatibleCol(colArrangements.get(c), c);
+            // if (compatibleCol(colArrangements.get(c), c)) {
+        //         for (int r = 0; r < rowNum; r ++) {
+
+        //         }    
             }
-            else {
-                // recurse and try a new col state
-            }
-        }
+        //     else {
+        //         // recurse and try a new col state
+        //     }
+        // }
     }
 
 // check line compatability
@@ -87,27 +88,42 @@ public class SolverMain {
 
     // helper methods for the previous two
     public boolean checkNodeRow(Node n, int row) {
-        for (int i = 0; i < n.places.size(); i ++) {
-            for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
-                if (solverGrid.grid[j][row] != n.c.colour.get(i)) {
-                    return false;
-                }
+        int[] testArr = renderRow(n, rowLen);
+        for (int i = 0; i < rowLen; i++) {
+            if (testArr[i] != solverGrid.grid[row][i] && solverGrid.grid[row][i] != 0 && solverGrid.grid[row][i] != 1) {
+                return false;
+            }
+            if (testArr[i] == 0 && solverGrid.grid[row][i] != 0  && solverGrid.grid[row][i] != 1) {
+                return false;
             }
         }
-        drawNodeRow(n, row);
         return true;
     }
 
     public boolean checkNodeCol(Node n, int column) {
-        for (int i = 0; i < n.places.size(); i ++) {
-            for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
-                if (solverGrid.grid[column][j] != n.c.colour.get(i)) {
-                    return false;
-                }
+        int[] testArr = renderRow(n, colLen);
+        for (int i = 0; i < colLen; i++) {
+            if (testArr[i] != solverGrid.grid[i][column] && solverGrid.grid[i][column] != 0 && solverGrid.grid[i][column] != 1) {
+                return false;
+            }
+            if (testArr[i] == 0 && solverGrid.grid[i][column] != 0  && solverGrid.grid[i][column] != 1) {
+                return false;
             }
         }
-        drawNodeCol(n, column);
         return true;
+    }
+
+    public int[] renderRow(Node n, int lineLength) {
+        int[] render = new int[lineLength];
+        for (int i = 0; i < lineLength; i++) {
+            render[i] = 0;
+        }
+        for (int i = 0; i < n.places.size(); i++) {
+            for (int j = n.places.get(i); j < n.places.get(i) + n.c.counts.get(i); j++) {
+                render[j] = n.c.colour.get(i);
+            }
+        }
+        return render;
     }
 
 
@@ -141,6 +157,120 @@ public class SolverMain {
             solverGrid.updateMove(i, col, color);
         }   
     }
+
+            // for (int i = 0; i < n.places.size(); i ++) {
+        //     // checks that there are no incorrect colors in the colored sections
+        //     for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
+        //         if (solverGrid.grid[row][j] != n.c.colour.get(i) && solverGrid.grid[row][j] != 0) {
+        //             return false;
+        //         }
+        //     }
+        //     // checks that the noncolored sections are blank
+        //     if (i == 0) {
+        //         // checks that if this is the first clue, then the preceding cells are whitespaces
+        //         for (int j = 0; j < n.places.get(i); j++) {
+        //             if (solverGrid.grid[row][j] != 0 || solverGrid.grid[row][j] != 1) {
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        //     else if (i < n.places.size() - 1) {
+        //         // checks whitespace between the end of the clue and the beginning of the next
+        //         for (int j = n.places.get(i) + n.c.counts.get(i); j < n.places.get(i + 1); j++) {
+        //             if (solverGrid.grid[row][j] != 0 || solverGrid.grid[row][j] != 1) {
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        //     else {
+        //         // checks for whitespaces between the end 
+        //         for (int j = n.places.get(i) + n.c.counts.get(i); j < rowLen; j++) {
+        //             if (solverGrid.grid[row][j] != 0 || solverGrid.grid[row][j] != 1) {
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        // }
+        // drawNodeRow(n, row);
+
+                // checks for blank space before the first element
+            // if (i == 0) {
+            //     System.out.println("we're ere");
+            //     for (int j = 0; j < n.places.get(i); i++) {
+            //         if (solverGrid.grid[j][column] != 1 && solverGrid.grid[j][column] != 0) {
+            //             return false;
+            //         }
+            //     }    
+            // }
+            // // checks that the middle spaces are correctly populated
+            // for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
+            //     System.out.println("we're lol");
+            //     if (solverGrid.grid[j][column] != n.c.colour.get(i) && solverGrid.grid[j][column] != 0) {
+            //         return false;
+            //     }
+            // }
+            // // checks, if before the end, that the spaces prior to the next clue are blank
+            // if (i < n.places.size() - 1) {
+            //     System.out.println("we're haha");
+            //     for (int j = n.places.get(i) + n.c.counts.get(i) + 1; j < n.places.get(i+1); j++) {
+            //         if (solverGrid.grid[j][column] != 1 && solverGrid.grid[j][column] != 0) {
+            //             return false;
+            //         }
+            //     }
+            // } 
+            // // checks if, the end, that there are blanks before the end
+            // if (i == n.places.size() - 1) {
+            //     System.out.println("we're hereee");
+            //     for (int j = n.places.get(i) + n.c.counts.get(i) + 1; j < rowLen; j++) {
+            //         // System.out.println(solverGrid.grid[j][column]);
+            //         if (solverGrid.grid[j][column] != 1 && solverGrid.grid[j][column] != 0) {
+            //             return false;
+            //         }
+            //     }
+            // }
+
+
+
+
+            // // checks that the noncolored sections are blank
+            // if (i == 0 && n.places.size() != 1) {
+            //     // checks that if this is the first clue, then the preceding cells are whitespaces
+            //     for (int j = 0; j < n.places.get(i); j++) {
+            //         if (solverGrid.grid[j][column] != 0 || solverGrid.grid[j][column] != 1) {
+            //             return false;
+            //         }
+            //     }
+            // }
+            // else if (i < n.places.size() - 1) {
+            //     // checks whitespace between the end of the clue and the beginning of the next
+            //     for (int j = n.places.get(i) + n.c.counts.get(i); j < n.places.get(i + 1); j++) {
+            //         if (solverGrid.grid[j][column] != 0 || solverGrid.grid[j][column] != 1) {
+            //             return false;
+            //         }
+            //     }
+            // }
+            // else if (i == 0 && n.places.size() == 1) {
+            //     System.out.print("single cell triggered");
+            //     // checks that if this is the first clue, then the preceding cells are whitespaces
+            //     for (int j = 0; j <= n.places.get(i); j++) {
+            //         if (solverGrid.grid[j][column] != 0 || solverGrid.grid[j][column] != 1) {
+            //             return false;
+            //         }
+            //     }
+            //     for (int j = n.places.get(i) + n.c.counts.get(i) + 1; j < column; j++) {
+            //         if (solverGrid.grid[j][column] != 0 || solverGrid.grid[j][column] != 1) {
+            //             return false;
+            //         }
+            //     }
+            // }
+            // else {
+            //     // checks for whitespaces between the end 
+            //     for (int j = n.places.get(i) + n.c.counts.get(i); j < column; j++) {
+            //         if (solverGrid.grid[j][column] != 0 || solverGrid.grid[j][column] != 1) {
+            //             return false;
+            //         }
+            //     }
+            // }
 
 
     // for (int i = 0; i < rowNum; i ++) {

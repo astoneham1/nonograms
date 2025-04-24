@@ -23,13 +23,16 @@ public class TestMain {
 
         System.out.println("----------------------------------------------------------");
 
-        Arrangements a = new Arrangements(g, g.columns, g.rowClues.get(5));
-        for (Node n: a.arrangement) {
-            System.out.println(n.places);
-        }
-        // for (int i = 0; i <= a.arrangement.size(); i++) {
-
+        // Arrangements a = new Arrangements(g, g.columns, g.rowClues.get(0));
+        // for (Node n: a.arrangement) {
+        //     System.out.println(n.places);
         // }
+        // s.compatibleRow(a, 0);
+
+        System.out.println("----------------------------------------------------------");
+        
+
+
     } catch (Exception e) {
         System.out.println(e);
     }
