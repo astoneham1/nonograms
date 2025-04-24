@@ -49,25 +49,31 @@ public class Grid {
         // first update the arraylist of moves
         Move m = new Move(row, col, grid[row][col], color);
 
-        /*
-        Checks the list of all of the moves. Gets the location of the current cell (the one passed into this method) and compares it to the
-        location of the Move object in the list. If these are the same, and the colours are the same (i.e. pressing a pink cell 20 times with the pink colour),
-        and it is on the end of the list, then we remove this Move. If the move list is now empty, OR if the current cell's colour (the one passed into 
-        this method) is exactly equal to the previous cell's old colour (so filling in a pink cell pink again), the oldColor is set to 0, so when undo is
-        pressed, the cell will return to 'UNKNOWN'. Otherwise (so filling in a blue cell with pink), the current cells oldColor is set to the previous one's
-        newColor (so undo works as intended).
-        */
-        for (int i = 0; i < this.moves.size(); i++) {
-            int[] location = new int[] {row, col};
-            if (Arrays.equals(location, this.moves.get(i).location) && color == this.moves.get(i).newColor && i == this.moves.size() - 1) {
-                this.moves.remove(this.moves.get(i));
-                if (this.moves.size() == 0 || (color == this.moves.get(this.moves.size() - 1).newColor)) {
-                    m.oldColor = 0;
+       /*
+        If the list has moves, start looping from the most-recent move. If a match is found (i.e. same location) but the colours are different,
+        then just break (since the colour is new this will count as a new move), but if a match is found and the colours are the same then remove
+        this move from the list (so the most recent one takes its place and so repeatedly clicking or dragging the same cell in the same colour will
+        only count as one move and so undo just needs to be pressed one time). If the move list is now empty, OR if the current cell's colour (the one passed into 
+        this method) is equal to the previous cell's new colour (so filling in a pink cell pink again), the oldColor is set to 0, otherwise
+        (so filling in a blue cell with pink), the current cells oldColor is set to the previous one's newColor (so undo works as intended).
+       */
+        if (this.moves.size() > 0) {
+            for (int i = this.moves.size() - 1; i >= 0; i--) {
+                int[] location = new int[] {row, col};
+                if (Arrays.equals(location, this.moves.get(i).location) && color != this.moves.get(i).newColor) {
+                    break;
                 }
-                else {
-                    m.oldColor = this.moves.get(this.moves.size() - 1).newColor;
+                
+                if (Arrays.equals(location, this.moves.get(i).location) && color == this.moves.get(i).newColor) {
+                    this.moves.remove(this.moves.get(i));
+                    if (this.moves.size() == 0 || (color == this.moves.get(this.moves.size() - 1).newColor)) {
+                        m.oldColor = 0;
+                    }
+                    else {
+                        m.oldColor = this.moves.get(this.moves.size() - 1).newColor;
+                    }
+                    break;
                 }
-                break;
             }
         }
 
