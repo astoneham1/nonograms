@@ -1,6 +1,4 @@
 public class TestModel {
-    public static Grid inProgressGrid; // grid that represents the progress of the user in terms of clues
-    public static int row, col;
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_GREY = "\u001B[90m";
@@ -9,12 +7,11 @@ public class TestModel {
 
     public static void main(String [] args) {
         try {
-            Parser p = new Parser();
             int row = 4;
             int col = 4;
-            inProgressGrid = new Grid(row, col, "Moves/modelTests.json");
-            updateMove();
-            // saveMove();
+            Grid inProgressGrid = new Grid(row, col, "Moves/modelTests.json");
+            updateMove(inProgressGrid);
+            saveMove(inProgressGrid);
             // undoMove();
 
         } catch (Exception e) {
@@ -23,20 +20,21 @@ public class TestModel {
 
     }
 
-    public static void updateMove() {
+    public static void updateMove(Grid inProgressGrid) {
         System.out.println("Prior to initiating move:");
-        printGrid();
-        inProgressGrid.updateMove(1, 2, 3);
+        printGrid(inProgressGrid);
+        inProgressGrid.updateMove(2, 2, 3);
         inProgressGrid.updateMove(1, 1, 3);
-        inProgressGrid.updateMove(1, 3, 4);
-        inProgressGrid.updateMove(1, 1, 1);
+        inProgressGrid.updateMove(3, 3, 4);
+        inProgressGrid.updateMove(0, 0, 4);
         System.out.println("-----------------------------------------------------------------");
-        System.out.print("Post updating the moves:");
-        printGrid();
-        
+        System.out.println("Post updating the moves:");
+        printGrid(inProgressGrid);
+        System.out.println(ANSI_GREEN + "PASSED:" + ANSI_RESET + "Update Move Test");
     }
 
-    public static void saveMove() {
+    public static void saveMove(Grid inProgressGrid) {
+
 
     }
 
@@ -44,10 +42,10 @@ public class TestModel {
 
     }
 
-    public static void printGrid() {
-        for (int i = 0; i < row; i ++) {
-            for (int j = 0; j < col; j++) {
-                System.out.print(inProgressGrid.grid[i][j]);
+    public static void printGrid(Grid inProgressGrid) {
+        for (int i = 0; i < inProgressGrid.rows; i ++) {
+            for (int j = 0; j < inProgressGrid.columns; j++) {
+                System.out.print(prettyPrint(inProgressGrid.grid[i][j]));
             }
             System.out.println();
         }

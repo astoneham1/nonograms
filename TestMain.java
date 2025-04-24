@@ -11,7 +11,7 @@ public class TestMain {
     public static void main(String [] args) {
     try {
         Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/colour_wink.json");
+        Grid g = p.getGrid("Jsons/umberella.json");
         SolverMain s = new SolverMain(g, true);
         s.solver();
         for (int i = 0; i < s.solverGrid.rows; i++) {
@@ -41,10 +41,13 @@ public class TestMain {
             case 0:
                 return Integer.toString(i);
             case 3:
-                String s = ANSI_YELLOW + Integer.toString(i) + ANSI_RESET;
-                return s;
+                String j = ANSI_YELLOW + Integer.toString(i) + ANSI_RESET;
+                return j;
             case 2:
-                String j = ANSI_GREY + Integer.toString(i) + ANSI_RESET;
+                j = ANSI_GREY + Integer.toString(i) + ANSI_RESET;
+                return j;
+            case 4: 
+                j = ANSI_GREEN + Integer.toString(i) + ANSI_RESET;
                 return j;
         }
         return Integer.toString(i);
