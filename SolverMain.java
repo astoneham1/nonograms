@@ -38,41 +38,52 @@ public class SolverMain {
         }
  */
 
-        solve();
+        // solve();
     }
 
 
 // solver
 // recursive funct that will back track and then solve, need to implement
-    public void solve() {
-        // loop through the rows and columns and check their arrangements 
-        for (int r = 0; r < rowNum; r ++) {
-            for (int c = 0; c < colNum; c ++) {
-                if (compatibleRow(rowArrangements.get(r), r) && compatibleCol(colArrangements.get(c), c)) {
+    // public void solve() {
+    //     // loop through the rows and columns and check their arrangements 
+    //     for (int r = 0; r < rowNum; r ++) {
+    //         for (int c = 0; c < colNum; c ++) {
+    //             if (compatibleRow(rowArrangements.get(r), r) && compatibleCol(colArrangements.get(c), c)) {
 
-                }
-            }
-        }
-    }
+    //             }
+    //         }
+    //     }
+    // }
 
 // check line compatability
 
-    public boolean compatibleRow(Arrangements a, int rowNum) {
-        for (Node n : a.arrangement) {
-            if (/*n is compatable*/) {
-                // draw n to board
-                a.solved = true;
-                return true;
+    // public boolean compatibleRow(Arrangements a, int rowNum) {
+    //     for (Node n : a.arrangement) {
+
+    //     // so we need to loop through each clue's placement that is present in the node --> 
+    //         // then we need to loop through the pertinent parts of the row and if there is an incorrect color in that arrangement --> break to check next node
+    //         // if there a node's placement works with the 
+    //     }
+    //     a.solved = false;
+    //     return false;
+    // }
+
+    // this method checks if the node is possible with the current state of the board and return 
+    public boolean checkNodeCol(Node n, int column) {
+        for (int i = 0; i < n.places.size(); i ++) {
+            for (int j = n.places.get(i); j < (n.places.get(i) + n.c.counts.get(i)); j++) {
+                if (solverGrid.grid[column][j] != n.c.colour.get(i)) {
+                    return false;
+                }
             }
         }
-        a.solved = false;
-        return false;
+        drawNodeCol(n, column);
+        return true;
     }
 
     public boolean compatibleCol(Arrangements a, int colNum) {
         for (Node n : a.arrangement) {
-            if (/*n is compatable */) {
-                // draw n to board
+            if (checkNodeCol(n, colNum)) {
                 a.solved = true;
                 return true;
             }
@@ -80,6 +91,7 @@ public class SolverMain {
         a.solved = false;
         return false;
     }
+
 
 
 

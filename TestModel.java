@@ -14,8 +14,8 @@ public class TestModel {
             int col = 4;
             inProgressGrid = new Grid(row, col, "Moves/modelTests.json");
             updateMove();
-            saveMove();
-            undoMove();
+            // saveMove();
+            // undoMove();
 
         } catch (Exception e) {
             System.out.println(e);
