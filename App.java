@@ -51,7 +51,7 @@ public class App {
 
     public App() {
         setupUI();
-        loadGamePuzzle("fromStart");
+        openGameLauncher();
     }
 
     private void setupUI() {
@@ -137,7 +137,7 @@ public class App {
             JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
-        save.addActionListener(e -> saveGame() );
+        save.addActionListener(e -> saveGame());
 
         undo.addActionListener(e -> {
             if (undoAllowed) {
@@ -153,6 +153,31 @@ public class App {
                 allowSave();
             }
         });
+    }
+
+    public void openGameLauncher() {
+        String[] options = { "Play", "How to Play" };
+        int selection = JOptionPane.showOptionDialog(
+                null,
+                "Click play or learn how to!",
+                "Welcome to Nonograms",
+                0,
+                3,
+                null,
+                options,
+                null);
+
+        if (selection == 0) {
+            loadGamePuzzle("fromStart");
+        } else if (selection == 1) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks, eg a 5 2 means a block of 5, then a gap of some\namount, then a block of 2. As you fill in squares, use\nprocess of elimination to deduce which squares are\nalso definitely filled or empty. Good luck and have fun!");
+    
+            openGameLauncher();
+        } else {
+            System.exit(0);
+        }
     }
 
     public void restartApp(String source) {
