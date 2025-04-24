@@ -16,7 +16,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST ONE:\u001B[0m Player has the correct blank_smiler grid (All constraints met) and the rest of the cells are marked as 'unknown'.");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blanksSmilerMessage + "\n\u001B[94mTEST STATUS:" + testOneStatus + "\n");
 
-        // Get the grid, clues and message for blanks smiler where the user has successfullu completed it and all other cells are 'empty' and print the test.
+        // Get the grid, clues and message for blanks smiler where the user has successfully completed it and all other cells are 'empty' and print the test.
         int[][] blanksSmilerEmpty = tc.createGrid("blanks_smiler_empty");
         ArrayList<Clue> rowCluesBlanksSmilerEmpty = tc.createRowClues("blanks_smiler_empty");
         ArrayList<Clue> columnCluesBlanksSmilerEmpty = tc.createColumnClues("blanks_smiler_empty");
