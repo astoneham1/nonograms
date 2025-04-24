@@ -110,7 +110,10 @@ public class App {
 
         // action listeners
         loadFile.addActionListener(e -> {
-            saveGame();
+            int response = askSave();
+            if (response == JOptionPane.YES_OPTION) {
+                saveGame();
+            }
             loadGamePuzzle("fromButton");
         });
 
@@ -172,24 +175,12 @@ public class App {
         } else if (selection == 1) {
             JOptionPane.showMessageDialog(
                     null,
-                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks, eg a 5 2 means a block of 5, then a gap of some\namount, then a block of 2. As you fill in squares, use\nprocess of elimination to deduce which squares are\nalso definitely filled or empty. Good luck and have fun!");
-    
+                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks, eg a 5 2 means a block of 5, then a gap of some\namount, then a block of 2. As you fill in squares, use\nprocess of elimination to deduce which squares are\nalso definitely filled or empty. Good luck and have fun!.\n\nHotkeys:\nALT + L: Load Puzzle\nALT + R: Reset Grid\nALT + C: Check Puzzle\nALT + S: Save Puzzle\nALT + U: Undo\n\n Colours can be selected by clicking 1,2,3 etc for each colour");
+
             openGameLauncher();
         } else {
             System.exit(0);
         }
-    }
-
-    public void restartApp(String source) {
-        if (source.equals("fromStart")) {
-            loadGamePuzzle("fromStart");
-        }
-    }
-
-    public void saveGame() {
-        userGrid.saveMoves();
-        JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
-        disableSave();
     }
 
     public void loadGamePuzzle(String source) {
@@ -495,6 +486,12 @@ public class App {
         cell.setBackground(Color.decode(colors.get(this.selectedColor)));
     }
 
+    public void restartApp(String source) {
+        if (source.equals("fromStart")) {
+            loadGamePuzzle("fromStart");
+        }
+    }
+
     public void allowUndo() {
         undo.setBackground(check.getBackground());
         undo.setEnabled(true);
@@ -519,15 +516,42 @@ public class App {
         isSaved = true;
     }
 
+    public int askSave() {
+        int response = JOptionPane.showConfirmDialog(mainPanel,
+                "Do you want to save your progress before exiting?",
+                "Exit Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        return response;
+    }
+
+    public void saveGame() {
+        userGrid.saveMoves();
+        JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
+        disableSave();
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             App a = new App();
             JFrame frame = new JFrame("Nonograms");
             frame.setContentPane(a.mainPanel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             frame.setSize(800, 800);
             frame.setResizable(false);
             frame.setLocationRelativeTo(null);
+
+            // handle closing the window by asking the user if they want to save
+            frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    int response = a.askSave();
+                    if (response == JOptionPane.YES_OPTION) {
+                        a.saveGame();
+                    }
+                    frame.dispose();
+                }
+            });
             frame.setVisible(true);
         });
     }
