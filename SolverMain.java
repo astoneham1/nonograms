@@ -28,6 +28,7 @@ public class SolverMain {
             colArrangements.add(new Arrangements(puzzleGrid, colLen, puzzleGrid.columnClues.get(i)));
             if (colArrangements.get(i).arrangement.size() == 1) {
                 drawNodeCol(colArrangements.get(i).arrangement.get(0), i);
+                colArrangements.get(i).solved = true; 
             }   
         }
  
@@ -35,6 +36,7 @@ public class SolverMain {
             rowArrangements.add(new Arrangements(puzzleGrid, rowLen, puzzleGrid.rowClues.get(i)));
             if (rowArrangements.get(i).arrangement.size() == 1) {
                 drawNodeRow(rowArrangements.get(i).arrangement.get(0), i);
+                rowArrangements.get(i).solved = true;
             }   
         }
  
@@ -48,12 +50,16 @@ public class SolverMain {
     public void solve() {
         // loop through the rows and columns and check their arrangements 
         for (int c = 0; c < colNum; c ++) {
+            System.out.println("Column" + c + "----------------------------------------------");
             compatibleCol(colArrangements.get(c), c);
             // if (compatibleCol(colArrangements.get(c), c)) {
         //         for (int r = 0; r < rowNum; r ++) {
 
         //         }    
-            }
+        }
+        // for (int r = 0; r < rowNum; r ++) {
+        //     System.out.println("Row" + c + "----------------------------------------------");
+        // }
         //     else {
         //         // recurse and try a new col state
         //     }
@@ -64,6 +70,9 @@ public class SolverMain {
 
     // these methods go through a set of arrangements and check if they are compatible and if there is a correct arrangement, assign a node state
     public boolean compatibleRow(Arrangements a, int rowNum) {
+        if (a.solved == true) {
+            return true;
+        }
         for (Node n : a.arrangement) {
             if (checkNodeRow(n, rowNum)) {
                 a.solved = true;
@@ -76,6 +85,9 @@ public class SolverMain {
 
 
     public boolean compatibleCol(Arrangements a, int colNum) {
+        if (a.solved == true) {
+            return true;
+        }
         for (Node n : a.arrangement) {
             if (checkNodeCol(n, colNum)) {
                 a.solved = true;
@@ -110,6 +122,10 @@ public class SolverMain {
                 return false;
             }
         }
+        for (int i: testArr) {
+            System.out.print(i);
+        }
+        System.out.println();
         return true;
     }
 

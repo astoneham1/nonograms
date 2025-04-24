@@ -11,7 +11,7 @@ public class TestMain {
     public static void main(String [] args) {
     try {
         Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/umberella.json");
+        Grid g = p.getGrid("Jsons/colour_wink.json");
         SolverMain s = new SolverMain(g, true);
         s.solver();
         for (int i = 0; i < s.solverGrid.rows; i++) {
