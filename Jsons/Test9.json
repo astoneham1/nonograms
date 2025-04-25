@@ -1,0 +1,5 @@
+{ "name": "1x1",
+    "states": {"UNKNOWN": "#ECECEC", "EMPTY": "#FFFFFF", "COLOUR_1": "#000000", "COLOUR_2": "#E6B800"},
+    "rows": [ [{ "count": 1 , "color": "COLOUR_1"}]],
+    "columns": [ [ { "count": 1, "color": "COLOUR_2" }]]
+}

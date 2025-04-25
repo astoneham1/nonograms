@@ -59,7 +59,7 @@ public class TestParser {
                 System.out.println("Test 3 Failed");
             }
         } catch (JsonFormatException e) {
-            System.out.println("Test 3 Faield");
+            System.out.println("Test 3 Failed");
         }
     }
 
@@ -93,6 +93,8 @@ public class TestParser {
             System.out.println("Test 1 Failed");
         }
 
+        lines = new ArrayList<>();
+        colours = new ArrayList<>();
         ArrayList<Clue> cluesCorrect1 = new ArrayList<>();
         
         try {

@@ -199,6 +199,11 @@ public class Parser {
                 checkNumColour.add(colour);
             }
         }
+        for (ArrayList<Integer> rows : rowColour){
+            for(Integer colour : rows){
+                checkNumColour.add(colour);
+            }
+        }
         if (checkNumColour.isEmpty() && !columnColour.isEmpty()) {
             checkNumColour.add(2);
         }
@@ -206,12 +211,16 @@ public class Parser {
             throw new JsonFormatException();
         }
     }
+
     //generates the grid
     public Grid getGrid(String filePath) throws JsonFormatException, FileNotFoundException{
         getArrayLists(filePath);
         createColourHashmap(colours);
         checkNumColour();
         if(puzzleName.equals(null) || puzzleName.isEmpty()){
+            throw new JsonFormatException();
+        }
+        if(rows.isEmpty() || columns.isEmpty()){
             throw new JsonFormatException();
         }
         Grid grid = new Grid(getClues(rows, rowColour), getClues(columns, columnColour), rows.size(), columns.size());

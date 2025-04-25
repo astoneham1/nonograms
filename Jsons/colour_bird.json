@@ -1,0 +1,22 @@
+{"name": "Colourful Bird",
+	"states": { "UNKNOWN": "0xECECEC", "EMPTY": "0xffffff", "COLOUR_1": "0x0000", "COLOUR_2": "0xcc1d3d", "COLOUR_3": "0x26ad46", "COLOUR_4": "0xe8c217"},
+	"rows": [ [{ "count" : 3, "color" : "COLOUR_1" }], 
+			[{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 3, "color" : "COLOUR_4" }, { "count" : 1, "color" : "COLOUR_1" }],
+            [{ "count" : 3, "color" : "COLOUR_3" }, { "count" : 1, "color" : "COLOUR_4" }, { "count" : 1, "color" : "COLOUR_1" }, { "count" : 1, "color" : "COLOUR_4" }, { "count" : 1, "color" : "COLOUR_1" }],
+            [{ "count" : 5, "color" : "COLOUR_3" }, { "count" : 2, "color" : "COLOUR_4" }, { "count" : 1, "color" : "COLOUR_1" }],
+            [{ "count" : 5, "color" : "COLOUR_2" }, { "count" : 3, "color" : "COLOUR_1" }],
+            [{ "count" : 3, "color" : "COLOUR_1" }],
+            [{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 2, "color" : "COLOUR_4" }, { "count" : 2, "color" : "COLOUR_1" }],
+            [{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 2, "color" : "COLOUR_4" }, { "count" : 2, "color" : "COLOUR_1" }],
+            [{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 4, "color" : "COLOUR_4" }, { "count" : 1, "color" : "COLOUR_1" }]
+	],
+	"columns": [ [{ "count" : 1, "color" : "COLOUR_3" }, { "count" : 1, "color" : "COLOUR_2" }], 
+			[{ "count" : 2, "color" : "COLOUR_3" }, { "count" : 1, "color" : "COLOUR_2"}],
+            [{ "count" : 2, "color" : "COLOUR_3" }, { "count" : 1, "color" : "COLOUR_2" }, { "count" : 1, "color" : "COLOUR_1" }],
+            [{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 2, "color" : "COLOUR_3" }, { "count" : 1, "color" : "COLOUR_2" }, { "count" : 2, "color" : "COLOUR_1"}, { "count" : 1, "color" : "COLOUR_4"}],
+            [{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 2, "color" : "COLOUR_4" }, { "count" : 1, "color" : "COLOUR_3" }, { "count" : 1, "color" : "COLOUR_2"}, { "count" : 1, "color" : "COLOUR_1"}, { "count" : 3, "color" : "COLOUR_4"}],
+            [{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 1, "color" : "COLOUR_4" }, { "count" : 1, "color" : "COLOUR_1" }, { "count" : 1, "color" : "COLOUR_4"}, { "count" : 2, "color" : "COLOUR_1"}, { "count" : 3, "color" : "COLOUR_4"}],
+            [{ "count" : 1, "color" : "COLOUR_1" }, { "count" : 3, "color" : "COLOUR_4" }, { "count" : 4, "color" : "COLOUR_1" }, { "count" : 1, "color" : "COLOUR_4"}],
+            [{ "count" : 4, "color" : "COLOUR_1" }, { "count" : 3, "color" : "COLOUR_1" }]
+	]
+}
