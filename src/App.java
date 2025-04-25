@@ -84,14 +84,12 @@ public class App {
 
         mainPanel.add(gameArea, BorderLayout.CENTER);
 
-        // bottom of screen controls
+        // Bottom of screen controls
         controls = new JPanel();
-        // Use BoxLayout for vertical stacking
         controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
-        controls.setBackground(new Color(0xCCCCCC)); // subtle background
+        controls.setBackground(new Color(204,204,204));
 
-        // *** Add a vertical strut for a tiny bit of padding at the top ***
-        controls.add(Box.createVerticalStrut(5)); // You can adjust the '5' to increase or decrease the padding
+        controls.add(Box.createVerticalStrut(5));
 
         Font buttonFont = new Font("SansSerif", Font.PLAIN, 14);
 
@@ -130,7 +128,7 @@ public class App {
         mainPanel.add(controls, BorderLayout.SOUTH);
 
         // Hotkeys
-        loadFile.setMnemonic(KeyEvent.VK_O);
+        loadFile.setMnemonic(KeyEvent.VK_L);
         reset.setMnemonic(KeyEvent.VK_R);
         check.setMnemonic(KeyEvent.VK_C);
         undo.setMnemonic(KeyEvent.VK_U);
@@ -225,7 +223,7 @@ public class App {
         } else if (selection == 1) {
             JOptionPane.showMessageDialog(
                     null,
-                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks, eg a 5 2 means a block of 5, then a gap of some\namount, then a block of 2. As you fill in squares, use\nprocess of elimination to deduce which squares are\nalso definitely filled or empty. Good luck and have fun!.\n\nHotkeys:\nALT + L: Load Puzzle\nALT + R: Reset Grid\nALT + C: Check Puzzle\nALT + S: Save Puzzle\nALT + U: Undo\nALT + V: Solve\n\n Colours can be selected by clicking 1,2,3 etc for each colour");
+                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks. As you fill in squares, use process of elimination to\ndeduce which squares are also definitely filled or empty.\nGood luck and have fun!.\n\nHotkeys:\nALT + L: Load Puzzle\nALT + R: Reset Grid\nALT + C: Check Puzzle\nALT + S: Save Puzzle\nALT + U: Undo\nALT + V: Solve\n\n Colours can be selected by clicking 1,2,3 etc for each colour");
 
             openGameLauncher();
         } else {
@@ -294,6 +292,7 @@ public class App {
                     // loaded
                     if (!createNewGrid) {
                         userGrid.loadMoves("Moves/" + currentGridName);
+                        disableSave(); // the user is loading a grid so has nothing to save yet
                     }
 
                     if (userGrid.moves.size() > 0) {
@@ -412,11 +411,11 @@ public class App {
         int calculatedCellSize = 30; // Default or minimum size
 
         if (maxDim <= 10) { // For very small puzzles
-            calculatedCellSize = 60;
-        } else if (maxDim <= 15) { // For medium-small puzzles
             calculatedCellSize = 50;
+        } else if (maxDim <= 15) { // For medium-small puzzles
+            calculatedCellSize = 40;
         } else { // For larger puzzles
-            calculatedCellSize = 30;
+            calculatedCellSize = 20;
         }
 
         // Top-Left Corner
@@ -467,7 +466,13 @@ public class App {
             ArrayList<Integer> clueColor = puzzleGrid.rowClues.get(i).getColours();
 
             for (int j = 0; j < counts.size(); j++) {
-                JLabel clueLabel = new JLabel(String.valueOf(counts.get(j)));
+                String textForLabel = "";
+                if (j < counts.size()-1) {
+                    textForLabel = String.valueOf(counts.get(j)) + ",";
+                } else {
+                    textForLabel = String.valueOf(counts.get(j));
+                }
+                JLabel clueLabel = new JLabel(textForLabel);
                 int colorKey = clueColor.get(j);
                 String colorCode = colors.getOrDefault(colorKey, "#000000");
                 clueLabel.setForeground(Color.decode(colorCode));
@@ -552,6 +557,8 @@ public class App {
     public void restartApp(String source) {
         if (source.equals("fromStart")) {
             loadGamePuzzle("fromStart");
+        } else if (source.equals("fromButton")) {
+            loadGamePuzzle("fromButton");
         }
     }
 
@@ -624,7 +631,7 @@ public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             App a = new App();
-            JFrame frame = new JFrame("Nonograms • " + Parser.puzzleName);
+            JFrame frame = new JFrame("Nonograms");
             frame.setContentPane(a.mainPanel);
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             frame.setSize(1000, 800);
@@ -646,7 +653,7 @@ public class App {
                     } else {
                         frame.dispose();
                     }
-                    // ensures if the user clicks X it keeps them in the game
+                    // ensures if the user clicks Xoff the popup, it keeps them in the game
                 }
             });
             frame.setVisible(true);
