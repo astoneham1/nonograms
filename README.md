@@ -14,6 +14,5 @@ Select a puzzle, then either load a previously saved grid or make a new one, and
 To compile and run the testing classes:
 `javac -d ./out -cp lib/javax.json-1.0.jar src/*.java`
 `java -cp lib/javax.json-1.0.jar:out TestChecker`
-`java -cp lib/javax.json-1.0.jar:out TestMain`
 `java -cp lib/javax.json-1.0.jar:out TestModel`
 `java -cp lib/javax.json-1.0.jar:out TestParser`
