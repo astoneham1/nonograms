@@ -84,14 +84,12 @@ public class App {
 
         mainPanel.add(gameArea, BorderLayout.CENTER);
 
-        // bottom of screen controls
+        // Bottom of screen controls
         controls = new JPanel();
-        // Use BoxLayout for vertical stacking
         controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
-        controls.setBackground(new Color(0xCCCCCC)); // subtle background
+        controls.setBackground(new Color(204,204,204));
 
-        // *** Add a vertical strut for a tiny bit of padding at the top ***
-        controls.add(Box.createVerticalStrut(5)); // You can adjust the '5' to increase or decrease the padding
+        controls.add(Box.createVerticalStrut(5));
 
         Font buttonFont = new Font("SansSerif", Font.PLAIN, 14);
 
@@ -130,7 +128,7 @@ public class App {
         mainPanel.add(controls, BorderLayout.SOUTH);
 
         // Hotkeys
-        loadFile.setMnemonic(KeyEvent.VK_O);
+        loadFile.setMnemonic(KeyEvent.VK_L);
         reset.setMnemonic(KeyEvent.VK_R);
         check.setMnemonic(KeyEvent.VK_C);
         undo.setMnemonic(KeyEvent.VK_U);
@@ -467,7 +465,13 @@ public class App {
             ArrayList<Integer> clueColor = puzzleGrid.rowClues.get(i).getColours();
 
             for (int j = 0; j < counts.size(); j++) {
-                JLabel clueLabel = new JLabel(String.valueOf(counts.get(j)));
+                String textForLabel = "";
+                if (j < counts.size()-1) {
+                    textForLabel = String.valueOf(counts.get(j)) + ",";
+                } else {
+                    textForLabel = String.valueOf(counts.get(j));
+                }
+                JLabel clueLabel = new JLabel(textForLabel);
                 int colorKey = clueColor.get(j);
                 String colorCode = colors.getOrDefault(colorKey, "#000000");
                 clueLabel.setForeground(Color.decode(colorCode));

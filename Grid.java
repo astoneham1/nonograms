@@ -139,7 +139,6 @@ public class Grid {
             grid[this.moves.get(moves.size()-1).location[0]][this.moves.get(moves.size()-1).location[1]] = this.moves.get(moves.size() - 1).oldColor;
             this.moves.remove(moves.size()-1);
         }
-        saveMoves();
     }
 
     public void clearAllMoves() {
@@ -149,7 +148,6 @@ public class Grid {
             }
         }
         moves = new ArrayList<>();
-        saveMoves();
     }
 }
 
