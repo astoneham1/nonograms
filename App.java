@@ -30,17 +30,16 @@ public class App {
     private JPanel gameArea;
     private JPanel grid;
     private JPanel controls;
-    private JPanel rowCluePanel;
-    private JPanel columnCluePanel;
 
     private JLabel loadedName;
+    private JLabel timerText;
+
     private JButton loadFile;
     private JButton reset;
     private JButton check;
     private JButton undo;
     private JButton solve;
     private JButton save;
-
 
     // GRIDS
     private Grid puzzleGrid;
@@ -56,51 +55,81 @@ public class App {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        // top of screen: color guide
+        // Top of screen: color guide
         colorGuide = new JPanel();
         colorGuide.setLayout(new GridLayout(1, 1));
-        colorGuide.setBackground(new Color(0xF0F0F0));
+        colorGuide.setBackground(new Color(204, 204, 204));
         mainPanel.add(colorGuide, BorderLayout.NORTH);
 
-        // centre gameArea area with grid and clues
-        rowCluePanel = new JPanel();
-        columnCluePanel = new JPanel();
-
+        // Centre gameArea area with grid and clues
         gameArea = new JPanel(new BorderLayout());
-        gameArea.setBackground(new Color(0xD2D2D2));
+        gameArea.setBackground(new Color(210, 210, 210));
 
-        grid = new JPanel();
-        grid.setLayout(new GridLayout(1, 1));
+        // The grid panel itself, using GridBagLayout internally for clues and cells
+        grid = new JPanel(new GridBagLayout());
 
-        gameArea.add(grid, BorderLayout.CENTER);
-        gameArea.add(rowCluePanel, BorderLayout.WEST);
-        gameArea.add(columnCluePanel, BorderLayout.NORTH);
+        JPanel centeringPanel = new JPanel(new GridBagLayout());
+        centeringPanel.setBackground(new Color(210, 210, 210));
+
+        GridBagConstraints gbcCentering = new GridBagConstraints();
+        gbcCentering.gridx = 0;
+        gbcCentering.gridy = 0;
+        gbcCentering.weightx = 1.0;
+        gbcCentering.weighty = 1.0;
+        gbcCentering.fill = GridBagConstraints.NONE;
+
+        centeringPanel.add(grid, gbcCentering);
+
+        gameArea.add(centeringPanel, BorderLayout.CENTER);
 
         mainPanel.add(gameArea, BorderLayout.CENTER);
 
         // bottom of screen controls
         controls = new JPanel();
-        controls.setLayout(new GridLayout(1, 4));
+        // Use BoxLayout for vertical stacking
+        controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
+        controls.setBackground(new Color(0xCCCCCC)); // subtle background
+
+        // *** Add a vertical strut for a tiny bit of padding at the top ***
+        controls.add(Box.createVerticalStrut(5)); // You can adjust the '5' to increase or decrease the padding
+
+        Font buttonFont = new Font("SansSerif", Font.PLAIN, 14);
 
         loadedName = new JLabel("", SwingConstants.CENTER);
-        loadFile = new JButton("Load");
-        reset = new JButton("Reset");
-        check = new JButton("Check");
-        undo = new JButton("Undo");
-        solve = new JButton("Solve");
-        save = new JButton("Save");
+        loadedName.setFont(new Font("SansSerif", Font.BOLD, 14));
 
+        loadFile = createStyledButton("Load", buttonFont);
+        reset = createStyledButton("Reset", buttonFont);
+        check = createStyledButton("Check", buttonFont);
+        undo = createStyledButton("Undo", buttonFont);
+        solve = createStyledButton("Solve", buttonFont);
+        save = createStyledButton("Save", buttonFont);
+
+        timerText = new JLabel("dsdsd", SwingConstants.RIGHT);
+        timerText.setFont(new Font("SansSerif", Font.BOLD, 14));
+        timerText.setForeground(Color.GREEN);
+        timerText.setVisible(false);
+
+        loadedName.setAlignmentX(Component.CENTER_ALIGNMENT);
         controls.add(loadedName);
-        controls.add(loadFile);
-        controls.add(reset);
-        controls.add(check);
-        controls.add(undo);
-        controls.add(solve);
-        controls.add(save);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonPanel.setBackground(new Color(204,204,204));
+
+        buttonPanel.add(loadFile);
+        buttonPanel.add(reset);
+        buttonPanel.add(check);
+        buttonPanel.add(undo);
+        buttonPanel.add(solve);
+        buttonPanel.add(save);
+        buttonPanel.add(timerText);
+
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        controls.add(buttonPanel);
 
         mainPanel.add(controls, BorderLayout.SOUTH);
 
-        // hotkeys
+        // Hotkeys
         loadFile.setMnemonic(KeyEvent.VK_O);
         reset.setMnemonic(KeyEvent.VK_R);
         check.setMnemonic(KeyEvent.VK_C);
@@ -108,42 +137,50 @@ public class App {
         solve.setMnemonic(KeyEvent.VK_V);
         save.setMnemonic(KeyEvent.VK_S);
 
-        // action listeners
+        // Action listeners
         loadFile.addActionListener(e -> {
-            int response = askSave();
-            if (response == JOptionPane.YES_OPTION) {
-                saveGrid();
+            if (!isSaved) {
+                int response = askSave();
+                if (response == JOptionPane.YES_OPTION) {
+                    saveGrid();
+                }
+    
+                if (response == JOptionPane.YES_OPTION || response == JOptionPane.NO_OPTION) {
+                    loadGamePuzzle("fromButton");
+                }
+            } else {
+                loadGamePuzzle("fromButton");
             }
-            loadGamePuzzle("fromButton");
+
         });
 
         check.addActionListener(e -> {
             // Create checker object, call the checkNonogram method and get the message to
-            // output to the screen.
+            // output to the screen
             Checker c = new Checker();
             ArrayList<ArrayList<Integer>> a = c.checkNonogram(userGrid.grid, puzzleGrid.rowClues,
                     puzzleGrid.columnClues);
             String message = c.getMessage(a, puzzleGrid.rowClues.size(), puzzleGrid.columnClues.size());
             JOptionPane.showMessageDialog(mainPanel, message);
+
+            if (message.contains("100.0%")) {
+                showTemporaryText("Well done!");
+            }
         });
 
         reset.addActionListener(e -> {
-            for (Component c : grid.getComponents()) {
-                if (c instanceof JButton button) {
-                    button.setBackground(Color.decode(colors.get(0)));
-                    button.putClientProperty("state", 0);
-                }
-            }
+            // Reset the userGrid data and rebuild the grid UI
             userGrid.clearAllMoves();
             disableUndo();
+            buildGrid(puzzleGrid.rows, puzzleGrid.columns); // Rebuild the grid UI
 
-            JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
+            showTemporaryText("Grid Reset");
         });
 
         undo.addActionListener(e -> {
             if (undoAllowed) {
                 userGrid.undoMoves();
-                buildGrid(puzzleGrid.rows, puzzleGrid.columns);
+                buildGrid(puzzleGrid.rows, puzzleGrid.columns); // Rebuild grid after undo
             }
 
             if (userGrid.moves.size() == 0) {
@@ -156,8 +193,19 @@ public class App {
         });
 
         solve.addActionListener(e -> solvePuzzle());
-    
+
         save.addActionListener(e -> saveGrid());
+    }
+
+    private JButton createStyledButton(String text, Font font) {
+        JButton button = new JButton(text);
+        button.setFont(font);
+        button.setFocusPainted(false);
+        button.setBackground(new Color(224, 224, 224));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createEmptyBorder(8, 16, 8, 16)));
+        return button;
     }
 
     public void openGameLauncher() {
@@ -177,7 +225,7 @@ public class App {
         } else if (selection == 1) {
             JOptionPane.showMessageDialog(
                     null,
-                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks, eg a 5 2 means a block of 5, then a gap of some\namount, then a block of 2. As you fill in squares, use\nprocess of elimination to deduce which squares are\nalso definitely filled or empty. Good luck and have fun!.\n\nHotkeys:\nALT + L: Load Puzzle\nALT + R: Reset Grid\nALT + C: Check Puzzle\nALT + S: Save Puzzle\nALT + U: Undo\n\n Colours can be selected by clicking 1,2,3 etc for each colour");
+                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks, eg a 5 2 means a block of 5, then a gap of some\namount, then a block of 2. As you fill in squares, use\nprocess of elimination to deduce which squares are\nalso definitely filled or empty. Good luck and have fun!.\n\nHotkeys:\nALT + L: Load Puzzle\nALT + R: Reset Grid\nALT + C: Check Puzzle\nALT + S: Save Puzzle\nALT + U: Undo\nALT + V: Solve\n\n Colours can be selected by clicking 1,2,3 etc for each colour");
 
             openGameLauncher();
         } else {
@@ -188,7 +236,8 @@ public class App {
     public void loadGamePuzzle(String source) {
         File puzzleDir = new File("Jsons");
         File[] jsonFiles = puzzleDir.listFiles((dir, name) -> name.endsWith(".json"));
-        String[] options = Arrays.stream(jsonFiles).map(File::getName).toArray(String[]::new);
+        String[] options = Arrays.stream(jsonFiles).map(File::getName)
+                .map(fileName -> fileName.substring(0, fileName.length() - 5)).toArray(String[]::new);
 
         String selected = (String) JOptionPane.showInputDialog(
                 mainPanel,
@@ -200,19 +249,20 @@ public class App {
                 options[0]);
 
         if (!(selected == null)) {
-            File selectedFile = new File(puzzleDir, selected);
+            File selectedFile = new File(puzzleDir, selected + ".json");
 
             Parser parser = new Parser();
             try {
                 puzzleGrid = parser.getGrid(selectedFile.getAbsolutePath());
 
-                // find out if the user wants to load an existing grid or create a new one
+                // Find out if the user wants to load an existing grid or create a new one
                 File gridDir = new File("Moves");
                 File[] gridFiles = gridDir.listFiles((dir, name) -> name.endsWith(".json"));
-                String[] grids = Arrays.stream(gridFiles).map(File::getName).toArray(String[]::new);
-                grids = Stream.concat(Arrays.stream(grids), Stream.of("New Grid")).toArray(String[]::new);
+                String[] grids = Arrays.stream(gridFiles).map(File::getName)
+                        .map(fileName -> fileName.substring(0, fileName.length() - 5)).toArray(String[]::new);
+                grids = Stream.concat(Stream.of("New Grid"), Arrays.stream(grids)).toArray(String[]::new);
 
-                String newGridName = "";
+                boolean createNewGrid = false;
 
                 String returnValue = (String) JOptionPane.showInputDialog(
                         mainPanel,
@@ -221,10 +271,10 @@ public class App {
                         JOptionPane.PLAIN_MESSAGE,
                         null,
                         grids,
-                        grids[grids.length - 1]);
+                        grids[0]);
 
                 if (returnValue != null) {
-                    // if the user chooses to make a new grid ask them for a name
+                    // If the user chooses to make a new grid ask them for a name
                     if (returnValue.equals("New Grid")) {
                         returnValue = JOptionPane.showInputDialog(
                                 mainPanel,
@@ -232,22 +282,18 @@ public class App {
                                 "New Grid Name",
                                 JOptionPane.PLAIN_MESSAGE);
 
-                        newGridName = returnValue.concat(".json");
+                        createNewGrid = true;
                     }
 
-                    // create an empty grid with the specified filename
-                    if (newGridName != "") {
-                        userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + newGridName);
-                        currentGridName = newGridName;
-                    } else {
-                        userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + returnValue);
-                        currentGridName = returnValue;
-                    }
+                    currentGridName = returnValue + ".json";
 
-                    // if the user clicked to load an existing grid then update the empty grid to be
+                    // Create an empty grid with the specified filename
+                    userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + currentGridName);
+
+                    // If the user clicked to load an existing grid then update the empty grid to be
                     // loaded
-                    if (newGridName == "") {
-                        userGrid.loadMoves("Moves/" + returnValue);
+                    if (!createNewGrid) {
+                        userGrid.loadMoves("Moves/" + currentGridName);
                     }
 
                     if (userGrid.moves.size() > 0) {
@@ -256,15 +302,12 @@ public class App {
                         disableUndo();
                     }
 
-                    ArrayList<Clue> rowClues = puzzleGrid.rowClues;
-                    ArrayList<Clue> columnClues = puzzleGrid.columnClues;
-
-                    loadedName.setText(currentGridName.substring(0, currentGridName.length() - 5));
+                    loadedName.setText(
+                            Parser.puzzleName + " • " + currentGridName.substring(0, currentGridName.length() - 5));
                     this.colors = Colours.colours;
 
                     displayColors();
                     buildGrid(puzzleGrid.rows, puzzleGrid.columns);
-                    displayClues(rowClues, columnClues);
                 } else if (source.equals("fromStart")) {
                     System.exit(0);
                 }
@@ -289,7 +332,7 @@ public class App {
 
     public void displayColors() {
         colorGuide.removeAll();
-        colorGuide.setLayout(new GridLayout(1, this.colors.size()));
+        colorGuide.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
         for (Map.Entry<Integer, String> entry : this.colors.entrySet()) {
             int key = entry.getKey();
@@ -305,25 +348,36 @@ public class App {
             Color color = Color.decode(colorCode);
             colorButton.setBackground(color);
             colorButton.setOpaque(true);
-            colorButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+            colorButton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK, 1),
+                    BorderFactory.createEmptyBorder(5, 15, 5, 15)));
+
+            colorButton.setForeground(Color.BLACK);
 
             colorButton.addActionListener(e -> {
                 this.selectedColor = key;
 
                 if (selectedButton != null) {
-                    selectedButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                    // Reset previously selected button's border
+                    selectedButton.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.BLACK, 1),
+                            BorderFactory.createEmptyBorder(5, 15, 5, 15)));
                 }
 
-                colorButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+                // Set border of the newly selected button
+                colorButton.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.BLACK, 3),
+                        BorderFactory.createEmptyBorder(5, 15, 5, 15)));
                 selectedButton = colorButton;
             });
 
-            // keybinding to the hashmap value (0,1,2,3 etc)
+            // Keybinding to the hashmap value (0,1,2,3 etc)
             InputMap inputMap = colorGuide.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             ActionMap actionMap = colorGuide.getActionMap();
 
-            inputMap.put(KeyStroke.getKeyStroke(String.valueOf(key)), "clicked" + key);
-            actionMap.put("clicked" + key, new AbstractAction() {
+            inputMap.put(KeyStroke.getKeyStroke(String.valueOf(key + 1)), "clicked" + key + 1);
+            actionMap.put("clicked" + key + 1, new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     colorButton.doClick();
@@ -333,10 +387,11 @@ public class App {
             colorGuide.add(colorButton);
         }
 
-        // preselect UNKNOWN
+        // preselect UNKNOWN (assuming key 0 is UNKNOWN)
         for (Component c : colorGuide.getComponents()) {
             if (c instanceof JButton b && "UNKNOWN".equals(b.getText())) {
                 b.doClick();
+                break; // Stop after finding UNKNOWN
             }
         }
 
@@ -346,7 +401,86 @@ public class App {
 
     public void buildGrid(int rows, int columns) {
         grid.removeAll();
-        grid.setLayout(new GridLayout(rows, columns));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH; // Components will fill their display area where possible
+        gbc.insets = new Insets(0, 0, 0, 0);
+
+        // Calculate cell size based on puzzle dimensions so we can max out the space
+        // used on the screen
+        int maxDim = Math.max(rows, columns);
+        int calculatedCellSize = 30; // Default or minimum size
+
+        if (maxDim <= 10) { // For very small puzzles
+            calculatedCellSize = 60;
+        } else if (maxDim <= 15) { // For medium-small puzzles
+            calculatedCellSize = 50;
+        } else { // For larger puzzles
+            calculatedCellSize = 30;
+        }
+
+        // Top-Left Corner
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 0.1; // Weight for the column clue row
+        gbc.weightx = 0.1; // Weight for the row clue column
+        grid.add(new JPanel(), gbc);
+
+        // Column Clues
+        gbc.gridy = 0;
+        gbc.weighty = 0.1;
+        gbc.weightx = 1.0;
+
+        for (int col = 0; col < columns; col++) {
+            JPanel clueCell = new JPanel();
+            clueCell.setLayout(new BoxLayout(clueCell, BoxLayout.Y_AXIS));
+            clueCell.setAlignmentY(Component.TOP_ALIGNMENT);
+
+            Clue clue = puzzleGrid.columnClues.get(col);
+            ArrayList<Integer> counts = clue.getCounts();
+            ArrayList<Integer> clueColor = clue.getColours();
+
+            for (int i = 0; i < counts.size(); i++) {
+                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
+                int colorKey = clueColor.get(i);
+                String colorCode = colors.getOrDefault(colorKey, "#000000");
+                clueLabel.setForeground(Color.decode(colorCode));
+                clueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                clueCell.add(clueLabel);
+            }
+
+            clueCell.add(Box.createVerticalGlue());
+
+            gbc.gridx = col + 1;
+            grid.add(clueCell, gbc);
+        }
+
+        // Row Clues
+        gbc.gridx = 0;
+        gbc.weightx = 0.1;
+        gbc.weighty = 0.0;
+
+        for (int i = 0; i < rows; i++) {
+            JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
+
+            ArrayList<Integer> counts = puzzleGrid.rowClues.get(i).getCounts();
+            ArrayList<Integer> clueColor = puzzleGrid.rowClues.get(i).getColours();
+
+            for (int j = 0; j < counts.size(); j++) {
+                JLabel clueLabel = new JLabel(String.valueOf(counts.get(j)));
+                int colorKey = clueColor.get(j);
+                String colorCode = colors.getOrDefault(colorKey, "#000000");
+                clueLabel.setForeground(Color.decode(colorCode));
+                clueRow.add(clueLabel);
+            }
+
+            gbc.gridy = i + 1;
+            grid.add(clueRow, gbc);
+        }
+
+        // Main Grid Cells
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -354,42 +488,35 @@ public class App {
                 final int col = j;
                 JButton cell = new JButton();
                 cell.setOpaque(true);
-                // When loading a new puzzle where the colour does not exist (i.e. colour 3
-                // exists in colour cat but not blanks smiler),
-                // the colour and state of the grid are set to 0 (unknown).
+                cell.setPreferredSize(new Dimension(calculatedCellSize, calculatedCellSize));
+
                 if (colors.get(userGrid.grid[i][j]) == null) {
                     userGrid.grid[i][j] = 0;
-                    cell.putClientProperty("state", 0);
                 }
                 cell.setBackground(Color.decode(colors.get(userGrid.grid[i][j])));
+                cell.putClientProperty("state", userGrid.grid[i][j]);
 
                 // Borders
-                if (((i + 1) % 5 == 0) && ((j + 1) % 5 == 0)) {
-                    cell.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 2, Color.BLACK));
-                } else if ((i + 1) % 5 == 0) {
-                    cell.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 1, Color.BLACK));
-                } else if ((j + 1) % 5 == 0) {
-                    cell.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 2, Color.BLACK));
-                } else {
-                    cell.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.BLACK));
-                }
+                int top = (i % 5 == 0) ? 2 : 1; // Thicker top border every 5 rows (relative to puzzle grid)
+                int left = (j % 5 == 0) ? 2 : 1; // Thicker left border every 5 columns (relative to puzzle grid)
+                int bottom = ((i + 1) % 5 == 0 || i == rows - 1) ? 2 : 1; // Thicker bottom every 5 rows or at the last
+                                                                          // row
+                int right = ((j + 1) % 5 == 0 || j == columns - 1) ? 2 : 1; // Thicker right every 5 columns or at the
+                                                                            // last column
 
-                cell.putClientProperty("state", 0);
+                cell.setBorder(BorderFactory.createMatteBorder(top, left, bottom, right, Color.BLACK));
 
                 cell.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
                         isMouseDown = true;
-                        cellClicked((JButton) e.getSource());
+                        cellClicked(cell);
                         userGrid.updateMove(row, col, selectedColor);
 
-                        if (isSaved) {
+                        if (isSaved)
                             allowSave();
-                        }
-
-                        if (!undoAllowed) {
+                        if (!undoAllowed)
                             allowUndo();
-                        }
                     }
 
                     @Override
@@ -400,87 +527,21 @@ public class App {
                     @Override
                     public void mouseEntered(MouseEvent e) {
                         if (isMouseDown) {
-                            cellClicked((JButton) e.getSource());
-                            userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid,
-                                                                          // so the checker will work if they have
-                                                                          // dragged it since all the cells are being
-                                                                          // updated in userGrid.grid
+                            cellClicked(cell);
+                            userGrid.updateMove(row, col, selectedColor);
                         }
                     }
                 });
 
-                grid.add(cell);
+                // Add the cell to the grid using GridBagConstraints
+                gbc.gridx = j + 1; // Column position (shifted by 1 for row clues column)
+                gbc.gridy = i + 1; // Row position (shifted by 1 for column clues row)
+                grid.add(cell, gbc);
             }
         }
+
         grid.revalidate();
         grid.repaint();
-    }
-
-    public void displayClues(ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
-        int rows = rowClues.size();
-        int columns = columnClues.size();
-
-        rowCluePanel.removeAll();
-        columnCluePanel.removeAll();
-        gameArea.removeAll();
-
-        rowCluePanel.setLayout(new GridLayout(rows, 1));
-        for (Clue clue : rowClues) {
-            JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 15));
-            ArrayList<Integer> counts = clue.getCounts();
-            ArrayList<Integer> clueColor = clue.getColours();
-
-            for (int i = 0; i < counts.size(); i++) {
-                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
-                int colorKey = clueColor.get(i);
-                String colorCode = colors.getOrDefault(colorKey, "#000000");
-                clueLabel.setForeground(Color.decode(colorCode));
-                clueRow.add(clueLabel);
-            }
-
-            rowCluePanel.add(clueRow);
-        }
-
-        columnCluePanel.setLayout(new GridLayout(1, columns));
-        for (Clue clue : columnClues) {
-            JPanel clueColumn = new JPanel();
-            clueColumn.setLayout(new BoxLayout(clueColumn, BoxLayout.Y_AXIS));
-            ArrayList<Integer> counts = clue.getCounts();
-            ArrayList<Integer> clueColor = clue.getColours();
-
-            for (int i = 0; i < counts.size(); i++) {
-                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
-                int colorKey = clueColor.get(i);
-                String colorCode = colors.getOrDefault(colorKey, "#000000");
-                clueLabel.setForeground(Color.decode(colorCode));
-                clueColumn.add(clueLabel);
-            }
-
-            columnCluePanel.add(clueColumn);
-        }
-
-        // Top-left spacer
-        JPanel cornerSpacer = new JPanel();
-        cornerSpacer.setPreferredSize(new Dimension(90, 10));
-        cornerSpacer.setBackground(grid.getBackground());
-
-        // Top row: spacer + column clues
-        JPanel topRow = new JPanel(new BorderLayout());
-        topRow.add(cornerSpacer, BorderLayout.WEST);
-        topRow.add(columnCluePanel, BorderLayout.CENTER);
-
-        // Center row: row clues + grid
-        JPanel centerRow = new JPanel(new BorderLayout());
-        centerRow.add(rowCluePanel, BorderLayout.WEST);
-        centerRow.add(grid, BorderLayout.CENTER);
-
-        // Add all to gameArea panel
-        gameArea.setLayout(new BorderLayout());
-        gameArea.add(topRow, BorderLayout.NORTH);
-        gameArea.add(centerRow, BorderLayout.CENTER);
-
-        gameArea.revalidate();
-        gameArea.repaint();
     }
 
     public void cellClicked(JButton cell) {
@@ -529,29 +590,44 @@ public class App {
 
     public void saveGrid() {
         userGrid.saveMoves();
-        JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
+        showTemporaryText("Saved!");
         disableSave();
     }
 
     public void solvePuzzle() {
         int response = JOptionPane.showConfirmDialog(mainPanel,
-        "Are you sure you want the puzzle to be solved?",
-        "Solve Confirmation",
-        JOptionPane.YES_NO_OPTION,
-        JOptionPane.QUESTION_MESSAGE);
+                "Are you sure you want the puzzle to be solved?",
+                "Solve Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
 
         if (response == JOptionPane.YES_OPTION) {
-                   // solver 
+            // solver
         }
+    }
+
+    public void showTemporaryText(String text) {
+        timerText.setText(text);
+        timerText.setVisible(true);
+
+        controls.revalidate();
+        controls.repaint();
+
+        Timer timer = new Timer(3000, e -> {
+            timerText.setVisible(false);
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             App a = new App();
-            JFrame frame = new JFrame(Parser.puzzleName);
+            JFrame frame = new JFrame("Nonograms • " + Parser.puzzleName);
             frame.setContentPane(a.mainPanel);
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            frame.setSize(800, 800);
+            frame.setSize(1000, 800);
             frame.setResizable(false);
             frame.setLocationRelativeTo(null);
 
@@ -559,11 +635,15 @@ public class App {
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                    int response = a.askSave();
-                    if (response == JOptionPane.YES_OPTION) {
-                        a.saveGrid();
-                    } 
-                    if (response == JOptionPane.NO_OPTION || response == JOptionPane.YES_OPTION) {
+                    if (!a.isSaved) {
+                        int response = a.askSave();
+                        if (response == JOptionPane.YES_OPTION) {
+                            a.saveGrid();
+                        }
+                        if (response == JOptionPane.YES_OPTION || response == JOptionPane.NO_OPTION) {
+                            frame.dispose();
+                        }
+                    } else {
                         frame.dispose();
                     }
                     // ensures if the user clicks X it keeps them in the game
