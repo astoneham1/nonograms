@@ -11,6 +11,7 @@ public class Parser {
     public ArrayList<ArrayList<Integer>> rowColour = new ArrayList<>();
     public ArrayList<ArrayList<Integer>> columns = new ArrayList<>();
     public ArrayList<ArrayList<Integer>> columnColour = new ArrayList<>();
+    public static String puzzleName = "";
     //hashmap of the colours and there hex codes
     public LinkedHashMap<String, String> colours = new LinkedHashMap<>();
     
@@ -29,6 +30,7 @@ public class Parser {
         rowOrColumnNum = 0;
         currentArray = "";
         Colours.colours.clear();
+        puzzleName = "";
     }
 
     /**
@@ -60,6 +62,8 @@ public class Parser {
             } else if (key.equals("columns")) {
                 currentArray = "columns";
                 rowOrColumnNum = -1;
+            } else if (key.equals("name")){
+                currentArray = "name";
             }
         }
         switch (tree.getValueType()) {
@@ -122,6 +126,9 @@ public class Parser {
                         }
                         columnColour.get(rowOrColumnNum).add(i);
                     }
+                }
+                else if(currentArray.equals("name")){
+                    puzzleName = st.toString();
                 }
                 break;
             case NUMBER:
@@ -204,6 +211,9 @@ public class Parser {
         getArrayLists(filePath);
         createColourHashmap(colours);
         checkNumColour();
+        if(puzzleName.equals(null) || puzzleName.isEmpty()){
+            throw new JsonFormatException();
+        }
         Grid grid = new Grid(getClues(rows, rowColour), getClues(columns, columnColour), rows.size(), columns.size());
         return grid;
     }
