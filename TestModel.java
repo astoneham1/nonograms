@@ -11,6 +11,7 @@ public class TestModel {
             int col = 4;
             Grid inProgressGrid = new Grid(row, col, "Moves/modelTests.json");
             updateMove(inProgressGrid);
+            undoMove(inProgressGrid);
             saveMove(inProgressGrid);
             // undoMove();
 
@@ -21,6 +22,7 @@ public class TestModel {
     }
 
     public static void updateMove(Grid inProgressGrid) {
+        inProgressGrid.clearAllMoves();
         System.out.println("Prior to initiating move:");
         printGrid(inProgressGrid);
         inProgressGrid.updateMove(2, 2, 3);
@@ -34,12 +36,38 @@ public class TestModel {
     }
 
     public static void saveMove(Grid inProgressGrid) {
+        inProgressGrid.clearAllMoves();
+        System.out.println("Updating Grid:");
+        inProgressGrid.updateMove(2, 2, 3);
+        inProgressGrid.updateMove(2, 1, 3);
+        inProgressGrid.updateMove(2, 3, 3);
+        inProgressGrid.saveMoves();
+        printGrid(inProgressGrid);
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("Grid updated but not saved");
+        inProgressGrid.updateMove(3, 2, 3);
+        inProgressGrid.updateMove(3, 1, 3);
+        printGrid(inProgressGrid);
+        System.out.println("Grid re-loaded from last saved state");
+        // Grid g = newGrid;
+        System.out.println("-----------------------------------------------------------------");
 
 
     }
 
-    public static void undoMove() {
-
+    public static void undoMove(Grid inProgressGrid) {
+        inProgressGrid.clearAllMoves();
+        System.out.println("Making initial moves");
+        inProgressGrid.updateMove(2, 2, 3);
+        inProgressGrid.updateMove(2, 1, 3);
+        inProgressGrid.updateMove(2, 3, 3);
+        printGrid(inProgressGrid);
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("Undoing move");
+        inProgressGrid.undoMoves();
+        inProgressGrid.undoMoves();
+        printGrid(inProgressGrid);
+        System.out.println(ANSI_GREEN + "PASSED:" + ANSI_RESET + "Undo Move Test");
     }
 
     public static void printGrid(Grid inProgressGrid) {
