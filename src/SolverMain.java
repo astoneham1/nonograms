@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SolverMain {
     Grid puzzleGrid;
@@ -39,7 +38,7 @@ public class SolverMain {
                 rowArrangements.get(i).solved = true;
             }   
         }
-        // optimization();
+        optimization();
         solve();
     }
 
@@ -54,21 +53,7 @@ public class SolverMain {
             for (int j = 0; j < colArrangements.size(); j++) { //kills my boy 1, 6
                 compatibleCol(colArrangements.get(j), j);
             }
-            // for (int i = 0; i < rowLen; i++) {
-            //     for (int j = 0; j < colLen; j++) {
-            //         System.out.print(solverGrid.grid[i][j]);
-            //     }
-            //     System.out.println();
-            // }
-            System.out.println("----------------------------------------------");
-            for (Arrangements arrangements : colArrangements) {
-                for (Node n : arrangements.arrangement) {
-                    System.out.print(n.places);
-                }
-                System.out.println();
-            }
         }
-
     }
 
 
@@ -220,12 +205,9 @@ public class SolverMain {
                 if (j == rowLen) {
                     updateRangeRow(0, rowLen, puzzleGrid.columnClues.get(i).colour.get(0), i);
                 }
-                if (rowLen%2 == 0 && j > rowLen / 2) {
+                if (j > rowLen / 2) {
                     updateRangeRow(rowLen - j, rowLen - (rowLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
                 }
-                // if (rowLen%2 != 0 && j > rowLen / 2) {
-                //     updateRangeRow(rowLen - j, rowLen - (rowLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
-                // }
             }
         }
     }
@@ -237,14 +219,14 @@ public class SolverMain {
                 if (j == colLen) {
                     updateRangeCol(0, colLen, puzzleGrid.columnClues.get(i).colour.get(0), i);
                 }
-                if (colLen%2 == 0 && j > colLen / 2) {
-                    updateRangeRow(colLen - j, colLen - (colLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
+                if (j > colLen / 2) {
+                    updateRangeCol(colLen - j, colLen - (colLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
                 }
-                // if (colLen%2 != 0 && j > colLen / 2) {
-                //     updateRangeRow(colLen - j, colLen - (colLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
-                // }
-            }
+                
+            }        
         }
     }
     
 }
+
+
