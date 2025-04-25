@@ -20,16 +20,12 @@ public class Arrangements {
         ArrayList<Node> arrangement = new ArrayList<>();
         // first calculate how much space each clue will take up if placed right next to each other
         ArrayList<Integer> blocks = findBlocks(c);
-        // System.out.println(blocks);
         // calculate the primary arrangement and add it to the arrangement as the first node
         ArrayList<Integer> originalPlace = firstPlacement(blocks);
         // arrangement.add(new Node(c, originalPlace));
         int index = blocks.size() - 1;
         int length = lineLength;
         int place = 0;
-        // System.out.println(blocks.toString());
-        // System.out.println("original place" + originalPlace.toString());
-        // System.out.println("--------------------------------------------------------");
         ArrayList<ArrayList<Integer>> total = getplaces(blocks, index, length, originalPlace, place);
         for (ArrayList<Integer> i: total) {
             arrangement.add(new Node(c, i));

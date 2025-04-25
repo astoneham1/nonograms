@@ -11,10 +11,11 @@ public class TestModel {
             int col = 4;
             Grid inProgressGrid = new Grid(row, col, "Moves/modelTests.json");
             updateMove(inProgressGrid);
+            System.out.println();
             undoMove(inProgressGrid);
+              System.out.println();
             saveMove(inProgressGrid);
-            // undoMove();
-
+              System.out.println();
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -43,13 +44,9 @@ public class TestModel {
         inProgressGrid.updateMove(2, 3, 3);
         inProgressGrid.saveMoves();
         printGrid(inProgressGrid);
-        System.out.println("-----------------------------------------------------------------");
-        System.out.println("Grid updated but not saved");
-        inProgressGrid.updateMove(3, 2, 3);
-        inProgressGrid.updateMove(3, 1, 3);
-        printGrid(inProgressGrid);
+        System.out.println("-----------------------------------------------------------------");;
         System.out.println("Grid re-loaded from last saved state");
-        // Grid g = newGrid;
+        printGrid(inProgressGrid);
         System.out.println("-----------------------------------------------------------------");
 
 
