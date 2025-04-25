@@ -2,7 +2,6 @@ import javax.json.stream.JsonParsingException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,17 +17,17 @@ public class App {
     // COLORS
     private LinkedHashMap<Integer, String> colors = new LinkedHashMap<Integer, String>();
 
-    // STATE
+    // STATES
     private int selectedColor = 0;
     private JButton selectedButton = null;
-
-    // MISC
     private boolean isMouseDown = false;
+    private boolean isSaved = false;
+    private boolean undoAllowed = false;
 
     // UI COMPONENTS
     private JPanel mainPanel;
     private JPanel colorGuide;
-    private JPanel focus;
+    private JPanel gameArea;
     private JPanel grid;
     private JPanel controls;
     private JPanel rowCluePanel;
@@ -38,12 +37,10 @@ public class App {
     private JButton loadFile;
     private JButton reset;
     private JButton check;
-    private JButton save;
     private JButton undo;
-    // method for the user to load a file
+    private JButton solve;
+    private JButton save;
 
-    private boolean isSaved = false;
-    private boolean undoAllowed = false;
 
     // GRIDS
     private Grid puzzleGrid;
@@ -52,10 +49,71 @@ public class App {
 
     public App() {
         setupUI();
-        loadGamePuzzle("fromStart");
+        openGameLauncher();
+    }
 
+    private void setupUI() {
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+
+        // top of screen: color guide
+        colorGuide = new JPanel();
+        colorGuide.setLayout(new GridLayout(1, 1));
+        colorGuide.setBackground(new Color(0xF0F0F0));
+        mainPanel.add(colorGuide, BorderLayout.NORTH);
+
+        // centre gameArea area with grid and clues
+        rowCluePanel = new JPanel();
+        columnCluePanel = new JPanel();
+
+        gameArea = new JPanel(new BorderLayout());
+        gameArea.setBackground(new Color(0xD2D2D2));
+
+        grid = new JPanel();
+        grid.setLayout(new GridLayout(1, 1));
+
+        gameArea.add(grid, BorderLayout.CENTER);
+        gameArea.add(rowCluePanel, BorderLayout.WEST);
+        gameArea.add(columnCluePanel, BorderLayout.NORTH);
+
+        mainPanel.add(gameArea, BorderLayout.CENTER);
+
+        // bottom of screen controls
+        controls = new JPanel();
+        controls.setLayout(new GridLayout(1, 4));
+
+        loadedName = new JLabel("", SwingConstants.CENTER);
+        loadFile = new JButton("Load");
+        reset = new JButton("Reset");
+        check = new JButton("Check");
+        undo = new JButton("Undo");
+        solve = new JButton("Solve");
+        save = new JButton("Save");
+
+        controls.add(loadedName);
+        controls.add(loadFile);
+        controls.add(reset);
+        controls.add(check);
+        controls.add(undo);
+        controls.add(solve);
+        controls.add(save);
+
+        mainPanel.add(controls, BorderLayout.SOUTH);
+
+        // hotkeys
+        loadFile.setMnemonic(KeyEvent.VK_O);
+        reset.setMnemonic(KeyEvent.VK_R);
+        check.setMnemonic(KeyEvent.VK_C);
+        undo.setMnemonic(KeyEvent.VK_U);
+        solve.setMnemonic(KeyEvent.VK_V);
+        save.setMnemonic(KeyEvent.VK_S);
+
+        // action listeners
         loadFile.addActionListener(e -> {
-            saveGame();
+            int response = askSave();
+            if (response == JOptionPane.YES_OPTION) {
+                saveGrid();
+            }
             loadGamePuzzle("fromButton");
         });
 
@@ -82,8 +140,6 @@ public class App {
             JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
-        save.addActionListener(e -> saveGame() );
-
         undo.addActionListener(e -> {
             if (undoAllowed) {
                 userGrid.undoMoves();
@@ -98,73 +154,35 @@ public class App {
                 allowSave();
             }
         });
+
+        solve.addActionListener(e -> solvePuzzle());
+    
+        save.addActionListener(e -> saveGrid());
     }
 
-    private void setupUI() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
+    public void openGameLauncher() {
+        String[] options = { "Play", "How to Play" };
+        int selection = JOptionPane.showOptionDialog(
+                null,
+                "Click play or learn how to!",
+                "Welcome to Nonograms",
+                0,
+                3,
+                null,
+                options,
+                null);
 
-        // top of screen: color guide
-        colorGuide = new JPanel();
-        colorGuide.setLayout(new GridLayout(1, 1));
-        colorGuide.setBackground(new Color(0xF0F0F0));
-        mainPanel.add(colorGuide, BorderLayout.NORTH);
-
-        // centre focus area with grid and clues
-        rowCluePanel = new JPanel();
-        columnCluePanel = new JPanel();
-
-        focus = new JPanel(new BorderLayout());
-        focus.setBackground(new Color(0xD2D2D2));
-
-        grid = new JPanel();
-        grid.setLayout(new GridLayout(1, 1));
-
-        focus.add(grid, BorderLayout.CENTER);
-        focus.add(rowCluePanel, BorderLayout.WEST);
-        focus.add(columnCluePanel, BorderLayout.NORTH);
-
-        mainPanel.add(focus, BorderLayout.CENTER);
-
-        // bottom of screen controls
-        controls = new JPanel();
-        controls.setLayout(new GridLayout(1, 4));
-
-        loadedName = new JLabel("", SwingConstants.CENTER);
-
-        loadFile = new JButton("Load");
-        reset = new JButton("Reset");
-        check = new JButton("Check");
-        save = new JButton("Save");
-        undo = new JButton("Undo");
-
-        controls.add(loadedName);
-        controls.add(loadFile);
-        controls.add(reset);
-        controls.add(check);
-        controls.add(save);
-        controls.add(undo);
-
-        mainPanel.add(controls, BorderLayout.SOUTH);
-
-        // hotkeys
-        loadFile.setMnemonic(KeyEvent.VK_O);
-        reset.setMnemonic(KeyEvent.VK_R);
-        check.setMnemonic(KeyEvent.VK_C);
-        save.setMnemonic(KeyEvent.VK_S);
-        undo.setMnemonic(KeyEvent.VK_U);
-    }
-
-    public void restartApp(String source) {
-        if (source.equals("fromStart")) {
+        if (selection == 0) {
             loadGamePuzzle("fromStart");
-        }
-    }
+        } else if (selection == 1) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Welcome to Nonograms. Your goal is to reveal a hidden\nimage by filling in squares of a grid that correspond to\nclues above/to the side of the column/row. The numbers in\nthe clues represent the length of consecutively filled\nblocks, eg a 5 2 means a block of 5, then a gap of some\namount, then a block of 2. As you fill in squares, use\nprocess of elimination to deduce which squares are\nalso definitely filled or empty. Good luck and have fun!.\n\nHotkeys:\nALT + L: Load Puzzle\nALT + R: Reset Grid\nALT + C: Check Puzzle\nALT + S: Save Puzzle\nALT + U: Undo\n\n Colours can be selected by clicking 1,2,3 etc for each colour");
 
-    public void saveGame() {
-        userGrid.saveMoves();
-        JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
-        disableSave();
+            openGameLauncher();
+        } else {
+            System.exit(0);
+        }
     }
 
     public void loadGamePuzzle(String source) {
@@ -404,7 +422,7 @@ public class App {
 
         rowCluePanel.removeAll();
         columnCluePanel.removeAll();
-        focus.removeAll();
+        gameArea.removeAll();
 
         rowCluePanel.setLayout(new GridLayout(rows, 1));
         for (Clue clue : rowClues) {
@@ -456,18 +474,24 @@ public class App {
         centerRow.add(rowCluePanel, BorderLayout.WEST);
         centerRow.add(grid, BorderLayout.CENTER);
 
-        // Add all to focus panel
-        focus.setLayout(new BorderLayout());
-        focus.add(topRow, BorderLayout.NORTH);
-        focus.add(centerRow, BorderLayout.CENTER);
+        // Add all to gameArea panel
+        gameArea.setLayout(new BorderLayout());
+        gameArea.add(topRow, BorderLayout.NORTH);
+        gameArea.add(centerRow, BorderLayout.CENTER);
 
-        focus.revalidate();
-        focus.repaint();
+        gameArea.revalidate();
+        gameArea.repaint();
     }
 
     public void cellClicked(JButton cell) {
         cell.putClientProperty("state", this.selectedColor);
         cell.setBackground(Color.decode(colors.get(this.selectedColor)));
+    }
+
+    public void restartApp(String source) {
+        if (source.equals("fromStart")) {
+            loadGamePuzzle("fromStart");
+        }
     }
 
     public void allowUndo() {
@@ -494,15 +518,57 @@ public class App {
         isSaved = true;
     }
 
+    public int askSave() {
+        int response = JOptionPane.showConfirmDialog(mainPanel,
+                "Do you want to save your progress before exiting?",
+                "Exit Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        return response;
+    }
+
+    public void saveGrid() {
+        userGrid.saveMoves();
+        JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
+        disableSave();
+    }
+
+    public void solvePuzzle() {
+        int response = JOptionPane.showConfirmDialog(mainPanel,
+        "Are you sure you want the puzzle to be solved?",
+        "Solve Confirmation",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+
+        if (response == JOptionPane.YES_OPTION) {
+                   // solver 
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             App a = new App();
-            JFrame frame = new JFrame("Nonograms");
+            JFrame frame = new JFrame(Parser.puzzleName);
             frame.setContentPane(a.mainPanel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             frame.setSize(800, 800);
             frame.setResizable(false);
             frame.setLocationRelativeTo(null);
+
+            // handle closing the window by asking the user if they want to save
+            frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    int response = a.askSave();
+                    if (response == JOptionPane.YES_OPTION) {
+                        a.saveGrid();
+                    } 
+                    if (response == JOptionPane.NO_OPTION || response == JOptionPane.YES_OPTION) {
+                        frame.dispose();
+                    }
+                    // ensures if the user clicks X it keeps them in the game
+                }
+            });
             frame.setVisible(true);
         });
     }

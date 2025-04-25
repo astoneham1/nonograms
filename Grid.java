@@ -128,7 +128,6 @@ public class Grid {
             }
             reader.close();
             //ensures that the file storing moves for the grid has the most updated moves
-            saveMoves();
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();

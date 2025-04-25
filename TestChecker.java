@@ -13,8 +13,9 @@ public class TestChecker {
         ArrayList<ArrayList<Integer>> blankSmilerCheck = c.checkNonogram(blanksSmiler, rowCluesBlankSmiler, columnCluesBlankSmiler);
         String blanksSmilerMessage = c.getMessage(blankSmilerCheck, rowCluesBlankSmiler.size(), columnCluesBlankSmiler.size());
         String testOneStatus = tc.checkTestStatus(1, blankSmilerCheck, blanksSmilerMessage);
-        System.out.println("\u001B[94mTEST ONE:\u001B[0m Player has the correct blank_smiler grid (All constraints met) and the rest of the cells are marked as 'unknown'.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blanksSmilerMessage + "\n\u001B[94mTEST STATUS:" + testOneStatus + "\n");
+        System.out.println("\u001B[94mTEST ONE:\u001B[0m Player has the correct blanks_smiler grid (All constraints met) and the rest of the cells are marked as 'unknown'.");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blankSmilerCheck.get(0) + blankSmilerCheck.get(1) + "\n" + blanksSmilerMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testOneStatus + "\n");
 
         // Get the grid, clues and message for blanks smiler where the user has successfully completed it and all other cells are 'empty' and print the test.
         int[][] blanksSmilerEmpty = tc.createGrid("blanks_smiler_empty");
@@ -23,8 +24,9 @@ public class TestChecker {
         ArrayList<ArrayList<Integer>> blanksSmilerEmptyCheck = c.checkNonogram(blanksSmilerEmpty, rowCluesBlanksSmilerEmpty, columnCluesBlanksSmilerEmpty);
         String blanksSmilerEmptyMessage = c.getMessage(blanksSmilerEmptyCheck, rowCluesBlanksSmilerEmpty.size(), columnCluesBlanksSmilerEmpty.size());
         String testTwoStatus = tc.checkTestStatus(2, blanksSmilerEmptyCheck, blanksSmilerEmptyMessage);
-        System.out.println("\u001B[94mTEST TWO:\u001B[0m Player has the correct blank_smiler grid (All constraints met) and the rest of the cells are marked as 'empty'. ");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blanksSmilerMessage + "\n\u001B[94mTEST STATUS:" + testTwoStatus + "\n");
+        System.out.println("\u001B[94mTEST TWO:\u001B[0m Player has the correct blanks_smiler grid (All constraints met) and the rest of the cells are marked as 'empty'. ");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blanksSmilerEmptyCheck.get(0) + blanksSmilerEmptyCheck.get(1) + "\n" + blanksSmilerEmptyMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testTwoStatus + "\n");
 
         // Get the grid, clues and message for unsolvable smiler where the user has successfully completed it and print the test.
         int[][] unsolvableSmiler = tc.createGrid("unsolvable_smiler");
@@ -34,7 +36,8 @@ public class TestChecker {
         String unsolvableSmilerMessage = c.getMessage(unsolvableSmilerCheck, rowCluesUnsolvableSmiler.size(), columnCluesUnsolvableSmiler.size());
         String testThreeStatus = tc.checkTestStatus(3, unsolvableSmilerCheck, unsolvableSmilerMessage);
         System.out.println("\u001B[94mTEST THREE:\u001B[0m Player has attempted to solve the unsolvable_smiler.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + unsolvableSmilerMessage + "\n\u001B[94mTEST STATUS:" + testThreeStatus  + "\n");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + unsolvableSmilerCheck.get(0) + unsolvableSmilerCheck.get(1) + "\n" + unsolvableSmilerMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testThreeStatus + "\n");
 
         // Get the grid, clues and message for the unsolvable smiler where the user has attempted to fill the final row by colouring the bottom-right cell
         // (the row has no constraint), and print the test.
@@ -45,7 +48,8 @@ public class TestChecker {
         String unsolvableSmiler2Message = c.getMessage(unsolvableSmiler2Check, rowCluesUnsolvableSmiler2.size(), columnCluesUnsolvableSmiler2.size());
         String testFourStatus = tc.checkTestStatus(4, unsolvableSmiler2Check, unsolvableSmiler2Message);
         System.out.println("\u001B[94mTEST FOUR:\u001B[0m Player has attempted to solve the unsolvable_smiler and has (row 10, column 10) filled.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + unsolvableSmiler2Message + "\n\u001B[94mTEST STATUS:" + testFourStatus + "\n");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + unsolvableSmiler2Check.get(0) + unsolvableSmiler2Check.get(1) + "\n" + unsolvableSmiler2Message);
+        System.out.println("\u001B[94mTEST STATUS:" + testFourStatus + "\n");
 
         // Get the grid, clues and message for the colour wink where the user has completed it and print the test.
         int[][] colourWink = tc.createGrid("colour_wink");
@@ -55,7 +59,8 @@ public class TestChecker {
         String colourWinkMessage = c.getMessage(colourWinkCheck, rowCluesColourWink.size(), columnCluesColourWink.size());
         String testFiveStatus = tc.checkTestStatus(5, colourWinkCheck, colourWinkMessage);
         System.out.println("\u001B[94mTEST FIVE:\u001B[0m Player has the correct colour_wink grid (All constraints met).");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + colourWinkMessage + "\n\u001B[94mTEST STATUS:" + testFiveStatus + "\n");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + colourWinkCheck.get(0) + colourWinkCheck.get(1) + "\n" + colourWinkMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testFiveStatus + "\n");
 
         // Get the grid, clues and message for the multi checks where the user has successfully completed it and print the test.
         int[][] multiChecks1 = tc.createGrid("multi_checks_1");
@@ -64,8 +69,9 @@ public class TestChecker {
         ArrayList<ArrayList<Integer>> multiChecks1Check = c.checkNonogram(multiChecks1, rowCluesMultiChecks1, columnCluesMultiChecks1);
         String multiChecks1Message = c.getMessage(multiChecks1Check, rowCluesMultiChecks1.size(), columnCluesMultiChecks1.size());
         String testSixStatus = tc.checkTestStatus(6, multiChecks1Check, multiChecks1Message);
-        System.out.println("\u001B[94mTEST SIX:\u001B[0m Player has the correct multi_checks_1 grid (All constraints met).");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multiChecks1Message + "\n\u001B[94mTEST STATUS:" + testSixStatus + "\n");
+        System.out.println("\u001B[94mTEST SIX:\u001B[0m Player has the correct multi_checks grid (All constraints met).");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multiChecks1Check.get(0) + multiChecks1Check.get(1) + "\n" + multiChecks1Message);
+        System.out.println("\u001B[94mTEST STATUS:" + testSixStatus + "\n");
 
         // Get the grid, clue and message for multi checks where the user has successfully completed it and print the test.
         // Since the constraints are the same but the solution is different this tests the checker can handle multiple correct solutions.
@@ -75,8 +81,9 @@ public class TestChecker {
         ArrayList<ArrayList<Integer>> multiChecks2Check = c.checkNonogram(multiChecks2, rowCluesMultiChecks2, columnCluesMultiChecks2);
         String multiChecks2Message = c.getMessage(multiChecks2Check, rowCluesMultiChecks2.size(), columnCluesMultiChecks2.size());
         String testSevenStatus = tc.checkTestStatus(7, multiChecks2Check, multiChecks2Message);
-        System.out.println("\u001B[94mTEST SEVEN:\u001B[0m Player has the correct multi_checks_2 grid (All constraints met).");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multiChecks2Message + "\n\u001B[94mTEST STATUS:" + testSevenStatus + "\n");
+        System.out.println("\u001B[94mTEST SEVEN:\u001B[0m Player has the correct multi_checks grid (All constraints met).");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multiChecks2Check.get(0) + multiChecks2Check.get(1) + "\n" + multiChecks2Message);
+        System.out.println("\u001B[94mTEST STATUS:" + testSevenStatus + "\n");
 
         // Get the grid, clues and message for colour cat where the user has successfully completed it and print the test.
         int[][] colourCat = tc.createGrid("colour_cat");
@@ -86,7 +93,8 @@ public class TestChecker {
         String colourCatMessage = c.getMessage(colourCatCheck, rowCluesColourCat.size(), columnCluesColourCat.size());
         String testEightStatus = tc.checkTestStatus(8, colourCatCheck, colourCatMessage);
         System.out.println("\u001B[94mTEST EIGHT:\u001B[0m Player has the correct colour_cat grid (All constraints met).");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + colourCatMessage + "\n\u001B[94mTEST STATUS:" + testEightStatus + "\n");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + colourCatCheck.get(0) + colourCatCheck.get(1) + "\n" + colourCatMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testEightStatus + "\n");
 
         // Get the grid, clues and message for cat where the user has made one error, and print the test.
         int[][] incorrectCat = tc.createGrid("incorrect_cat");
@@ -96,7 +104,8 @@ public class TestChecker {
         String incorrectCatMessage = c.getMessage(incorrectCatCheck, rowCluesIncorrectCat.size(), columnCluesIncorrectCat.size());
         String testNineStatus = tc.checkTestStatus(9, incorrectCatCheck, incorrectCatMessage);
         System.out.println("\u001B[94mTEST NINE:\u001B[0m Player has an incorrect cat grid with one error in row 2, column 7.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + incorrectCatMessage + "\n\u001B[94mTEST STATUS:" + testNineStatus + "\n");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + incorrectCatCheck.get(0) + incorrectCatCheck.get(1) + "\n" + incorrectCatMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testNineStatus + "\n");
 
         // Get the grid, clues and message for cat where the user has made multiple different errors, and print the test.
         int[][] multipleIncorrectCat = tc.createGrid("multiple_incorrect_cat");
@@ -106,7 +115,8 @@ public class TestChecker {
         String multipleIncorrectCatMessage = c.getMessage(multipleIncorrectCatCheck, rowCluesMultipleIncorrectCat.size(), columnCluesMultipleIncorrectCat.size());
         String testTenStatus = tc.checkTestStatus(10, multipleIncorrectCatCheck, multipleIncorrectCatMessage);
         System.out.println("\u001B[94mTEST TEN:\u001B[0m Player has an incorrect cat grid with multiple errors in rows 1, 4, 8, 10 and columns 3, 5, 6, 9.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multipleIncorrectCatMessage + "\n\u001B[94mTEST STATUS:" + testTenStatus + "\n");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + multipleIncorrectCatCheck.get(0) + multipleIncorrectCatCheck.get(1) + "\n" + multipleIncorrectCatMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testTenStatus + "\n");
     
         // Get the grid, clues and message for cat where the user has not filled any of the grid in correctly, and print the test.
         int[][] blankGridCat = tc.createGrid("blank_grid_cat");
@@ -116,7 +126,8 @@ public class TestChecker {
         String blankGridCatMessage = c.getMessage(blankGridCatCheck, rowCluesBlankGridCat.size(), columnCluesBlankGridCat.size());
         String testElevenStatus = tc.checkTestStatus(11, blankGridCatCheck, blankGridCatMessage);
         System.out.println("\u001B[94mTEST ELEVEN:\u001B[0m Player has an incorrect cat grid which is completely blank (filled with unknown and empty cells only). All constraints failed.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blankGridCatMessage + "\n\u001B[94mTEST STATUS:" + testElevenStatus + "\n");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m\n" + blankGridCatCheck.get(0) + blankGridCatCheck.get(1) + "\n" + blankGridCatMessage);
+        System.out.println("\u001B[94mTEST STATUS:" + testElevenStatus + "\n");
 
         // Create a line and a clue, and get the message, where the user has entered too many cells (i.e. the counts are wrong), and print the test.
         int[] errorType1 = {2, 2, 2, 2, 2, 2}; // Clue is 5 but found 6
@@ -198,7 +209,37 @@ public class TestChecker {
         Boolean correctLine5Status = c.checkLine(correctLine5, clueCorrectLine5);
         String testTwentyOneStatus = tc.checkTestStatus(21, correctLine5Status);
         System.out.println("\u001B[94mTEST TWENTY ONE:\u001B[0m The line has 2 squares in colour 2, 1 unknown, and 1 square in colour 2, which meets the constraint.");
-        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine5Status + "\n\u001B[94mTEST STATUS:" + testTwentyOneStatus + "\u001B[0m");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + correctLine5Status + "\n\u001B[94mTEST STATUS:" + testTwentyOneStatus + "\n");
+    
+        // Create a grid and get the columns, and check if they are the expected columns, and print the test.
+        int[][] testGetColumn = tc.createGrid("test_get_column");
+        int[] column1 = c.getColumn(testGetColumn, 0);
+        int[] column2 = c.getColumn(testGetColumn, 1);
+        int[] column3 = c.getColumn(testGetColumn, 2);
+        String testTwentyTwoStatus = tc.checkTestStatus(column1, column2, column3);
+        System.out.println("\u001B[94mTEST TWENTY TWO:\u001B[0m Tests the columns are successfully extracted from the 2D array grid.");
+        System.out.println("\u001B[94mTEST OUTPUT:\n\u001B[0m" + tc.getArrayString(column1) + "\n" + tc.getArrayString(column2) + "\n" + tc.getArrayString(column3));
+        System.out.println("\u001B[94mTEST STATUS:" + testTwentyTwoStatus + "\n");
+
+        // Create the number of lines and incorrect lines and check if the progress calculation is correct, and print the test.
+        int incorrectRowsWhole = 4;
+        int incorrectColumnsWhole = 4;
+        int totalRowsWhole = 8;
+        int totalColumnsWhole = 8;
+        double progressWhole = c.getProgress(incorrectRowsWhole, incorrectRowsWhole, totalRowsWhole, totalColumnsWhole);
+        String testTwentyThreeStatus = tc.checkTestStatus(1, progressWhole);
+        System.out.println("\u001B[94mTEST TWENTY THREE:\u001B[0m The progress for 16 total lines where 8 are incorrect (and so 8 are correct).");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + progressWhole + "\n\u001B[94mTEST STATUS:" + testTwentyThreeStatus + "\n");
+
+        // Create the number of lines and incorrect lines and check if the progress calculation is correct, and print the test.
+        int incorrectRowsDecimal = 2;
+        int incorrectColumnsDecimal = 3;
+        int totalRowsDecimal = 14;
+        int totalColumnsDecimal = 12;
+        double progressDecimal = c.getProgress(incorrectRowsDecimal, incorrectColumnsDecimal, totalRowsDecimal, totalColumnsDecimal);
+        String testTwentyFourStatus = tc.checkTestStatus(2, progressDecimal);
+        System.out.println("\u001B[94mTEST TWENTY FOUR:\u001B[0m The progress for 26 total lines where 5 are incorrect (and so 21 are correct).");
+        System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + progressDecimal + "\n\u001B[94mTEST STATUS:" + testTwentyFourStatus + "\u001B[0m");
     }
 
     public int[][] createGrid(String name) {
@@ -353,6 +394,15 @@ public class TestChecker {
                 {0, 1, 0, 0, 1, 0, 1, 0, 1, 0},
                 {0, 1, 1, 0, 0, 0, 1, 0, 1, 0},
                 {1, 1, 0, 0, 0, 1, 1, 0, 0, 1}
+            };
+        }
+        else if (name.equals("test_get_column")) {
+            grid = new int[][] {
+                {0, 1, 5},
+                {2, 3, 4},
+                {4, 5, 3},
+                {6, 7, 2},
+                {8, 9, 1}
             };
         }
         return grid;
@@ -679,7 +729,7 @@ public class TestChecker {
                         status = "\u001B[32m Pass";
                 }
                 else {
-                    status = "\u001B[32m Pass";
+                    status = "\u001B[31m Fail";
                 }
                 break;
             case 9:
@@ -743,5 +793,61 @@ public class TestChecker {
                 break;
         }
         return status;
+    }
+
+    public String checkTestStatus(int[] column1, int[] column2, int[] column3) {
+        String status = "";
+        int[] correctColumn1 = new int[] {0, 2, 4, 6, 8};
+        int[] correctColumn2 = new int[] {1, 3, 5, 7, 9};
+        int[] correctColumn3 = new int[] {5, 4, 3, 2, 1};
+        
+        if (Arrays.equals(column1, correctColumn1) && Arrays.equals(column2, correctColumn2) && Arrays.equals(column3, correctColumn3)) {
+            status = "\u001B[32m Pass";
+        }
+        else {
+            status = "\u001B[31m Fail";
+        }
+        
+        return status;
+    }
+
+    public String checkTestStatus(int testCaseNumber, double progress) {
+        String status = "";
+
+        switch(testCaseNumber) {
+            case 1:
+                if (progress == 50.0) {
+                    status = "\u001B[32m Pass";
+                }
+                else {
+                    status = "\u001B[31m Fail";
+                }
+                break;
+            case 2:
+                if (progress == 80.8) {
+                    status = "\u001B[32m Pass";
+                }
+                else {
+                    status = "\u001B[31m Fail";
+                }
+                break;
+        }
+
+        return status;
+    }
+
+    public String getArrayString(int[] array) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (int i = 0; i < array.length; i++) {
+            sb.append(array[i]);
+            if (i != array.length - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        String arrayString = sb.toString();
+        return arrayString;
     }
 }
