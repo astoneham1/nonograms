@@ -11,7 +11,7 @@ public class Parser {
     public ArrayList<ArrayList<Integer>> rowColour = new ArrayList<>();
     public ArrayList<ArrayList<Integer>> columns = new ArrayList<>();
     public ArrayList<ArrayList<Integer>> columnColour = new ArrayList<>();
-    public static String puzzleName;
+    public static String puzzleName = "";
     //hashmap of the colours and there hex codes
     public LinkedHashMap<String, String> colours = new LinkedHashMap<>();
     
@@ -30,7 +30,7 @@ public class Parser {
         rowOrColumnNum = 0;
         currentArray = "";
         Colours.colours.clear();
-        puzzleName = null;
+        puzzleName = "";
     }
 
     /**
@@ -211,7 +211,7 @@ public class Parser {
         getArrayLists(filePath);
         createColourHashmap(colours);
         checkNumColour();
-        if(puzzleName.equals(null)){
+        if(puzzleName.equals(null) || puzzleName.isEmpty()){
             throw new JsonFormatException();
         }
         Grid grid = new Grid(getClues(rows, rowColour), getClues(columns, columnColour), rows.size(), columns.size());
