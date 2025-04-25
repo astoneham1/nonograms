@@ -1,7 +1,7 @@
 # NONOGRAMS GAME
 ##### GROUP 05
 
-To compile, run the following bash command:
+To compile and run, execute the following bash command:
 
 `./run.sh`
 
