@@ -11,7 +11,7 @@ public class TestMain {
     public static void main(String [] args) {
     try {
         Parser p = new Parser();
-        Grid g = p.getGrid("Jsons/colour_wink.json");
+        Grid g = p.getGrid("Jsons/smiler.json");
         SolverMain s = new SolverMain(g, true);
         s.solver();
         for (int i = 0; i < s.solverGrid.rows; i++) {
@@ -20,17 +20,7 @@ public class TestMain {
             }
             System.out.println();
         }
-
-        System.out.println("----------------------------------------------------------");
-
-        // Arrangements a = new Arrangements(g, g.columns, g.rowClues.get(0));
-        // for (Node n: a.arrangement) {
-        //     System.out.println(n.places);
-        // }
-        // s.compatibleRow(a, 0);
-
-        System.out.println("----------------------------------------------------------");
-        
+       
 
 
     } catch (Exception e) {
@@ -57,6 +47,25 @@ public class TestMain {
     }
 
 }
+
+
+ // for (int i = 0; i < s.solverGrid.rows; i++) {
+        //     for (int j = 0; j < s.solverGrid.columns; j++) {
+        //         System.out.print(prettyPrint(s.solverGrid.grid[i][j]));
+        //     }
+        //     System.out.println();
+        // }
+
+        // System.out.println("----------------------------------------------------------");
+
+        // // Arrangements a = new Arrangements(g, g.columns, g.rowClues.get(0));
+        // // for (Node n: a.arrangement) {
+        // //     System.out.println(n.places);
+        // // }
+        // // s.compatibleRow(a, 0);
+
+        // System.out.println("----------------------------------------------------------");
+        
 
 
         // SolverMain s = new SolverMain(g, true);

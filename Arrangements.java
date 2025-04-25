@@ -8,13 +8,13 @@ public class Arrangements {
     boolean solved;
 
 
-    public Arrangements(Grid inProgress, int lineLength, Clue c) {
+    public Arrangements(int lineLength, Clue c) {
         this.lineLength = lineLength;
-        this.arrangement = populateArrangement(inProgress, lineLength, c);
+        this.arrangement = populateArrangement(lineLength, c);
     }
 
 
-    public ArrayList<Node> populateArrangement(Grid inProgress, int lineLength, Clue c) {
+    public ArrayList<Node> populateArrangement(int lineLength, Clue c) {
         ArrayList<Node> arrangement = new ArrayList<>();
         // first calculate how much space each clue will take up if placed right next to each other
         ArrayList<Integer> blocks = findBlocks(c);
@@ -23,13 +23,18 @@ public class Arrangements {
         arrangement.add(new Node(c, primaryPlacement));
         int trailingBlock = 0;
         ArrayList<Integer> placement = new ArrayList<>(primaryPlacement);
-        for (int i = blocks.size() - 1; i >= 0; i--) {
-            while (placement.get(i) + blocks.get(i) + trailingBlock < lineLength) {
+        for (int i = blocks.size() - 1; i >= 0; i--) { //get rightmost block and incrementally decreases
+            int increasePlacement = 0;
+            while (placement.get(i) + blocks.get(i) + trailingBlock <= lineLength) {
+                for(int j = i; i < placement.size(); j++){
+                    placement.set(i, placement.get(j) + increasePlacement);
+                }
                 // modify placement for all the blocks
                 for (int j = i; j < blocks.size(); j++) {
                     placement.set(j, placement.get(j) + 1);
                 }
                 arrangement.add(new Node(c, new ArrayList<Integer>(placement)));
+                increasePlacement+=1;
             }
             placement = new ArrayList<Integer>(primaryPlacement);
             trailingBlock += blocks.get(i);
@@ -37,6 +42,22 @@ public class Arrangements {
         // each node will contain the Clue c and then an integer array for their placement
         return arrangement;
     }
+
+    // public void addVariations(ArrayList<Integer> placement, ArrayList<Integer> blocks, Clue c, int trailingBlock, int sumBlocks, int lineLength) {
+    //     if (/*the current block + trailing == linelength && i > 0 */) {
+    //         i--;
+    //     }
+    //     else {
+    //         // current block placement + 1
+    //     }
+    //     if (sumBlocks + placement.get(0) == lineLength) {
+    //         arrangement.add(new Node(c, placement));
+    //         return;
+    //     }
+    //     else if () {
+
+    //     } 
+    // }
 
     // calculates the first, most compact placement of the blocks from the right/top
     public ArrayList<Integer> firstPlacement(ArrayList<Integer> blocks) {

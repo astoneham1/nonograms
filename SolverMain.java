@@ -25,22 +25,36 @@ public class SolverMain {
         colArrangements = new ArrayList<>();
         rowArrangements = new ArrayList<>();
         for (int i = 0; i < colNum; i++) {
-            colArrangements.add(new Arrangements(puzzleGrid, colLen, puzzleGrid.columnClues.get(i)));
+            colArrangements.add(new Arrangements(colLen, puzzleGrid.columnClues.get(i)));
             if (colArrangements.get(i).arrangement.size() == 1) {
                 drawNodeCol(colArrangements.get(i).arrangement.get(0), i);
                 colArrangements.get(i).solved = true; 
             }   
         }
- 
         for (int i = 0; i < rowNum; i++) {
-            rowArrangements.add(new Arrangements(puzzleGrid, rowLen, puzzleGrid.rowClues.get(i)));
+            rowArrangements.add(new Arrangements(rowLen, puzzleGrid.rowClues.get(i)));
             if (rowArrangements.get(i).arrangement.size() == 1) {
                 drawNodeRow(rowArrangements.get(i).arrangement.get(0), i);
                 rowArrangements.get(i).solved = true;
             }   
         }
- 
-
+        System.out.println("ROWS");
+        for (int i = 0; i < rowArrangements.size(); i++) {
+            System.out.print(i);
+            for (Node n: rowArrangements.get(i).arrangement) {
+                System.out.print(n.places);
+            } 
+            System.out.println();
+        }
+        System.out.println("----------------------------------------------------------");
+        System.out.println("COLS");
+        for (int i = 0; i < colArrangements.size(); i++) {
+            System.out.print(i);
+            for (Node n: colArrangements.get(i).arrangement) {
+                System.out.print(n.places);
+            } 
+            System.out.println();
+        }
         solve();
     }
 
@@ -48,36 +62,78 @@ public class SolverMain {
 // solver
 // recursive funct that will back track and then solve, need to implement
     public void solve() {
-        // loop through the rows and columns and check their arrangements 
-        for (int c = 0; c < colNum; c ++) {
-            System.out.println("Column" + c + "----------------------------------------------");
-            compatibleCol(colArrangements.get(c), c);
-            // if (compatibleCol(colArrangements.get(c), c)) {
-        //         for (int r = 0; r < rowNum; r ++) {
-
-        //         }    
-        }
-        // for (int r = 0; r < rowNum; r ++) {
-        //     System.out.println("Row" + c + "----------------------------------------------");
+        // while (!checkSolved()) {
+            for (int i = 0; i < rowArrangements.size(); i++) {
+                compatibleRow(rowArrangements.get(i), i);
+            }
+            for (int j = 0; j < colArrangements.size(); j++) {
+                // compatibleRow(rowArrangements.get(i), i);
+                compatibleCol(colArrangements.get(j), j);
+            }
+            System.out.println("----------------------------------------------------------");
+            for (int j = 0; j < colArrangements.size(); j++) {
+                compatibleCol(colArrangements.get(j), j);
+            }
+            for (int i = 0; i < rowArrangements.size(); i++) {
+                compatibleRow(rowArrangements.get(i), i);
+            }
+            System.out.println("----------------------------------------------------------");
+            for (int j = 0; j < colArrangements.size(); j++) {
+                compatibleCol(colArrangements.get(j), j);
+            }
+            for (int i = 0; i < rowArrangements.size(); i++) {
+                compatibleRow(rowArrangements.get(i), i);
+            }
+            System.out.println("----------------------------------------------------------");
+            for (int j = 0; j < colArrangements.size(); j++) {
+                compatibleCol(colArrangements.get(j), j);
+            }
+            for (int i = 0; i < rowArrangements.size(); i++) {
+                compatibleRow(rowArrangements.get(i), i);
+            }
         // }
-        //     else {
-        //         // recurse and try a new col state
-        //     }
+        // if (!checkSolved()) {
+        //     solve();
         // }
     }
 
-// check line compatability
 
+// check solved
+    public boolean checkSolved() {
+        for (int i = 0; i < rowArrangements.size(); i++) {
+            if (compatibleRow(rowArrangements.get(i), i) == false) {
+                return false;
+            }
+        }
+        for (int j = 0; j < colArrangements.size(); j++) {
+            if (compatibleCol(colArrangements.get(j), j)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+// check line compatability
     // these methods go through a set of arrangements and check if they are compatible and if there is a correct arrangement, assign a node state
     public boolean compatibleRow(Arrangements a, int rowNum) {
+        int i = 0;
         if (a.solved == true) {
             return true;
         }
-        for (Node n : a.arrangement) {
-            if (checkNodeRow(n, rowNum)) {
-                a.solved = true;
-                return true;
+        while (i < a.arrangement.size()) {
+            if (checkNodeRow(a.arrangement.get(i), rowNum) == false) {
+                a.arrangement.remove(i);
             }
+            i++;
+        }
+        for (Node n: a.arrangement) {
+            System.out.print(n.places);
+        }
+        System.out.println();
+        if (a.arrangement.size() == 1) {
+            a.solved = true;
+            drawNodeRow(a.arrangement.get(0), rowNum);
+            return true;
         }
         a.solved = false;
         return false;
@@ -85,14 +141,25 @@ public class SolverMain {
 
 
     public boolean compatibleCol(Arrangements a, int colNum) {
+        int i = 0;
         if (a.solved == true) {
             return true;
         }
-        for (Node n : a.arrangement) {
-            if (checkNodeCol(n, colNum)) {
-                a.solved = true;
-                return true;
+        while (i < a.arrangement.size()) {
+            if (checkNodeCol(a.arrangement.get(i), colNum) == false) {
+                a.arrangement.remove(i);
             }
+            i++;
+        }
+        // System.out.println(a.arrangement.size());
+        // for (Node n: a.arrangement) {
+        //     System.out.print(n.places);
+        // }
+        // System.out.println();
+        if (a.arrangement.size() == 1) {
+            a.solved = true;
+            drawNodeCol(a.arrangement.get(0), colNum);
+            return true;
         }
         a.solved = false;
         return false;
@@ -122,10 +189,6 @@ public class SolverMain {
                 return false;
             }
         }
-        for (int i: testArr) {
-            System.out.print(i);
-        }
-        System.out.println();
         return true;
     }
 
@@ -173,6 +236,14 @@ public class SolverMain {
             solverGrid.updateMove(i, col, color);
         }   
     }
+
+    
+}
+
+
+
+
+
 
             // for (int i = 0; i < n.places.size(); i ++) {
         //     // checks that there are no incorrect colors in the colored sections
@@ -369,5 +440,29 @@ public class SolverMain {
     //         }
     //     }
     // }
-    
-}
+
+
+            // // loop through the rows and columns and check their arrangements 
+        // for (int c = 0; c < colNum; c ++) {
+        //     System.out.println("Column" + c + "----------------------------------------------");
+        //     compatibleCol(colArrangements.get(c), c);
+        //     // if (compatibleCol(colArrangements.get(c), c)) {
+        // //         for (int r = 0; r < rowNum; r ++) {
+
+        // //         }    
+        // }
+        // for (int r = 0; r < rowNum; r ++) {
+        //     System.out.println("Row" + r + "----------------------------------------------");
+        //     compatibleRow(rowArrangements.get(r), r);
+        //     // if (compatibleCol(colArrangements.get(c), c)) {
+        // //         for (int r = 0; r < rowNum; r ++) {
+
+        // //         }    
+        // }
+        // // for (int r = 0; r < rowNum; r ++) {
+        // //     System.out.println("Row" + c + "----------------------------------------------");
+        // // }
+        // //     else {
+        // //         // recurse and try a new col state
+        // //     }
+        // // }
