@@ -226,7 +226,7 @@ public class TestChecker {
         int incorrectColumnsWhole = 4;
         int totalRowsWhole = 8;
         int totalColumnsWhole = 8;
-        double progressWhole = c.getProgress(incorrectRowsWhole, incorrectRowsWhole, totalRowsWhole, totalColumnsWhole);
+        double progressWhole = c.getProgress(incorrectRowsWhole, incorrectColumnsWhole, totalRowsWhole, totalColumnsWhole);
         String testTwentyThreeStatus = tc.checkTestStatus(1, progressWhole);
         System.out.println("\u001B[94mTEST TWENTY THREE:\u001B[0m The progress for 16 total lines where 8 are incorrect (and so 8 are correct).");
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + progressWhole + "\n\u001B[94mTEST STATUS:" + testTwentyThreeStatus + "\n");

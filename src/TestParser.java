@@ -95,7 +95,6 @@ public class TestParser {
 
         lines = new ArrayList<>();
         colours = new ArrayList<>();
-        ArrayList<Clue> cluesCorrect1 = new ArrayList<>();
         
         try {
             boolean passed = true;
