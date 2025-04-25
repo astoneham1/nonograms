@@ -41,7 +41,6 @@ public class App {
     private JButton solve;
     private JButton save;
 
-
     // GRIDS
     private Grid puzzleGrid;
     private Grid userGrid;
@@ -62,10 +61,7 @@ public class App {
         colorGuide.setBackground(new Color(0xF0F0F0));
         mainPanel.add(colorGuide, BorderLayout.NORTH);
 
-        // centre gameArea area with grid and clues
-        rowCluePanel = new JPanel();
-        columnCluePanel = new JPanel();
-
+        // centre gameArea area with grid
         gameArea = new JPanel(new BorderLayout());
         gameArea.setBackground(new Color(0xD2D2D2));
 
@@ -73,8 +69,6 @@ public class App {
         grid.setLayout(new GridLayout(1, 1));
 
         gameArea.add(grid, BorderLayout.CENTER);
-        gameArea.add(rowCluePanel, BorderLayout.WEST);
-        gameArea.add(columnCluePanel, BorderLayout.NORTH);
 
         mainPanel.add(gameArea, BorderLayout.CENTER);
 
@@ -118,11 +112,16 @@ public class App {
         });
 
         check.addActionListener(e -> {
-            // Create checker object, call the checkNonogram method and get the message to
-            // output to the screen.
+            // Create a modified grid without the clue cells for checking
+            int[][] checkGrid = new int[puzzleGrid.rows][puzzleGrid.columns];
+            for (int i = 0; i < puzzleGrid.rows; i++) {
+                for (int j = 0; j < puzzleGrid.columns; j++) {
+                    checkGrid[i][j] = userGrid.grid[i][j];
+                }
+            }
+
             Checker c = new Checker();
-            ArrayList<ArrayList<Integer>> a = c.checkNonogram(userGrid.grid, puzzleGrid.rowClues,
-                    puzzleGrid.columnClues);
+            ArrayList<ArrayList<Integer>> a = c.checkNonogram(checkGrid, puzzleGrid.rowClues, puzzleGrid.columnClues);
             String message = c.getMessage(a, puzzleGrid.rowClues.size(), puzzleGrid.columnClues.size());
             JOptionPane.showMessageDialog(mainPanel, message);
         });
@@ -156,7 +155,7 @@ public class App {
         });
 
         solve.addActionListener(e -> solvePuzzle());
-    
+
         save.addActionListener(e -> saveGrid());
     }
 
@@ -264,7 +263,7 @@ public class App {
 
                     displayColors();
                     buildGrid(puzzleGrid.rows, puzzleGrid.columns);
-                    displayClues(rowClues, columnClues);
+                    // displayClues(rowClues, columnClues);
                 } else if (source.equals("fromStart")) {
                     System.exit(0);
                 }
@@ -346,24 +345,114 @@ public class App {
 
     public void buildGrid(int rows, int columns) {
         grid.removeAll();
-        grid.setLayout(new GridLayout(rows, columns));
+        // Add +1 for column clues row and +1 for row clues column
+        grid.setLayout(new GridLayout(rows + 1, columns + 1));
 
+        // Much smaller cell size - reduce grid cells significantly
+        Dimension cellSize = new Dimension(20, 20); // Smaller grid cells
+
+        // Make clue panels larger with fixed minimum width/height
+        int minClueWidth = 50; // Minimum width for row clue panels
+        int minClueHeight = 40; // Minimum height for column clue cells
+
+        // Add empty corner cell (top-left corner)
+        JPanel cornerCell = new JPanel();
+        cornerCell.setOpaque(false);
+        cornerCell.setBorder(BorderFactory.createEmptyBorder());
+        cornerCell.setPreferredSize(new Dimension(minClueWidth, minClueHeight));
+        grid.add(cornerCell);
+
+        // Add column clues (top row)
+        for (int j = 0; j < columns; j++) {
+            JPanel cluePanel = new JPanel();
+            cluePanel.setLayout(new BoxLayout(cluePanel, BoxLayout.Y_AXIS));
+            cluePanel.setOpaque(false);
+            cluePanel.setBorder(BorderFactory.createEmptyBorder());
+            cluePanel.setPreferredSize(new Dimension(cellSize.width, minClueHeight));
+
+            // Get column clue and add labels for each clue number
+            Clue columnClue = puzzleGrid.columnClues.get(j);
+            ArrayList<Integer> counts = columnClue.getCounts();
+            ArrayList<Integer> clueColor = columnClue.getColours();
+
+            // Use larger font for clues
+            Font clueFont = new Font("Arial", Font.BOLD, 12);
+
+            for (int i = 0; i < counts.size(); i++) {
+                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
+                clueLabel.setFont(clueFont);
+                clueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                int colorKey = clueColor.get(i);
+                String colorCode = colors.getOrDefault(colorKey, "#000000");
+                clueLabel.setForeground(Color.decode(colorCode));
+
+                cluePanel.add(clueLabel);
+            }
+
+            grid.add(cluePanel);
+        }
+
+        // For each row
         for (int i = 0; i < rows; i++) {
+            final int row = i;
+
+            // Add row clue (first column of each row)
+            JPanel rowCluePanel = new JPanel();
+            rowCluePanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 2));
+            rowCluePanel.setOpaque(false);
+            rowCluePanel.setBorder(BorderFactory.createEmptyBorder());
+            rowCluePanel.setPreferredSize(new Dimension(minClueWidth, cellSize.height));
+            rowCluePanel.setMinimumSize(new Dimension(minClueWidth, cellSize.height));
+
+            // Get row clue and add labels for each clue number
+            Clue rowClue = puzzleGrid.rowClues.get(i);
+            ArrayList<Integer> counts = rowClue.getCounts();
+            ArrayList<Integer> clueColor = rowClue.getColours();
+
+            // Use larger font for clues
+            Font clueFont = new Font("Arial", Font.BOLD, 12);
+
+            for (int k = 0; k < counts.size(); k++) {
+                String textForLabel = "";
+                if (k < counts.size() - 1) {
+                    textForLabel = String.valueOf(counts.get(k)) + ",";
+                } else {
+                    textForLabel = String.valueOf(counts.get(k));
+                }
+
+                JLabel clueLabel = new JLabel(textForLabel);
+                clueLabel.setFont(clueFont);
+                int colorKey = clueColor.get(k);
+                String colorCode = colors.getOrDefault(colorKey, "#000000");
+                clueLabel.setForeground(Color.decode(colorCode));
+                rowCluePanel.add(clueLabel);
+            }
+
+            grid.add(rowCluePanel);
+
+            // Add cells for this row
             for (int j = 0; j < columns; j++) {
-                final int row = i;
                 final int col = j;
                 JButton cell = new JButton();
                 cell.setOpaque(true);
-                // When loading a new puzzle where the colour does not exist (i.e. colour 3
-                // exists in colour cat but not blanks smiler),
-                // the colour and state of the grid are set to 0 (unknown).
+                cell.setPreferredSize(cellSize);
+                cell.setMinimumSize(cellSize);
+                cell.setMaximumSize(cellSize);
+                // Remove any text or margins from button
+                cell.setMargin(new Insets(0, 0, 0, 0));
+                cell.setBorderPainted(true);
+                cell.setContentAreaFilled(true);
+                cell.setFocusPainted(false);
+
+                // Set cell color based on the user grid
                 if (colors.get(userGrid.grid[i][j]) == null) {
                     userGrid.grid[i][j] = 0;
                     cell.putClientProperty("state", 0);
                 }
                 cell.setBackground(Color.decode(colors.get(userGrid.grid[i][j])));
 
-                // Borders
+                // Apply appropriate borders
                 if (((i + 1) % 5 == 0) && ((j + 1) % 5 == 0)) {
                     cell.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 2, Color.BLACK));
                 } else if ((i + 1) % 5 == 0) {
@@ -374,9 +463,11 @@ public class App {
                     cell.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.BLACK));
                 }
 
-                cell.putClientProperty("state", 0);
+                cell.putClientProperty("state", userGrid.grid[i][j]);
 
+                // Add cell click handling - your existing mouse listener code
                 cell.addMouseListener(new MouseAdapter() {
+                    // Your existing mouse listener implementation
                     @Override
                     public void mousePressed(MouseEvent e) {
                         isMouseDown = true;
@@ -401,10 +492,7 @@ public class App {
                     public void mouseEntered(MouseEvent e) {
                         if (isMouseDown) {
                             cellClicked((JButton) e.getSource());
-                            userGrid.updateMove(row, col, selectedColor); // Updates the move in the JSON and the grid,
-                                                                          // so the checker will work if they have
-                                                                          // dragged it since all the cells are being
-                                                                          // updated in userGrid.grid
+                            userGrid.updateMove(row, col, selectedColor);
                         }
                     }
                 });
@@ -412,75 +500,9 @@ public class App {
                 grid.add(cell);
             }
         }
+
         grid.revalidate();
         grid.repaint();
-    }
-
-    public void displayClues(ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
-        int rows = rowClues.size();
-        int columns = columnClues.size();
-
-        rowCluePanel.removeAll();
-        columnCluePanel.removeAll();
-        gameArea.removeAll();
-
-        rowCluePanel.setLayout(new GridLayout(rows, 1));
-        for (Clue clue : rowClues) {
-            JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 15));
-            ArrayList<Integer> counts = clue.getCounts();
-            ArrayList<Integer> clueColor = clue.getColours();
-
-            for (int i = 0; i < counts.size(); i++) {
-                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
-                int colorKey = clueColor.get(i);
-                String colorCode = colors.getOrDefault(colorKey, "#000000");
-                clueLabel.setForeground(Color.decode(colorCode));
-                clueRow.add(clueLabel);
-            }
-
-            rowCluePanel.add(clueRow);
-        }
-
-        columnCluePanel.setLayout(new GridLayout(1, columns));
-        for (Clue clue : columnClues) {
-            JPanel clueColumn = new JPanel();
-            clueColumn.setLayout(new BoxLayout(clueColumn, BoxLayout.Y_AXIS));
-            ArrayList<Integer> counts = clue.getCounts();
-            ArrayList<Integer> clueColor = clue.getColours();
-
-            for (int i = 0; i < counts.size(); i++) {
-                JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
-                int colorKey = clueColor.get(i);
-                String colorCode = colors.getOrDefault(colorKey, "#000000");
-                clueLabel.setForeground(Color.decode(colorCode));
-                clueColumn.add(clueLabel);
-            }
-
-            columnCluePanel.add(clueColumn);
-        }
-
-        // Top-left spacer
-        JPanel cornerSpacer = new JPanel();
-        cornerSpacer.setPreferredSize(new Dimension(90, 10));
-        cornerSpacer.setBackground(grid.getBackground());
-
-        // Top row: spacer + column clues
-        JPanel topRow = new JPanel(new BorderLayout());
-        topRow.add(cornerSpacer, BorderLayout.WEST);
-        topRow.add(columnCluePanel, BorderLayout.CENTER);
-
-        // Center row: row clues + grid
-        JPanel centerRow = new JPanel(new BorderLayout());
-        centerRow.add(rowCluePanel, BorderLayout.WEST);
-        centerRow.add(grid, BorderLayout.CENTER);
-
-        // Add all to gameArea panel
-        gameArea.setLayout(new BorderLayout());
-        gameArea.add(topRow, BorderLayout.NORTH);
-        gameArea.add(centerRow, BorderLayout.CENTER);
-
-        gameArea.revalidate();
-        gameArea.repaint();
     }
 
     public void cellClicked(JButton cell) {
@@ -535,13 +557,13 @@ public class App {
 
     public void solvePuzzle() {
         int response = JOptionPane.showConfirmDialog(mainPanel,
-        "Are you sure you want the puzzle to be solved?",
-        "Solve Confirmation",
-        JOptionPane.YES_NO_OPTION,
-        JOptionPane.QUESTION_MESSAGE);
+                "Are you sure you want the puzzle to be solved?",
+                "Solve Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
 
         if (response == JOptionPane.YES_OPTION) {
-                   // solver 
+            // solver
         }
     }
 
@@ -551,7 +573,8 @@ public class App {
             JFrame frame = new JFrame("Nonograms");
             frame.setContentPane(a.mainPanel);
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            frame.setSize(800, 800);
+            frame.setSize(1000, 800);
+            frame.setMinimumSize(new Dimension(800, 600));
             frame.setResizable(false);
             frame.setLocationRelativeTo(null);
 
@@ -562,7 +585,7 @@ public class App {
                     int response = a.askSave();
                     if (response == JOptionPane.YES_OPTION) {
                         a.saveGrid();
-                    } 
+                    }
                     if (response == JOptionPane.NO_OPTION || response == JOptionPane.YES_OPTION) {
                         frame.dispose();
                     }
