@@ -17,17 +17,17 @@ public class App {
     // COLORS
     private LinkedHashMap<Integer, String> colors = new LinkedHashMap<Integer, String>();
 
-    // STATE
+    // STATES
     private int selectedColor = 0;
     private JButton selectedButton = null;
-
-    // MISC
     private boolean isMouseDown = false;
+    private boolean isSaved = false;
+    private boolean undoAllowed = false;
 
     // UI COMPONENTS
     private JPanel mainPanel;
     private JPanel colorGuide;
-    private JPanel focus;
+    private JPanel gameArea;
     private JPanel grid;
     private JPanel controls;
     private JPanel rowCluePanel;
@@ -37,12 +37,10 @@ public class App {
     private JButton loadFile;
     private JButton reset;
     private JButton check;
-    private JButton save;
     private JButton undo;
-    // method for the user to load a file
+    private JButton solve;
+    private JButton save;
 
-    private boolean isSaved = false;
-    private boolean undoAllowed = false;
 
     // GRIDS
     private Grid puzzleGrid;
@@ -64,40 +62,41 @@ public class App {
         colorGuide.setBackground(new Color(0xF0F0F0));
         mainPanel.add(colorGuide, BorderLayout.NORTH);
 
-        // centre focus area with grid and clues
+        // centre gameArea area with grid and clues
         rowCluePanel = new JPanel();
         columnCluePanel = new JPanel();
 
-        focus = new JPanel(new BorderLayout());
-        focus.setBackground(new Color(0xD2D2D2));
+        gameArea = new JPanel(new BorderLayout());
+        gameArea.setBackground(new Color(0xD2D2D2));
 
         grid = new JPanel();
         grid.setLayout(new GridLayout(1, 1));
 
-        focus.add(grid, BorderLayout.CENTER);
-        focus.add(rowCluePanel, BorderLayout.WEST);
-        focus.add(columnCluePanel, BorderLayout.NORTH);
+        gameArea.add(grid, BorderLayout.CENTER);
+        gameArea.add(rowCluePanel, BorderLayout.WEST);
+        gameArea.add(columnCluePanel, BorderLayout.NORTH);
 
-        mainPanel.add(focus, BorderLayout.CENTER);
+        mainPanel.add(gameArea, BorderLayout.CENTER);
 
         // bottom of screen controls
         controls = new JPanel();
         controls.setLayout(new GridLayout(1, 4));
 
         loadedName = new JLabel("", SwingConstants.CENTER);
-
         loadFile = new JButton("Load");
         reset = new JButton("Reset");
         check = new JButton("Check");
-        save = new JButton("Save");
         undo = new JButton("Undo");
+        solve = new JButton("Solve");
+        save = new JButton("Save");
 
         controls.add(loadedName);
         controls.add(loadFile);
         controls.add(reset);
         controls.add(check);
-        controls.add(save);
         controls.add(undo);
+        controls.add(solve);
+        controls.add(save);
 
         mainPanel.add(controls, BorderLayout.SOUTH);
 
@@ -105,14 +104,15 @@ public class App {
         loadFile.setMnemonic(KeyEvent.VK_O);
         reset.setMnemonic(KeyEvent.VK_R);
         check.setMnemonic(KeyEvent.VK_C);
-        save.setMnemonic(KeyEvent.VK_S);
         undo.setMnemonic(KeyEvent.VK_U);
+        solve.setMnemonic(KeyEvent.VK_V);
+        save.setMnemonic(KeyEvent.VK_S);
 
         // action listeners
         loadFile.addActionListener(e -> {
             int response = askSave();
             if (response == JOptionPane.YES_OPTION) {
-                saveGame();
+                saveGrid();
             }
             loadGamePuzzle("fromButton");
         });
@@ -140,8 +140,6 @@ public class App {
             JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
-        save.addActionListener(e -> saveGame());
-
         undo.addActionListener(e -> {
             if (undoAllowed) {
                 userGrid.undoMoves();
@@ -156,6 +154,10 @@ public class App {
                 allowSave();
             }
         });
+
+        solve.addActionListener(e -> solvePuzzle());
+    
+        save.addActionListener(e -> saveGrid());
     }
 
     public void openGameLauncher() {
@@ -420,7 +422,7 @@ public class App {
 
         rowCluePanel.removeAll();
         columnCluePanel.removeAll();
-        focus.removeAll();
+        gameArea.removeAll();
 
         rowCluePanel.setLayout(new GridLayout(rows, 1));
         for (Clue clue : rowClues) {
@@ -472,13 +474,13 @@ public class App {
         centerRow.add(rowCluePanel, BorderLayout.WEST);
         centerRow.add(grid, BorderLayout.CENTER);
 
-        // Add all to focus panel
-        focus.setLayout(new BorderLayout());
-        focus.add(topRow, BorderLayout.NORTH);
-        focus.add(centerRow, BorderLayout.CENTER);
+        // Add all to gameArea panel
+        gameArea.setLayout(new BorderLayout());
+        gameArea.add(topRow, BorderLayout.NORTH);
+        gameArea.add(centerRow, BorderLayout.CENTER);
 
-        focus.revalidate();
-        focus.repaint();
+        gameArea.revalidate();
+        gameArea.repaint();
     }
 
     public void cellClicked(JButton cell) {
@@ -525,10 +527,22 @@ public class App {
         return response;
     }
 
-    public void saveGame() {
+    public void saveGrid() {
         userGrid.saveMoves();
         JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
         disableSave();
+    }
+
+    public void solvePuzzle() {
+        int response = JOptionPane.showConfirmDialog(mainPanel,
+        "Are you sure you want the puzzle to be solved?",
+        "Solve Confirmation",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+
+        if (response == JOptionPane.YES_OPTION) {
+                   // solver 
+        }
     }
 
     public static void main(String[] args) {
@@ -547,9 +561,12 @@ public class App {
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                     int response = a.askSave();
                     if (response == JOptionPane.YES_OPTION) {
-                        a.saveGame();
+                        a.saveGrid();
+                    } 
+                    if (response == JOptionPane.NO_OPTION || response == JOptionPane.YES_OPTION) {
+                        frame.dispose();
                     }
-                    frame.dispose();
+                    // ensures if the user clicks X it keeps them in the game
                 }
             });
             frame.setVisible(true);
