@@ -496,7 +496,7 @@ public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             App a = new App();
-            JFrame frame = new JFrame("Nonograms");
+            JFrame frame = new JFrame(Parser.puzzleName);
             frame.setContentPane(a.mainPanel);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 800);
