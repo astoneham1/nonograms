@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Node {
     ArrayList<Integer> places;
     Clue c;
+    Boolean possible = true;
     
     public Node (Clue c, ArrayList<Integer> places) {
         this.c = c;

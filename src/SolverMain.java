@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class SolverMain {
     Grid puzzleGrid;
@@ -29,7 +30,7 @@ public class SolverMain {
             if (colArrangements.get(i).arrangement.size() == 1) {
                 drawNodeCol(colArrangements.get(i).arrangement.get(0), i);
                 colArrangements.get(i).solved = true; 
-            }   
+            } 
         }
         for (int i = 0; i < rowNum; i++) {
             rowArrangements.add(new Arrangements(rowLen, puzzleGrid.rowClues.get(i)));
@@ -38,23 +39,7 @@ public class SolverMain {
                 rowArrangements.get(i).solved = true;
             }   
         }
-        // System.out.println("ROWS");
-        // for (int i = 0; i < rowArrangements.size(); i++) {
-        //     System.out.print(i);
-        //     for (Node n: rowArrangements.get(i).arrangement) {
-        //         System.out.print(n.places);
-        //     } 
-        //     System.out.println();
-        // }
-        // System.out.println("----------------------------------------------------------");
-        // System.out.println("COLS");
-        // for (int i = 0; i < colArrangements.size(); i++) {
-        //     System.out.print(i);
-        //     for (Node n: colArrangements.get(i).arrangement) {
-        //         System.out.print(n.places);
-        //     } 
-        //     System.out.println();
-        // }
+        // optimization();
         solve();
     }
 
@@ -62,43 +47,28 @@ public class SolverMain {
 // solver
 // recursive funct that will back track and then solve, need to implement
     public void solve() {
-        // while (!checkSolved()) {
+        while (!checkSolved()) {
             for (int i = 0; i < rowArrangements.size(); i++) {
                 compatibleRow(rowArrangements.get(i), i);
             }
-            for (int j = 0; j < colArrangements.size(); j++) {
-                // compatibleRow(rowArrangements.get(i), i);
+            for (int j = 0; j < colArrangements.size(); j++) { //kills my boy 1, 6
                 compatibleCol(colArrangements.get(j), j);
             }
-            System.out.println("----------------------------------------------------------");
-            for (int i = 0; i < rowArrangements.size(); i++) {
-                compatibleRow(rowArrangements.get(i), i);
+            // for (int i = 0; i < rowLen; i++) {
+            //     for (int j = 0; j < colLen; j++) {
+            //         System.out.print(solverGrid.grid[i][j]);
+            //     }
+            //     System.out.println();
+            // }
+            System.out.println("----------------------------------------------");
+            for (Arrangements arrangements : colArrangements) {
+                for (Node n : arrangements.arrangement) {
+                    System.out.print(n.places);
+                }
+                System.out.println();
             }
-            for (int j = 0; j < colArrangements.size(); j++) {
-                // compatibleRow(rowArrangements.get(i), i);
-                compatibleCol(colArrangements.get(j), j);
-            }
-            System.out.println("----------------------------------------------------------");
-            for (int i = 0; i < rowArrangements.size(); i++) {
-                compatibleRow(rowArrangements.get(i), i);
-            }
-            for (int j = 0; j < colArrangements.size(); j++) {
-                // compatibleRow(rowArrangements.get(i), i);
-                compatibleCol(colArrangements.get(j), j);
-            }
-            System.out.println("----------------------------------------------------------");
-            for (int i = 0; i < rowArrangements.size(); i++) {
-                compatibleRow(rowArrangements.get(i), i);
-            }
-            for (int j = 0; j < colArrangements.size(); j++) {
-                // compatibleRow(rowArrangements.get(i), i);
-                compatibleCol(colArrangements.get(j), j);
-            }
-            System.out.println("----------------------------------------------------------");
-        // }
-        // if (!checkSolved()) {
-        //     solve();
-        // }
+        }
+
     }
 
 
@@ -110,7 +80,7 @@ public class SolverMain {
             }
         }
         for (int j = 0; j < colArrangements.size(); j++) {
-            if (compatibleCol(colArrangements.get(j), j)) {
+            if (compatibleCol(colArrangements.get(j), j) == false) {
                 return false;
             }
         }
@@ -124,16 +94,14 @@ public class SolverMain {
         if (a.solved == true) {
             return true;
         }
+        ArrayList<Node> tempArray = new ArrayList<>();
         while (i < a.arrangement.size()) {
-            if (checkNodeRow(a.arrangement.get(i), rowNum) == false) {
-                a.arrangement.remove(i);
+            if (checkNodeRow(a.arrangement.get(i), rowNum) == true) {
+                tempArray.add(a.arrangement.get(i));
             }
             i++;
         }
-        // for (Node n: a.arrangement) {
-        //     System.out.print(n.places);
-        // }
-        // System.out.println();
+        a.arrangement = new ArrayList<>(tempArray);
         if (a.arrangement.size() == 1) {
             a.solved = true;
             drawNodeRow(a.arrangement.get(0), rowNum);
@@ -149,16 +117,14 @@ public class SolverMain {
         if (a.solved == true) {
             return true;
         }
+        ArrayList<Node> tempArray = new ArrayList<>();
         while (i < a.arrangement.size()) {
-            if (checkNodeCol(a.arrangement.get(i), colNum) == false) {
-                a.arrangement.remove(i);
+            if (checkNodeCol(a.arrangement.get(i), colNum) == true) {
+                tempArray.add(a.arrangement.get(i));
             }
             i++;
         }
-        for (Node n: a.arrangement) {
-            System.out.print(n.places);
-        }
-        System.out.println();
+        a.arrangement = new ArrayList<>(tempArray);
         if (a.arrangement.size() == 1) {
             a.solved = true;
             drawNodeCol(a.arrangement.get(0), colNum);
@@ -172,10 +138,10 @@ public class SolverMain {
     public boolean checkNodeRow(Node n, int row) {
         int[] testArr = renderRow(n, rowLen);
         for (int i = 0; i < rowLen; i++) {
-            if (testArr[i] != solverGrid.grid[row][i] && solverGrid.grid[row][i] != 0) {
+            if (solverGrid.grid[row][i] == 1 && testArr[i] != 0) {
                 return false;
             }
-            if (testArr[i] == 1 && solverGrid.grid[row][i] != 0  && solverGrid.grid[row][i] != 1) {
+            if (!(solverGrid.grid[row][i] == 1 || solverGrid.grid[row][i] == 0) && testArr[i] != solverGrid.grid[row][i]) {
                 return false;
             }
         }
@@ -185,10 +151,10 @@ public class SolverMain {
     public boolean checkNodeCol(Node n, int column) {
         int[] testArr = renderRow(n, colLen);
         for (int i = 0; i < colLen; i++) {
-            if (testArr[i] != solverGrid.grid[i][column] && solverGrid.grid[i][column] != 0) {
+            if (solverGrid.grid[i][column] == 1 && testArr[i] != 0) {
                 return false;
             }
-            if (testArr[i] == 0 && solverGrid.grid[i][column] != 0  && solverGrid.grid[i][column] != 1) {
+            if (!(solverGrid.grid[i][column] == 1 || solverGrid.grid[i][column] == 0) && testArr[i] != solverGrid.grid[i][column]) {
                 return false;
             }
         }
@@ -223,7 +189,7 @@ public class SolverMain {
     }
 
     public void drawNodeCol(Node n, int col) {
-        updateRangeCol(0, col, 1, col);
+        updateRangeCol(0, colLen, 1, col);
         for (int i = 0; i < n.places.size(); i++) {
             updateRangeCol(n.places.get(i), n.places.get(i)+n.c.counts.get(i), n.c.colour.get(i), col);
         }
@@ -231,17 +197,55 @@ public class SolverMain {
 
     public void updateRangeRow(int start, int end, int color, int row) {
         for (int i = start; i < end; i++) {
-            solverGrid.updateMove(row , i, color);
-        }   
+                solverGrid.updateMove(row , i, color);
+        } 
     }
 
 
     public void updateRangeCol(int start, int end, int color, int col) {
         for (int i = start; i < end; i++) {
-            solverGrid.updateMove(i, col, color);
+                solverGrid.updateMove(i, col, color);
         }   
     }
 
+      // This method scans the grid and then optimizes it
+    public void optimization() {
+        optimizeRow();
+        optimizeCol();
+    }
+
+    public void optimizeRow() {
+        for (int i = 0; i < puzzleGrid.rowClues.size(); i++) {
+            for (Integer j : puzzleGrid.rowClues.get(i).counts) {
+                if (j == rowLen) {
+                    updateRangeRow(0, rowLen, puzzleGrid.columnClues.get(i).colour.get(0), i);
+                }
+                if (rowLen%2 == 0 && j > rowLen / 2) {
+                    updateRangeRow(rowLen - j, rowLen - (rowLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
+                }
+                // if (rowLen%2 != 0 && j > rowLen / 2) {
+                //     updateRangeRow(rowLen - j, rowLen - (rowLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
+                // }
+            }
+        }
+    }
+
+
+    public void optimizeCol() {
+        for (int i = 0; i < puzzleGrid.columnClues.size(); i++) {
+            for (Integer j : puzzleGrid.columnClues.get(i).counts) {
+                if (j == colLen) {
+                    updateRangeCol(0, colLen, puzzleGrid.columnClues.get(i).colour.get(0), i);
+                }
+                if (colLen%2 == 0 && j > colLen / 2) {
+                    updateRangeRow(colLen - j, colLen - (colLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
+                }
+                // if (colLen%2 != 0 && j > colLen / 2) {
+                //     updateRangeRow(colLen - j, colLen - (colLen - j), puzzleGrid.columnClues.get(i).colour.get(0), i);
+                // }
+            }
+        }
+    }
     
 }
 
