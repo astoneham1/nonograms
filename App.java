@@ -34,6 +34,8 @@ public class App {
     private JPanel columnCluePanel;
 
     private JLabel loadedName;
+    private JLabel timerText;
+
     private JButton loadFile;
     private JButton reset;
     private JButton check;
@@ -79,15 +81,25 @@ public class App {
 
         // bottom of screen controls
         controls = new JPanel();
-        controls.setLayout(new GridLayout(1, 4));
+        controls.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10)); // more padding between buttons
+        controls.setBackground(new Color(0xCCCCCC)); // subtle background
+
+        Font buttonFont = new Font("SansSerif", Font.PLAIN, 14);
 
         loadedName = new JLabel("", SwingConstants.CENTER);
-        loadFile = new JButton("Load");
-        reset = new JButton("Reset");
-        check = new JButton("Check");
-        undo = new JButton("Undo");
-        solve = new JButton("Solve");
-        save = new JButton("Save");
+        loadedName.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        loadFile = createStyledButton("Load", buttonFont);
+        reset = createStyledButton("Reset", buttonFont);
+        check = createStyledButton("Check", buttonFont);
+        undo = createStyledButton("Undo", buttonFont);
+        solve = createStyledButton("Solve", buttonFont);
+        save = createStyledButton("Save", buttonFont);
+
+        timerText = new JLabel("dsdsd", SwingConstants.RIGHT);
+        timerText.setFont(new Font("SansSerif", Font.BOLD, 14));
+        timerText.setForeground(Color.GREEN);
+        timerText.setVisible(false);
 
         controls.add(loadedName);
         controls.add(loadFile);
@@ -96,6 +108,7 @@ public class App {
         controls.add(undo);
         controls.add(solve);
         controls.add(save);
+        controls.add(timerText);
 
         mainPanel.add(controls, BorderLayout.SOUTH);
 
@@ -136,7 +149,8 @@ public class App {
             userGrid.clearAllMoves();
             disableUndo();
 
-            JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
+            showTemporaryText("Grid Reset");
+            // JOptionPane.showMessageDialog(mainPanel, "All cells reset to unknown");
         });
 
         undo.addActionListener(e -> {
@@ -157,6 +171,17 @@ public class App {
         solve.addActionListener(e -> solvePuzzle());
 
         save.addActionListener(e -> saveGrid());
+    }
+
+    private JButton createStyledButton(String text, Font font) {
+        JButton button = new JButton(text);
+        button.setFont(font);
+        button.setFocusPainted(false);
+        button.setBackground(new Color(0xE0E0E0));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createEmptyBorder(8, 16, 8, 16)));
+        return button;
     }
 
     public void openGameLauncher() {
@@ -321,8 +346,8 @@ public class App {
             InputMap inputMap = colorGuide.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             ActionMap actionMap = colorGuide.getActionMap();
 
-            inputMap.put(KeyStroke.getKeyStroke(String.valueOf(key)), "clicked" + key);
-            actionMap.put("clicked" + key, new AbstractAction() {
+            inputMap.put(KeyStroke.getKeyStroke(String.valueOf(key + 1)), "clicked" + key + 1);
+            actionMap.put("clicked" + key + 1, new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     colorButton.doClick();
@@ -352,6 +377,10 @@ public class App {
             JPanel clueCell = new JPanel();
             clueCell.setLayout(new BoxLayout(clueCell, BoxLayout.Y_AXIS));
 
+            // Add some space at the top
+            clueCell.add(Box.createVerticalStrut(10)); // Adjust the pixel value (e.g., 10) for desired top
+                                                       // padding/height increase
+
             Clue clue = puzzleGrid.columnClues.get(col);
             ArrayList<Integer> counts = clue.getCounts();
             ArrayList<Integer> clueColor = clue.getColours();
@@ -365,9 +394,11 @@ public class App {
                 clueCell.add(clueLabel);
             }
 
-            // ✨ Remove this line to avoid any border
-            // clueCell.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            // Add some space at the bottom
+            clueCell.add(Box.createVerticalStrut(20)); // Adjust the pixel value (e.g., 10) for desired bottom
+                                                       // padding/height increase
 
+            // Add the clueCell to the grid
             grid.add(clueCell);
         }
 
@@ -433,18 +464,18 @@ public class App {
 
     public void displayClues(ArrayList<Clue> rowClues, ArrayList<Clue> columnClues) {
         int rows = rowClues.size();
-    
+
         rowCluePanel.removeAll();
         gameArea.removeAll();
-    
+
         rowCluePanel.setLayout(new GridLayout(rows + 1, 1)); // add space for top column clue row
         rowCluePanel.add(new JLabel()); // blank label to push clues down
-    
+
         for (Clue clue : rowClues) {
             JPanel clueRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 15));
             ArrayList<Integer> counts = clue.getCounts();
             ArrayList<Integer> clueColor = clue.getColours();
-    
+
             for (int i = 0; i < counts.size(); i++) {
                 JLabel clueLabel = new JLabel(String.valueOf(counts.get(i)));
                 int colorKey = clueColor.get(i);
@@ -452,20 +483,20 @@ public class App {
                 clueLabel.setForeground(Color.decode(colorCode));
                 clueRow.add(clueLabel);
             }
-    
+
             rowCluePanel.add(clueRow);
         }
-    
+
         JPanel center = new JPanel(new BorderLayout());
         center.add(rowCluePanel, BorderLayout.WEST);
         center.add(grid, BorderLayout.CENTER);
-    
+
         gameArea.setLayout(new BorderLayout());
         gameArea.add(center, BorderLayout.CENTER);
-    
+
         gameArea.revalidate();
         gameArea.repaint();
-    }    
+    }
 
     public void cellClicked(JButton cell) {
         cell.putClientProperty("state", this.selectedColor);
@@ -513,7 +544,9 @@ public class App {
 
     public void saveGrid() {
         userGrid.saveMoves();
-        JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " + currentGridName);
+        showTemporaryText("Saved!");
+        // JOptionPane.showMessageDialog(mainPanel, "Saved progress to grid: " +
+        // currentGridName);
         disableSave();
     }
 
@@ -527,6 +560,22 @@ public class App {
         if (response == JOptionPane.YES_OPTION) {
             // solver
         }
+    }
+
+    public void showTemporaryText(String text) {
+        timerText.setText(text);
+        timerText.setVisible(true);
+
+        // Update the layout
+        controls.revalidate();
+        controls.repaint();
+
+        Timer timer = new Timer(3000, e -> {
+            timerText.setVisible(false);
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
 
     public static void main(String[] args) {
