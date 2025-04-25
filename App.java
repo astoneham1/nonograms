@@ -58,18 +58,18 @@ public class App {
         // Top of screen: color guide
         colorGuide = new JPanel();
         colorGuide.setLayout(new GridLayout(1, 1));
-        colorGuide.setBackground(new Color(0xF0F0F0));
+        colorGuide.setBackground(new Color(204, 204, 204));
         mainPanel.add(colorGuide, BorderLayout.NORTH);
 
         // Centre gameArea area with grid and clues
         gameArea = new JPanel(new BorderLayout());
-        gameArea.setBackground(new Color(0xD2D2D2));
+        gameArea.setBackground(new Color(210, 210, 210));
 
         // The grid panel itself, using GridBagLayout internally for clues and cells
         grid = new JPanel(new GridBagLayout());
 
         JPanel centeringPanel = new JPanel(new GridBagLayout());
-        centeringPanel.setBackground(new Color(0xD2D2D2));
+        centeringPanel.setBackground(new Color(210, 210, 210));
 
         GridBagConstraints gbcCentering = new GridBagConstraints();
         gbcCentering.gridx = 0;
@@ -84,10 +84,14 @@ public class App {
 
         mainPanel.add(gameArea, BorderLayout.CENTER);
 
-        // Bottom of screen controls
+        // bottom of screen controls
         controls = new JPanel();
-        controls.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        controls.setBackground(new Color(0xCCCCCC));
+        // Use BoxLayout for vertical stacking
+        controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
+        controls.setBackground(new Color(0xCCCCCC)); // subtle background
+
+        // *** Add a vertical strut for a tiny bit of padding at the top ***
+        controls.add(Box.createVerticalStrut(5)); // You can adjust the '5' to increase or decrease the padding
 
         Font buttonFont = new Font("SansSerif", Font.PLAIN, 14);
 
@@ -106,14 +110,22 @@ public class App {
         timerText.setForeground(Color.GREEN);
         timerText.setVisible(false);
 
+        loadedName.setAlignmentX(Component.CENTER_ALIGNMENT);
         controls.add(loadedName);
-        controls.add(loadFile);
-        controls.add(reset);
-        controls.add(check);
-        controls.add(undo);
-        controls.add(solve);
-        controls.add(save);
-        controls.add(timerText);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        buttonPanel.setBackground(new Color(204,204,204));
+
+        buttonPanel.add(loadFile);
+        buttonPanel.add(reset);
+        buttonPanel.add(check);
+        buttonPanel.add(undo);
+        buttonPanel.add(solve);
+        buttonPanel.add(save);
+        buttonPanel.add(timerText);
+
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        controls.add(buttonPanel);
 
         mainPanel.add(controls, BorderLayout.SOUTH);
 
@@ -127,14 +139,19 @@ public class App {
 
         // Action listeners
         loadFile.addActionListener(e -> {
-            int response = askSave();
-            if (response == JOptionPane.YES_OPTION) {
-                saveGrid();
-            }
-
-            if (response == JOptionPane.YES_OPTION || response == JOptionPane.NO_OPTION) {
+            if (!isSaved) {
+                int response = askSave();
+                if (response == JOptionPane.YES_OPTION) {
+                    saveGrid();
+                }
+    
+                if (response == JOptionPane.YES_OPTION || response == JOptionPane.NO_OPTION) {
+                    loadGamePuzzle("fromButton");
+                }
+            } else {
                 loadGamePuzzle("fromButton");
             }
+
         });
 
         check.addActionListener(e -> {
@@ -145,6 +162,10 @@ public class App {
                     puzzleGrid.columnClues);
             String message = c.getMessage(a, puzzleGrid.rowClues.size(), puzzleGrid.columnClues.size());
             JOptionPane.showMessageDialog(mainPanel, message);
+
+            if (message.contains("100.0%")) {
+                showTemporaryText("Well done!");
+            }
         });
 
         reset.addActionListener(e -> {
@@ -180,7 +201,7 @@ public class App {
         JButton button = new JButton(text);
         button.setFont(font);
         button.setFocusPainted(false);
-        button.setBackground(new Color(0xE0E0E0));
+        button.setBackground(new Color(224, 224, 224));
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY),
                 BorderFactory.createEmptyBorder(8, 16, 8, 16)));
@@ -215,7 +236,8 @@ public class App {
     public void loadGamePuzzle(String source) {
         File puzzleDir = new File("Jsons");
         File[] jsonFiles = puzzleDir.listFiles((dir, name) -> name.endsWith(".json"));
-        String[] options = Arrays.stream(jsonFiles).map(File::getName).toArray(String[]::new);
+        String[] options = Arrays.stream(jsonFiles).map(File::getName)
+                .map(fileName -> fileName.substring(0, fileName.length() - 5)).toArray(String[]::new);
 
         String selected = (String) JOptionPane.showInputDialog(
                 mainPanel,
@@ -227,7 +249,7 @@ public class App {
                 options[0]);
 
         if (!(selected == null)) {
-            File selectedFile = new File(puzzleDir, selected);
+            File selectedFile = new File(puzzleDir, selected + ".json");
 
             Parser parser = new Parser();
             try {
@@ -236,10 +258,10 @@ public class App {
                 // Find out if the user wants to load an existing grid or create a new one
                 File gridDir = new File("Moves");
                 File[] gridFiles = gridDir.listFiles((dir, name) -> name.endsWith(".json"));
-                String[] grids = Arrays.stream(gridFiles).map(File::getName).toArray(String[]::new);
+                String[] grids = Arrays.stream(gridFiles).map(File::getName)
+                        .map(fileName -> fileName.substring(0, fileName.length() - 5)).toArray(String[]::new);
                 grids = Stream.concat(Stream.of("New Grid"), Arrays.stream(grids)).toArray(String[]::new);
 
-                String newGridName = "";
                 boolean createNewGrid = false;
 
                 String returnValue = (String) JOptionPane.showInputDialog(
@@ -260,15 +282,10 @@ public class App {
                                 "New Grid Name",
                                 JOptionPane.PLAIN_MESSAGE);
 
-                        newGridName = returnValue.concat(".json");
                         createNewGrid = true;
                     }
 
-                    if (createNewGrid) {
-                        currentGridName = newGridName;
-                    } else {
-                        currentGridName = returnValue;
-                    }
+                    currentGridName = returnValue + ".json";
 
                     // Create an empty grid with the specified filename
                     userGrid = new Grid(puzzleGrid.rows, puzzleGrid.columns, "Moves/" + currentGridName);
@@ -276,7 +293,7 @@ public class App {
                     // If the user clicked to load an existing grid then update the empty grid to be
                     // loaded
                     if (!createNewGrid) {
-                        userGrid.loadMoves("Moves/" + returnValue);
+                        userGrid.loadMoves("Moves/" + currentGridName);
                     }
 
                     if (userGrid.moves.size() > 0) {
@@ -285,7 +302,8 @@ public class App {
                         disableUndo();
                     }
 
-                    loadedName.setText(currentGridName.substring(0, currentGridName.length() - 5));
+                    loadedName.setText(
+                            Parser.puzzleName + " • " + currentGridName.substring(0, currentGridName.length() - 5));
                     this.colors = Colours.colours;
 
                     displayColors();
@@ -314,7 +332,7 @@ public class App {
 
     public void displayColors() {
         colorGuide.removeAll();
-        colorGuide.setLayout(new GridLayout(1, this.colors.size()));
+        colorGuide.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
         for (Map.Entry<Integer, String> entry : this.colors.entrySet()) {
             int key = entry.getKey();
@@ -330,16 +348,27 @@ public class App {
             Color color = Color.decode(colorCode);
             colorButton.setBackground(color);
             colorButton.setOpaque(true);
-            colorButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+            colorButton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK, 1),
+                    BorderFactory.createEmptyBorder(5, 15, 5, 15)));
+
+            colorButton.setForeground(Color.BLACK);
 
             colorButton.addActionListener(e -> {
                 this.selectedColor = key;
 
                 if (selectedButton != null) {
-                    selectedButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+                    // Reset previously selected button's border
+                    selectedButton.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.BLACK, 1),
+                            BorderFactory.createEmptyBorder(5, 15, 5, 15)));
                 }
 
-                colorButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+                // Set border of the newly selected button
+                colorButton.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.BLACK, 3),
+                        BorderFactory.createEmptyBorder(5, 15, 5, 15)));
                 selectedButton = colorButton;
             });
 
@@ -347,7 +376,6 @@ public class App {
             InputMap inputMap = colorGuide.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             ActionMap actionMap = colorGuide.getActionMap();
 
-            // Add 1 so the user isn't clicking 0 for the first colour, makes no sense
             inputMap.put(KeyStroke.getKeyStroke(String.valueOf(key + 1)), "clicked" + key + 1);
             actionMap.put("clicked" + key + 1, new AbstractAction() {
                 @Override
@@ -359,10 +387,11 @@ public class App {
             colorGuide.add(colorButton);
         }
 
-        // Preselect UNKNOWN
+        // preselect UNKNOWN (assuming key 0 is UNKNOWN)
         for (Component c : colorGuide.getComponents()) {
             if (c instanceof JButton b && "UNKNOWN".equals(b.getText())) {
                 b.doClick();
+                break; // Stop after finding UNKNOWN
             }
         }
 
@@ -382,7 +411,7 @@ public class App {
         int maxDim = Math.max(rows, columns);
         int calculatedCellSize = 30; // Default or minimum size
 
-        if (maxDim <= 10) { // For very small puzzles (e.g., 5x5, 10x10)
+        if (maxDim <= 10) { // For very small puzzles
             calculatedCellSize = 60;
         } else if (maxDim <= 15) { // For medium-small puzzles
             calculatedCellSize = 50;
@@ -595,7 +624,7 @@ public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             App a = new App();
-            JFrame frame = new JFrame(Parser.puzzleName);
+            JFrame frame = new JFrame("Nonograms • " + Parser.puzzleName);
             frame.setContentPane(a.mainPanel);
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             frame.setSize(1000, 800);
@@ -606,11 +635,15 @@ public class App {
             frame.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                    int response = a.askSave();
-                    if (response == JOptionPane.YES_OPTION) {
-                        a.saveGrid();
-                    }
-                    if (response == JOptionPane.YES_OPTION || response == JOptionPane.NO_OPTION) {
+                    if (!a.isSaved) {
+                        int response = a.askSave();
+                        if (response == JOptionPane.YES_OPTION) {
+                            a.saveGrid();
+                        }
+                        if (response == JOptionPane.YES_OPTION || response == JOptionPane.NO_OPTION) {
+                            frame.dispose();
+                        }
+                    } else {
                         frame.dispose();
                     }
                     // ensures if the user clicks X it keeps them in the game
