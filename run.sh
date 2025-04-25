@@ -1,4 +1,4 @@
 #!/bin/bash
 
-javac -cp lib/javax.json-1.0.jar *.java
-java -cp lib/javax.json-1.0.jar:. App
+javac -d ./out -cp lib/javax.json-1.0.jar src/*.java
+java -cp lib/javax.json-1.0.jar:out App
