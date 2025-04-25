@@ -27,10 +27,15 @@ Shows all edge cases: Clicking cancel and clicking 'X'
 Shows all edge cases for loading a puzzle from game start
 - Nothing is printed in the terminal, no errors are thrown, the program gracefully exits as intended
 
-#### Video 6 DO AFTER SOLVER
+#### Video 6
 Shows all control panel buttons and their keyboard shortcuts
 Shows keyboard shortcuts for colours
+- All keyboard shortcuts work as intended
 
 #### Video 7
 Shows the puzzle loader gracefully coping with loading a grid of a different size
-A small grid is loaded onto a large puzzle, in which it occupies the top left cells and uses the first colour after unknown and empty
+- A small grid is loaded onto a large puzzle, in which it occupies the top left cells and uses the first colour after unknown and empty
+
+#### Video 8 and Video 9
+Show the solver in action, correctly completing the puzzle
+- The solver correctly displays the completed puzzle on the screen
