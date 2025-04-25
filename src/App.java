@@ -170,6 +170,7 @@ public class App {
             // Reset the userGrid data and rebuild the grid UI
             userGrid.clearAllMoves();
             disableUndo();
+            allowSave();
             buildGrid(puzzleGrid.rows, puzzleGrid.columns); // Rebuild the grid UI
 
             showTemporaryText("Grid Reset");
@@ -588,8 +589,8 @@ public class App {
 
     public int askSave() {
         int response = JOptionPane.showConfirmDialog(mainPanel,
-                "Do you want to save your progress before exiting?",
-                "Exit Confirmation",
+                "Do you want to save your progress?",
+                "Save Confirmation",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
         return response;
@@ -609,7 +610,7 @@ public class App {
                 JOptionPane.QUESTION_MESSAGE);
 
         if (response == JOptionPane.YES_OPTION) {
-            // solver
+            
         }
     }
 
