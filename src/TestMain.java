@@ -12,7 +12,7 @@ public class TestMain {
     try {
         Parser p = new Parser();
         Grid g = p.getGrid("Jsons/smiler.json");
-        SolverMain s = new SolverMain(g, true);
+        SolverMain s = new SolverMain(g);
         s.solver();
         for (int i = 0; i < s.solverGrid.rows; i++) {
             for (int j = 0; j < s.solverGrid.columns; j++) {
