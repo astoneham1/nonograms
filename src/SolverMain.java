@@ -38,7 +38,7 @@ public class SolverMain {
                 rowArrangements.get(i).solved = true;
             }   
         }
-        System.out.println("ROWS");
+        // System.out.println("ROWS");
         for (int i = 0; i < rowArrangements.size(); i++) {
             System.out.print(i);
             for (Node n: rowArrangements.get(i).arrangement) {
@@ -46,14 +46,14 @@ public class SolverMain {
             } 
             System.out.println();
         }
-        System.out.println("----------------------------------------------------------");
-        System.out.println("COLS");
+        // System.out.println("----------------------------------------------------------");
+        // System.out.println("COLS");
         for (int i = 0; i < colArrangements.size(); i++) {
-            System.out.print(i);
-            for (Node n: colArrangements.get(i).arrangement) {
-                System.out.print(n.places);
-            } 
-            System.out.println();
+            // System.out.print(i);
+            // for (Node n: colArrangements.get(i).arrangement) {
+            //     System.out.print(n.places);
+            // } 
+            // System.out.println();
         }
         solve();
     }
@@ -70,21 +70,21 @@ public class SolverMain {
                 // compatibleRow(rowArrangements.get(i), i);
                 compatibleCol(colArrangements.get(j), j);
             }
-            System.out.println("----------------------------------------------------------");
+            // System.out.println("----------------------------------------------------------");
             for (int j = 0; j < colArrangements.size(); j++) {
                 compatibleCol(colArrangements.get(j), j);
             }
             for (int i = 0; i < rowArrangements.size(); i++) {
                 compatibleRow(rowArrangements.get(i), i);
             }
-            System.out.println("----------------------------------------------------------");
+            // System.out.println("----------------------------------------------------------");
             for (int j = 0; j < colArrangements.size(); j++) {
                 compatibleCol(colArrangements.get(j), j);
             }
             for (int i = 0; i < rowArrangements.size(); i++) {
                 compatibleRow(rowArrangements.get(i), i);
             }
-            System.out.println("----------------------------------------------------------");
+            // System.out.println("----------------------------------------------------------");
             for (int j = 0; j < colArrangements.size(); j++) {
                 compatibleCol(colArrangements.get(j), j);
             }
@@ -126,10 +126,10 @@ public class SolverMain {
             }
             i++;
         }
-        for (Node n: a.arrangement) {
-            System.out.print(n.places);
-        }
-        System.out.println();
+        // for (Node n: a.arrangement) {
+        //     System.out.print(n.places);
+        // }
+        // System.out.println();
         if (a.arrangement.size() == 1) {
             a.solved = true;
             drawNodeRow(a.arrangement.get(0), rowNum);
