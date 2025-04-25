@@ -307,6 +307,17 @@ public class App {
                             Parser.puzzleName + " • " + currentGridName.substring(0, currentGridName.length() - 5));
                     this.colors = Colours.colours;
 
+                    // ensure only compatible puzzles are able to be solved
+                    String[] compatiblePuzzles = { "Invader", "Colourful Cat Face", "Colourful Bird", "Checks", "Wink", "Smiler", "" };
+            
+                    if (Arrays.asList(compatiblePuzzles).contains(Parser.puzzleName)) {
+                        solve.setBackground(reset.getBackground());
+                        solve.setEnabled(true);
+                    } else {
+                        solve.setBackground(Color.GRAY);
+                        solve.setEnabled(false);
+                    }
+
                     displayColors();
                     buildGrid(puzzleGrid.rows, puzzleGrid.columns, userGrid);
                 } else if (source.equals("fromStart")) {
@@ -614,6 +625,7 @@ public class App {
             SolverMain solver = new SolverMain(puzzleGrid);
 
             solverGrid = solver.solverGrid;
+            solver.solver();
             buildGrid(puzzleGrid.rows, puzzleGrid.columns, solverGrid);
         }
     }
