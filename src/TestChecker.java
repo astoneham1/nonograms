@@ -242,6 +242,7 @@ public class TestChecker {
         System.out.println("\u001B[94mTEST OUTPUT:\u001B[0m " + progressDecimal + "\n\u001B[94mTEST STATUS:" + testTwentyFourStatus + "\u001B[0m");
     }
 
+    // Retrieve the required grid depending on the test case.
     public int[][] createGrid(String name) {
         int[][] grid = null;
         if (name.equals("blanks_smiler")) {
@@ -301,7 +302,6 @@ public class TestChecker {
             };
         }
         else if (name.equals("colour_wink")) {
-            // yellow 3, black 0, empty 2
             grid = new int[][] {
                 {0, 0, 3, 3, 3, 3, 3, 0, 0},
                 {0, 3, 3, 3, 3, 3, 3, 3, 0},
@@ -408,6 +408,7 @@ public class TestChecker {
         return grid;
     }
   
+    // Gets the row clues depending on the test case.
     public ArrayList<Clue> createRowClues(String name) {
         ArrayList<Clue> rowClues = new ArrayList<Clue>();
         if (name.equals("blanks_smiler") || name.equals("unsolvable_smiler") || name.equals("unsolvable_smiler_2") || name.equals("blanks_smiler_empty")) {
@@ -537,6 +538,7 @@ public class TestChecker {
         return rowClues;
     }
 
+    // Gets the column clues depending on the test case.
     public ArrayList<Clue> createColumnClues(String name) {
         ArrayList<Clue> columnClues = new ArrayList<Clue>();
         if (name.equals("blanks_smiler") || name.equals("blanks_smiler_empty")) {
@@ -696,6 +698,7 @@ public class TestChecker {
         return columnClues;
     }
 
+    // Check the tests which test the list of lists of incorrect lines and the corresponding output message.
     public String checkTestStatus(int testCaseNumber, ArrayList<ArrayList<Integer>> incorrectLines, String message) {
         String status = "";
 
@@ -763,6 +766,7 @@ public class TestChecker {
         return status;
     }
 
+    //Check the tests which test if a given row or column is valid/correct or not.
     public String checkTestStatus(int testCaseNumber, Boolean isLineCorrect) {
         String status = "";
 
@@ -795,6 +799,7 @@ public class TestChecker {
         return status;
     }
 
+    // Checks the test which tests if the getColumn() method successfully returns the correct columns from a 2D int array.
     public String checkTestStatus(int[] column1, int[] column2, int[] column3) {
         String status = "";
         int[] correctColumn1 = new int[] {0, 2, 4, 6, 8};
@@ -811,6 +816,7 @@ public class TestChecker {
         return status;
     }
 
+    // Checks the tests wich test if the getProgress() method successfully returns the correct progress given the number of incorrect and total rows/columns.
     public String checkTestStatus(int testCaseNumber, double progress) {
         String status = "";
 
@@ -836,6 +842,7 @@ public class TestChecker {
         return status;
     }
 
+    // Converts the array to a nice String so it can be printed.
     public String getArrayString(int[] array) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
