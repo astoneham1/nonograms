@@ -44,6 +44,7 @@ public class App {
     // GRIDS
     private Grid puzzleGrid;
     private Grid userGrid;
+    private Grid solverGrid;
     private String currentGridName;
 
     public App() {
@@ -87,7 +88,7 @@ public class App {
         // Bottom of screen controls
         controls = new JPanel();
         controls.setLayout(new BoxLayout(controls, BoxLayout.Y_AXIS));
-        controls.setBackground(new Color(204,204,204));
+        controls.setBackground(new Color(204, 204, 204));
 
         controls.add(Box.createVerticalStrut(5));
 
@@ -103,7 +104,7 @@ public class App {
         solve = createStyledButton("Solve", buttonFont);
         save = createStyledButton("Save", buttonFont);
 
-        timerText = new JLabel("dsdsd", SwingConstants.RIGHT);
+        timerText = new JLabel("", SwingConstants.RIGHT);
         timerText.setFont(new Font("SansSerif", Font.BOLD, 14));
         timerText.setForeground(Color.GREEN);
         timerText.setVisible(false);
@@ -112,7 +113,7 @@ public class App {
         controls.add(loadedName);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        buttonPanel.setBackground(new Color(204,204,204));
+        buttonPanel.setBackground(new Color(204, 204, 204));
 
         buttonPanel.add(loadFile);
         buttonPanel.add(reset);
@@ -142,7 +143,7 @@ public class App {
                 if (response == JOptionPane.YES_OPTION) {
                     saveGrid();
                 }
-    
+
                 if (response == JOptionPane.YES_OPTION || response == JOptionPane.NO_OPTION) {
                     loadGamePuzzle("fromButton");
                 }
@@ -170,7 +171,8 @@ public class App {
             // Reset the userGrid data and rebuild the grid UI
             userGrid.clearAllMoves();
             disableUndo();
-            buildGrid(puzzleGrid.rows, puzzleGrid.columns); // Rebuild the grid UI
+            allowSave();
+            buildGrid(puzzleGrid.rows, puzzleGrid.columns, userGrid); // Rebuild the grid UI
 
             showTemporaryText("Grid Reset");
         });
@@ -178,7 +180,7 @@ public class App {
         undo.addActionListener(e -> {
             if (undoAllowed) {
                 userGrid.undoMoves();
-                buildGrid(puzzleGrid.rows, puzzleGrid.columns); // Rebuild grid after undo
+                buildGrid(puzzleGrid.rows, puzzleGrid.columns, userGrid); // Rebuild grid after undo
             }
 
             if (userGrid.moves.size() == 0) {
@@ -306,7 +308,7 @@ public class App {
                     this.colors = Colours.colours;
 
                     displayColors();
-                    buildGrid(puzzleGrid.rows, puzzleGrid.columns);
+                    buildGrid(puzzleGrid.rows, puzzleGrid.columns, userGrid);
                 } else if (source.equals("fromStart")) {
                     System.exit(0);
                 }
@@ -398,7 +400,7 @@ public class App {
         colorGuide.repaint();
     }
 
-    public void buildGrid(int rows, int columns) {
+    public void buildGrid(int rows, int columns, Grid gridName) {
         grid.removeAll();
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -467,7 +469,7 @@ public class App {
 
             for (int j = 0; j < counts.size(); j++) {
                 String textForLabel = "";
-                if (j < counts.size()-1) {
+                if (j < counts.size() - 1) {
                     textForLabel = String.valueOf(counts.get(j)) + ",";
                 } else {
                     textForLabel = String.valueOf(counts.get(j));
@@ -495,11 +497,11 @@ public class App {
                 cell.setOpaque(true);
                 cell.setPreferredSize(new Dimension(calculatedCellSize, calculatedCellSize));
 
-                if (colors.get(userGrid.grid[i][j]) == null) {
-                    userGrid.grid[i][j] = 0;
+                if (colors.get(gridName.grid[i][j]) == null) {
+                    gridName.grid[i][j] = 0;
                 }
-                cell.setBackground(Color.decode(colors.get(userGrid.grid[i][j])));
-                cell.putClientProperty("state", userGrid.grid[i][j]);
+                cell.setBackground(Color.decode(colors.get(gridName.grid[i][j])));
+                cell.putClientProperty("state", gridName.grid[i][j]);
 
                 // Borders
                 int top = (i % 5 == 0) ? 2 : 1; // Thicker top border every 5 rows (relative to puzzle grid)
@@ -588,8 +590,8 @@ public class App {
 
     public int askSave() {
         int response = JOptionPane.showConfirmDialog(mainPanel,
-                "Do you want to save your progress before exiting?",
-                "Exit Confirmation",
+                "Do you want to save your progress?",
+                "Save Confirmation",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
         return response;
@@ -609,7 +611,10 @@ public class App {
                 JOptionPane.QUESTION_MESSAGE);
 
         if (response == JOptionPane.YES_OPTION) {
-            // solver
+            SolverMain solver = new SolverMain(puzzleGrid);
+
+            solverGrid = solver.solverGrid;
+            buildGrid(puzzleGrid.rows, puzzleGrid.columns, solverGrid);
         }
     }
 

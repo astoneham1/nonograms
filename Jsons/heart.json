@@ -1,0 +1,27 @@
+{
+  "name": "Heart",
+  "rows": [
+    [{"count": 6}],
+    [{"count": 8}],
+    [{"count": 10}],
+    [{"count": 10}],
+    [{"count": 10}],
+    [{"count": 8}],
+    [{"count": 6}],
+    [{"count": 4}],
+    [{"count": 2}],
+    [{"count": 0}]
+  ],
+  "columns": [
+    [{"count": 3}],
+    [{"count": 5}],
+    [{"count": 7}],
+    [{"count": 8}],
+    [{"count": 9}],
+    [{"count": 9}],
+    [{"count": 8}],
+    [{"count": 7}],
+    [{"count": 5}],
+    [{"count": 3}]
+  ]
+}
